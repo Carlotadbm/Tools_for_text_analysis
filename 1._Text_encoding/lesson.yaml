@@ -22,7 +22,7 @@
   Output: Next thing is loading the .txt file. We'll be using a list of word frequencies in Don Quixote, made available by the Real Academia Española (if you want to check the resources they made available, go to https://www.rae.es/ and check the Banco de datos section).
 
 - Class: cmd_question
-  Output: The text file is found in this URL: http://corpus.rae.es/frecCORDE/quijote1.TXT We will have to pass it as an argument in a function so, for readability, assign it the name url.
+  Output: The text file is found in the URL http://corpus.rae.es/frecCORDE/quijote1.TXT We will have to pass it as an argument in a function so, for readability, assign it the name url.
   CorrectAnswer: url <- "http://corpus.rae.es/frecCORDE/quijote1.TXT"
   AnswerTests: any_of_exprs(url <- "http://corpus.rae.es/frecCORDE/quijote1.TXT", url = "http://corpus.rae.es/frecCORDE/quijote1.TXT")
   Hint: You're creating a character variable, don't forget the quotation marks!
@@ -115,7 +115,7 @@
   Output: No, we cannot. Why? Because assigning a value to Encoding() does not change anything in quixote, but in how R deals with quixote.
 
 - Class: cmd_question
-  Output: For changing the encoding we will have to use a different function, namely, enc2utf8(). And, because you want to change the quixote object, you need to save that change… By giving it a name. Call it quixote_utf8.
+  Output: For changing the encoding we will have to use a different function, namely, enc2utf8(). And, because you want to change the quixote object, you need to save that change… By giving it a name. Name it quixote_utf8.
   CorrectAnswer: quixote_utf8 <- enc2utf8(quixote)
   AnswerTests: omnitest(quixote_utf8 <- enc2utf8(quixote))
   Hint: Pass quixote as the single argument of enc2utf8() and assign it to the variable quixote_utf8.
