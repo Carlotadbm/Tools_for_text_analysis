@@ -15,7 +15,7 @@
 - Class: cmd_question
   Output: We'll be working with the tidyverse, so the first thing is to load it. Go on and do it!
   CorrectAnswer: library(tidyverse)
-  AnswerTests: any_of_exprs(library(tidyverse), library("tidyverse"))
+  AnswerTests: any_of_exprs("library(tidyverse)", "library('tidyverse')")
   Hint: Use the function library()
 
 - Class: text
@@ -24,13 +24,13 @@
 - Class: cmd_question
   Output: The text file is found in the URL http://corpus.rae.es/frecCORDE/quijote1.TXT We will have to pass it as an argument in a function so, for readability, assign it the name url.
   CorrectAnswer: url <- "http://corpus.rae.es/frecCORDE/quijote1.TXT"
-  AnswerTests: any_of_exprs(url <- "http://corpus.rae.es/frecCORDE/quijote1.TXT", url = "http://corpus.rae.es/frecCORDE/quijote1.TXT")
+  AnswerTests: omnitest(correctExpr = "url <- 'http://corpus.rae.es/frecCORDE/quijote1.TXT'")
   Hint: You're creating a character variable, don't forget the quotation marks!
 
 - Class: cmd_question
   Output: Now we just have to read this URL into R, with the tidyverse function read_lines, that only requires the URL as its single argument. Do so now!
   CorrectAnswer: read_lines(url)
-  AnswerTests: omnitest(read_lines(url))
+  AnswerTests: omnitest(correctExpr = "read_lines(url)")
   Hint: Pass the variable url as the single argument of read_lines()
 
 - Class: text
@@ -39,107 +39,107 @@
 - Class: cmd_question
   Output: So let's do that now - assign it the name quixote
   CorrectAnswer: quixote <- read_lines(url)
-  AnswerTests: any_of_exprs(quixote <- read_lines(url), quixote = read_lines(url))
+  AnswerTests: omnitest(correctExpr = "quixote <- read_lines(url)")
   Hint: Did you type everything in lower-case letters?
 
 - Class: cmd_question
   Output: Now that it's saved, let's take a look at its content. We will call the function head(), which, by default, shows you the first 6 elements of an R object.
   CorrectAnswer: head(quixote)
-  AnswerTests: omnitest(head(quixote))
+  AnswerTests: omnitest(correctExpr = "head(quixote)")
   Hint: Pass the variable quixote as the single argument of head()
 
 - Class: text
   Output: You can already see that there is something weird going on here. Element 3 is supposed to be the country where Don Quixote was written, but it doesn't say España there… The text is in a different encoding than what R was expecting.
 
 - Class: text
-  Output: Before addressing the encoding question, let's explore quixote a bit further. Turns out that the first 9 elements are a bit special, so you don't really know what most of the file looks like.
+  Output: Before addressing the encoding question, let's explore quixote a bit further. Turns out that the first 9 elements are a bit special, so right now you don't really know what most of the file looks like.
   
 - Class: cmd_question
   Output: But we can tell head() to show more than the first 6 elements, by specifying how many elements in a second argument called n. Ask for the 15 first elements! Remember that you must use the = sign to specify the value of a named argument.
   CorrectAnswer: head(quixote, n = 15)
-  AnswerTests: omnitest(head(quixote, n = 15))
+  AnswerTests: omnitest(correctExpr = "head(quixote, n = 15)")
   Hint: Pass n = 15 as the second argument of head.
 
 - Class: text
-  Output: So, as you can see, while the first 9 elements show information of the text, from the 10th element onwards you get a list of a word/punctuation mark and the number of times it appears in Don Quixote. And you can also see that every word with an accent mark in Spanish isn't read correctly. Let's look at that now.
+  Output: So, as you can see, while the first 9 elements show information of the text, from the 10th element onwards you get a list of a word/punctuation mark and the number of times it appears in Don Quixote. And you can also see that every word with an accent mark in Spanish isn't read correctly. Let's fix that now.
 
 - Class: cmd_question
-  Output: The function Encoding() returns the encoding that R set for every element of a text. Pass quixote as it's argument
+  Output: The function Encoding() returns the encoding that R set for every element of a text. Pass quixote as its argument
   CorrectAnswer: Encoding(quixote)
-  AnswerTests: omnitest(Encoding(quixote))
+  AnswerTests: omnitest(correctExpr = "Encoding(quixote)")
   Hint: Note that Encoding() starts with a capital E!
 
 - Class: text
   Output: R gave you the results for the first 1000 elements (not bad). As you can see, there are two possible values, unknown and UTF-8.
 
 - Class: text
-  Output: unknown is what R says for ASCII characters, because these are the same both in Latin-1 and in UTF-8. Whenever there was a non-ASCII character, R used UTF-8 to read it…and failed, as we saw.
+  Output: unknown is what R says for ASCII characters, because these are the same both in Latin-1 and in UTF-8. Whenever there was a non-ASCII character, R used UTF-8 to read it… and failed, as we saw.
 
 
 - Class: cmd_question
   Output: That is because our .txt file was encoded in Latin-1, but the function read_lines() assumes everything it reads is in UTF-8. We can change the encoding of quixote by assigning the value "latin1" to the result of the Encoding() function. Try it now.
   CorrectAnswer: Encoding(quixote) <- "latin1"
-  AnswerTests: omnitest(Encoding(quixote) <- "latin1")
+  AnswerTests: omnitest(correctExpr = "Encoding(quixote) <- 'latin1'")
   Hint: Use the assign operator <- to assign "latin1" (with quotation marks!) to the last function you ran.
 
 - Class: cmd_question
-  Output: Did it work? Check if the 15 first elements of quixote are displayed correctly.
+  Output: Ok, did it work? Check if the 15 first elements of quixote are displayed correctly.
   CorrectAnswer: head(quixote, n = 15)
-  AnswerTests: omnitest(head(quixote, n = 15))
+  AnswerTests: omnitest(correctExpr = "head(quixote, n = 15)")
   Hint: You did this already! If you're feeling lazy you can't simply use the up arrow until you find it :)
 
 - Class: mult_question
   Output: What values do you think will show up if you run Encoding(quixote) now?
-  AnswerChoices: "latin1 and unknown";"latin1";"unknown"
-  CorrectAnswer: "latin1 and unknown"
+  AnswerChoices: latin1 and unknown;latin1;unknown
+  CorrectAnswer: latin1 and unknown
   AnswerTests: omnitest(correctVal= "latin1 and unknown")
   Hint: Remember that ASCII characters are the same in both encodings, so R can't decide.
   
 - Class: cmd_question
   Output: Check it now.
   CorrectAnswer: Encoding(quixote)
-  AnswerTests: omnitest(Encoding(quixote))
+  AnswerTests: omnitest(correctExpr = "Encoding(quixote)")
   Hint: You also did this already!
 
 - Class: text
-  Output: We have now told R what encoding it should use to read quixote correctly. But we know that it's preferrable to haev our text files in UTF-8. That's the last thing we'll do in this lesson.
+  Output: We have now told R what encoding it should use to read quixote correctly. But we know that it's preferrable to have our text files in UTF-8. We'll convert the file now.
 
 - Class: mult_question
   Output: Can we change the encoding of Quixote by running Encoding(quixote) <- "latin1"?
-  AnswerChoices:"No";"Yes"
-  CorrectAnswer: "No"
+  AnswerChoices: No;Yes
+  CorrectAnswer: No
   AnswerTests: omnitest(correctVal= "No")
   Hint: 50 % chance… ;)
 
 - Class: text
-  Output: No, we cannot. Why? Because assigning a value to Encoding() does not change anything in quixote, but in how R deals with quixote.
+  Output: No, we can't. Why? Because assigning a value to Encoding() does not change anything in the object quixote, but in how R deals with quixote.
 
 - Class: cmd_question
   Output: For changing the encoding we will have to use a different function, namely, enc2utf8(). And, because you want to change the quixote object, you need to save that change… By giving it a name. Name it quixote_utf8.
   CorrectAnswer: quixote_utf8 <- enc2utf8(quixote)
-  AnswerTests: omnitest(quixote_utf8 <- enc2utf8(quixote))
+  AnswerTests: omnitest(correctExpr = "quixote_utf8 <- enc2utf8(quixote)")
   Hint: Pass quixote as the single argument of enc2utf8() and assign it to the variable quixote_utf8.
 
 - Class: cmd_question
   Output: What do you expect now that the output of Encoding(quixote_utf8) will be? Try it out!
   CorrectAnswer: Encoding(quixote_utf8)
-  AnswerTests: omnitest(Encoding(quixote_utf8))
+  AnswerTests: omnitest(correctExpr = "Encoding(quixote_utf8)")
   Hint: Just type Encoding(quixote_utf8).
 
 
 
 - Class: mult_question
   Output: Ok, so now that you know that the answer is UTF-8, do you think that R will display all characters correctly when you print quixote_utf8?
-  AnswerChoices: "Yes";"No"
-  CorrectAnswer: "Yes"
+  AnswerChoices: Yes;No
+  CorrectAnswer: Yes
   AnswerTests: omnitest(correctVal= "Yes")
   Hint: Again, 50 % chance!
 
 - Class: cmd_question
   Output: Let's see if that's right. Print the first 15 elements of quixote_utf8
   CorrectAnswer: head(quixote_utf8, n = 15)
-  AnswerTests: omnitest(head(quixote_utf8, n = 15))
+  AnswerTests: omnitest(correctExpr = "head(quixote_utf8, n = 15)")
   Hint: Did you remember to set n = 15?
 
 - Class: text
-  Output: Now you should be able to convert to UTF-8 almost any old text you find… Congratulations! If you want to explore more options of some of the functions we used in this lesson, I recommend you run ?Encoding and ?head. Have fun!
+  Output: Well done! Now you should be able to convert to UTF-8 almost any old text you find… Congratulations! If you want to explore more options of some of the functions we used in this lesson, I recommend you run ?Encoding and ?head. Have fun!
