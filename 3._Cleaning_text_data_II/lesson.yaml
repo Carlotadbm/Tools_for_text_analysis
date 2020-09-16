@@ -145,3 +145,10 @@
 - Class: text
   Output: Little by little we'll be learning how to optimise the coding process, so that it's nicer, cleaner and less tedious. You now deserve a break, but whenever you feel like going back to R, check the OLAT video about pipes and try to do the recommended homework. Your code will start looking very elegant soon enough!
   
+- Class: mult_question
+  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
+  AnswerChoices: Yes;No
+  CorrectAnswer: NULL
+  AnswerTests: submit_log()
+  Hint: As you feel!
+  
