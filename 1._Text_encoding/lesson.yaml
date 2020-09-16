@@ -126,8 +126,6 @@
   AnswerTests: omnitest(correctExpr = "Encoding(quixote_utf8)")
   Hint: Just type Encoding(quixote_utf8).
 
-
-
 - Class: mult_question
   Output: Ok, so now that you know that the answer is UTF-8, do you think that R will display all characters correctly when you print quixote_utf8?
   AnswerChoices: Yes;No
@@ -143,3 +141,10 @@
 
 - Class: text
   Output: Well done! Now you should be able to convert to UTF-8 almost any old text you find… Congratulations! If you want to explore more options of some of the functions we used in this lesson, I recommend you run ?Encoding and ?head. Have fun!
+  
+- Class: mult_question
+  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
+  AnswerChoices: Yes;No
+  CorrectAnswer: NULL
+  AnswerTests: submit_log()
+  Hint: As you feel!

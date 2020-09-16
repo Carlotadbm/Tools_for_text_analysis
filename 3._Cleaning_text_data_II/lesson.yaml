@@ -1,0 +1,147 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 3. Cleaning text data II
+  Author: your name goes here
+  Type: Standard
+  Organization: your organization's name goes here
+  Version: 2.4.5
+
+- Class: text
+  Output: Hi there! In this session we will again deal with some frequency data provided by the Real Academia Española, but we'll use a new approach to download it and we'll practice our mutating skills. I have loaded the tidyverse for you already. Have fun!
+  
+- Class: cmd_question
+  Output: The txt file containing the 5000 most frequent words in the CREA Spanish corpus is found in the following url "http://corpus.rae.es/frec/5000_formas.TXT". Save it under the name crea.
+  CorrectAnswer: crea <- "http://corpus.rae.es/frec/5000_formas.TXT"
+  AnswerTests: omnitest(correctExpr='crea <- "http://corpus.rae.es/frec/5000_formas.TXT"')
+  Hint: Remember that you save objects by assigning them a name
+  
+- Class: cmd_question
+  Output: Let's first read it using the read_lines() functions, don't save it yet. Because you don't want to load 1000 lines, add the argument n_max = 10, so that it only reads the first 10 lines.
+  CorrectAnswer: read_lines(crea, n_max = 10)
+  AnswerTests: omnitest(correctExpr='read_lines(crea, n_max = 10)')
+  Hint: The first argument of read_lines is the path to your txt file is, that is, the url you just stored!
+  
+- Class: mult_question
+  Output: As you can see, this time it seems that the data is already tabulated. But can you spot why this file is not tidy?
+  AnswerChoices: It is missing a column name;Delimiters are not tabs;There are a lot of extra spaces
+  CorrectAnswer: It is missing a column name
+  AnswerTests: omnitest(correctVal= 'It is missing a column name')
+  Hint: Some of these are annoying, but not untidy per se…
+
+- Class: text
+  Output: So the Real Academia Española uploaded a nice .txt file except for all the extra spaces and that it forgot to name the second column. This is a problem, since most R functions recognise the number of columns of a tabulated object by looking at the first row. But we're gonna get around this. At least delimiters are tabs!
+  
+- Class: cmd_question
+  Output: We'll read crea now with the function read_delim() and save it to crea_table. We'll need the argument delim (which, as you saw, are tabs, that is, "\t") and we'll also specify col_names, to force it to read four columns instead of three. The argument col_names takes a character vector. Name your columns order, word, abs_freq and rel_freq.
+  CorrectAnswer: crea_table <- read_delim(crea, delim = "\t", col_names = c("order", "word", "abs_freq", "rel_freq"))
+  AnswerTests: omnitest(correctExpr='crea_table <- read_delim(crea, delim = "\t", col_names = c("order", "word", "abs_freq", "rel_freq"))')
+  Hint: Recall that named arguments identify their values by means of =. Also recall that elements of a character vector need quotation marks!
+  
+- Class: cmd_question
+  Output: R tells you that there were two parsing failures. The one in row 1 you were already expecting - you had 3 values for 4 columns. Something happened in row 5002 too. Check first the top few elements of crea_table.
+  CorrectAnswer: head(crea_table)
+  AnswerTests: omnitest(correctExpr='head(crea_table)')
+  Hint: The function you're looking for is head()
+  
+- Class: cmd_question
+  Output: Now let's check the bottom elements of crea_table, using tail()
+  CorrectAnswer: tail(crea_table)
+  AnswerTests: omnitest(correctExpr='tail(crea_table)')
+  Hint: hint
+
+- Class: cmd_question
+  Output: You just confirmed that you can delete the first row, because you already set correct column names. You can also delete the last one, since it's empty. Remove them now using slice() and save it to crea_table. Note that you need to use c() to combine the two rows you want to delete.
+  CorrectAnswer: crea_table <- slice(crea_table, -c(1, 5002))
+  AnswerTests: omnitest(correctExpr='crea_table <- slice(crea_table, -c(1, 5002))')
+  Hint: Recall that you simply need to add the sign - before the rows you want to delete.
+  
+- Class: cmd_question
+  Output: As with the quijote file, this file is encoded in latin1, which is why R is not reading all elements properly, as you saw with tai(). We'll fix this now. First we must encode the column word as latin1. As you might remember, the function for that is Encoding(). But we have to pass a specific column as its only argument. Because it is a base R function, we'll have to use the $ notation. Pass crea_table$word as the single argument of Encoding() and assign it the value "latin1" (with quotation marks!)
+  CorrectAnswer: Encoding(crea_table$word) <- "latin1"
+  AnswerTests: omnitest(correctExpr='Encoding(crea_table$word) <- "latin1"')
+  Hint: Recall that Encoding starts with a cap letter and that you want to remove rows 1 and 5002.
+  
+- Class: cmd_question
+  Output: Now that R can read it properly, we can transform it into UTF-8. We can use a mutate for that. The function that you need is enc2utf8(). Remember to save it to crea_table.
+  CorrectAnswer: crea_table <- mutate(crea_table, word = enc2utf8(word))
+  AnswerTests: omnitest(correctExpr='crea_table <- mutate(crea_table, word = enc2utf8(word))')
+  Hint: This is quite similar to the mutate() that you did with as.integer() in the last session, maybe you wrote it down?
+
+- Class: cmd_question
+  Output: Did this work? Run tail() on crea_table and check the 10 last elements.
+  CorrectAnswer: tail(crea_table, 10)
+  AnswerTests: omnitest(correctExpr='tail(crea_table, 10)')
+  Hint: 10 last elements!
+
+- Class: text
+  Output: Very good! But, as you can see, we have extra spaces in every single column. We will get rid of them with a combination of mutate() and the function str_replace_all().
+
+- Class: cmd_question
+  Output:  str_replace_all() takes your column as its first argument; the character you want to replace as its second argument (" "), and the character you want to replace it with as its third argument (in this case, nothing ""). Embed it within a mutate, where you assign the column word to the str_replace_all of word. Save it to crea_table
+  CorrectAnswer: crea_table <- mutate(crea_table, word = str_replace_all(word, " ", ""))
+  AnswerTests: omnitest(correctExpr='crea_table <- mutate(crea_table, word = str_replace_all(word, " ", ""))')
+  Hint: The second argument of mutate should be word = str_replace_all(word, " ", "")
+  
+- Class: cmd_question
+  Output:  Now repeat this for column rel_freq…
+  CorrectAnswer: crea_table <- mutate(crea_table, rel_freq = str_replace_all(rel_freq, " ", ""))
+  AnswerTests: omnitest(correctExpr='crea_table <- mutate(crea_table, rel_freq = str_replace_all(rel_freq, " ", ""))')
+  Hint: Just look at your code above.
+  
+- Class: cmd_question
+  Output:  Same for column abs_freq…
+  CorrectAnswer: crea_table <- mutate(crea_table, abs_freq = str_replace_all(abs_freq, " ", ""))
+  AnswerTests: omnitest(correctExpr='crea_table <- mutate(crea_table, abs_freq = str_replace_all(abs_freq, " ", ""))')
+  Hint: Just look at your code above.
+
+- Class: cmd_question
+  Output:  And for column order.
+  CorrectAnswer: crea_table <- mutate(crea_table, order = str_replace_all(order, " ", ""))
+  AnswerTests: omnitest(correctExpr='crea_table <- mutate(crea_table, order = str_replace_all(order, " ", ""))')
+  Hint: Just look at your code above.
+  
+- Class: cmd_question
+  Output: Let's see how these changes played out. Run head() on crea_table.
+  CorrectAnswer: head(crea_table)
+  AnswerTests: omnitest(correctExpr='head(crea_table)')
+  Hint: You know this!
+  
+- Class: cmd_question
+  Output: Note that column abs_freq has commas for thousands separator. We do not want that! Let's remove them (save it as crea_table).
+  CorrectAnswer: crea_table <- mutate(crea_table, abs_freq = str_replace_all(abs_freq, ",", ""))
+  AnswerTests: omnitest(correctExpr='crea_table <- mutate(crea_table, abs_freq = str_replace_all(abs_freq, ",", ""))')
+  Hint: You will need to use mutate() again, adapt the code you used above.
+  
+- Class: cmd_question
+  Output: Let's check if it worked. Run head() on crea_table
+  CorrectAnswer: head(crea_table)
+  AnswerTests: omnitest(correctExpr='head(crea_table)')
+  Hint: You know this!
+
+- Class: cmd_question
+  Output: It's time to transform columns order and abs_freq to integers and rel_freq to numeric. We can use as.integer and as.numeric within a mutate. You'll be glad to know that we can actually pass several arguments to mutate, so we can do all this transformations in a single piece of code. And yes, we could've done that also earlier, but I thought it might have been too much… Sorry about that! If you're writing in a script, you can press enter after the comma that separates every argument of mutate, it will be easier to read. Don't forget to save everything as crea_table.
+  CorrectAnswer: crea_table <- mutate(crea_table, order = as.integer(order), abs_freq = as.integer(abs_freq), rel_freq = as.numeric(rel_freq))
+  AnswerTests: omnitest(correctExpr='crea_table <- mutate(crea_table, order = as.integer(order), abs_freq = as.integer(abs_freq), rel_freq = as.numeric(rel_freq))')
+  Hint: Are all your parentheses in the right place? The whole expression should end with two parentheses…
+
+- Class: cmd_question
+  Output: Let's check these new changes. Run head() on crea_table.
+  CorrectAnswer: head(crea_table)
+  AnswerTests: omnitest(correctExpr='head(crea_table)')
+  Hint: You are bored of doing this already, so you might have mistyped something.
+  
+- Class: cmd_question
+  Output: It looks like values in rel_freq got rounded up/down, but actually that's not what happened. It's a representation thing, R gave you only five digits, because it has a default limit. But you can ask it to give you more! Run head() again, byt this time, pass crea_table$rel_freq as its first argument and add a second argument that reads digits = 8.
+  CorrectAnswer: head(crea_table$rel_freq, digits = 8)
+  AnswerTests: omnitest(correctExpr='head(crea_table$rel_freq, digits = 8)')
+  Hint: Remember that you're asking for a single column, not the whole tibble now.
+
+- Class: text
+  Output: See? So there they were! 
+
+- Class: text
+  Output: I know this whole proces was a bit tedious, but I hope that you now understand quite well how mutate() works. It's a crucial function, since it allows us to modify and create columns with tidyverse syntax. 
+
+- Class: text
+  Output: Little by little we'll be learning how to optimise the coding process, so that it's nicer, cleaner and less tedious. You now deserve a break, but whenever you feel like going back to R, check the OLAT video about pipes and try to do the recommended homework. Your code will start looking very elegant soon enough!
+  
