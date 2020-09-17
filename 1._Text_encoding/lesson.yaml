@@ -19,7 +19,7 @@
   Hint: Use the function library()
 
 - Class: text
-  Output: Next thing is loading the .txt file. We'll be using a list of word frequencies in Don Quixote, made available by the Real Academia Española (if you want to check the resources they made available, go to https://www.rae.es/ and check the Banco de datos section).
+  Output: Next thing is loading the .txt file. We'll be using a list of word frequencies in Don Quixote, made available by the Real Academia Española (if you want to check the resources they make available, go to https://www.rae.es/ and check the Banco de datos section).
 
 - Class: cmd_question
   Output: The text file is found in the URL http://corpus.rae.es/frecCORDE/quijote1.TXT We will have to pass it as an argument in a function so, for readability, assign it the name url.
@@ -43,7 +43,7 @@
   Hint: Did you type everything in lower-case letters?
 
 - Class: cmd_question
-  Output: Now that it's saved, let's take a look at its content. We will call the function head(), which, by default, shows you the first 6 elements of an R object.
+  Output: Now that it's saved, let's take a look at its content. We will use the function head(), which, by default, shows you the first 6 elements of an R object.
   CorrectAnswer: head(quixote)
   AnswerTests: omnitest(correctExpr = "head(quixote)")
   Hint: Pass the variable quixote as the single argument of head()
@@ -55,10 +55,10 @@
   Output: Before addressing the encoding question, let's explore quixote a bit further. Turns out that the first 9 elements are a bit special, so right now you don't really know what most of the file looks like.
   
 - Class: cmd_question
-  Output: But we can tell head() to show more than the first 6 elements, by specifying how many elements in a second argument called n. Ask for the 15 first elements! Remember that you must use the = sign to specify the value of a named argument.
-  CorrectAnswer: head(quixote, n = 15)
-  AnswerTests: omnitest(correctExpr = "head(quixote, n = 15)")
-  Hint: Pass n = 15 as the second argument of head.
+  Output: But we can tell head() to show more than the first 6 elements, by specifying how many elements in the second argument. Ask for the 15 first elements!
+  CorrectAnswer: head(quixote, 15)
+  AnswerTests: omnitest(correctExpr = "head(quixote, 15)")
+  Hint: Pass 15 as the second argument of head.
 
 - Class: text
   Output: So, as you can see, while the first 9 elements show information of the text, from the 10th element onwards you get a list of a word/punctuation mark and the number of times it appears in Don Quixote. And you can also see that every word with an accent mark in Spanish isn't read correctly. Let's fix that now.
@@ -84,8 +84,8 @@
 
 - Class: cmd_question
   Output: Ok, did it work? Check if the 15 first elements of quixote are displayed correctly.
-  CorrectAnswer: head(quixote, n = 15)
-  AnswerTests: omnitest(correctExpr = "head(quixote, n = 15)")
+  CorrectAnswer: head(quixote, 15)
+  AnswerTests: omnitest(correctExpr = "head(quixote, 15)")
   Hint: You did this already! If you're feeling lazy you can't simply use the up arrow until you find it :)
 
 - Class: mult_question
@@ -105,7 +105,7 @@
   Output: We have now told R what encoding it should use to read quixote correctly. But we know that it's preferrable to have our text files in UTF-8. We'll convert the file now.
 
 - Class: mult_question
-  Output: Can we change the encoding of Quixote by running Encoding(quixote) <- "latin1"?
+  Output: Can we change the encoding of Quixote by running Encoding(quixote) <- "UTF-8"?
   AnswerChoices: No;Yes
   CorrectAnswer: No
   AnswerTests: omnitest(correctVal= "No")
@@ -135,9 +135,9 @@
 
 - Class: cmd_question
   Output: Let's see if that's right. Print the first 15 elements of quixote_utf8
-  CorrectAnswer: head(quixote_utf8, n = 15)
-  AnswerTests: omnitest(correctExpr = "head(quixote_utf8, n = 15)")
-  Hint: Did you remember to set n = 15?
+  CorrectAnswer: head(quixote_utf8, 15)
+  AnswerTests: omnitest(correctExpr = "head(quixote_utf8, 15)")
+  Hint: Did you remember to set the second argument to 15?
 
 - Class: text
   Output: Well done! Now you should be able to convert to UTF-8 almost any old text you find… Congratulations! If you want to explore more options of some of the functions we used in this lesson, I recommend you run ?Encoding and ?head. Have fun!

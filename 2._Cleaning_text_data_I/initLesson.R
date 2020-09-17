@@ -6,7 +6,7 @@
 swirl_options(swirl_logging = TRUE)
 
 library(tidyverse)
-quijote <- "http://corpus.rae.es/frecCORDE/quijote1.TXT"
-quijote <- read_lines(quijote) 
-Encoding(quijote) <- "latin1"
-quijote <- enc2utf8(quijote)
+quixote <- "http://corpus.rae.es/frecCORDE/quijote1.TXT"
+quixote <- read_lines(quixote) 
+Encoding(quixote) <- "latin1"
+quixote <- enc2utf8(quixote)

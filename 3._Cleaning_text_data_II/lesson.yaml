@@ -50,13 +50,13 @@
   Hint: hint
 
 - Class: cmd_question
-  Output: You just confirmed that you can delete the first row, because you already set correct column names. You can also delete the last one, since it's empty. Remove them now using slice() and save it to crea_table. Note that you need to use c() to combine the two rows you want to delete.
+  Output: You just confirmed that you can delete the first row, because it contains the old column names. You can also delete the last one, since it's empty. Remove them now using slice() and save it to crea_table. Note that you need to use c() to combine the two rows you want to delete.
   CorrectAnswer: crea_table <- slice(crea_table, -c(1, 5002))
   AnswerTests: omnitest(correctExpr='crea_table <- slice(crea_table, -c(1, 5002))')
   Hint: Recall that you simply need to add the sign - before the rows you want to delete.
   
 - Class: cmd_question
-  Output: As with the quijote file, this file is encoded in latin1, which is why R is not reading all elements properly, as you saw with tai(). We'll fix this now. First we must encode the column word as latin1. As you might remember, the function for that is Encoding(). But we have to pass a specific column as its only argument. Because it is a base R function, we'll have to use the $ notation. Pass crea_table$word as the single argument of Encoding() and assign it the value "latin1" (with quotation marks!)
+  Output: As with the quixote file, this file is encoded in latin1, which is why R is not reading all elements properly, as you saw with tail(). We'll fix this now. First we must encode the column word as latin1. As you might remember, the function for that is Encoding(). But we have to pass a specific column as its only argument. Because it is a base R function, we'll have to use the $ notation. Pass crea_table$word as the single argument of Encoding() and assign it the value "latin1" (with quotation marks!)
   CorrectAnswer: Encoding(crea_table$word) <- "latin1"
   AnswerTests: omnitest(correctExpr='Encoding(crea_table$word) <- "latin1"')
   Hint: Recall that Encoding starts with a cap letter and that you want to remove rows 1 and 5002.
@@ -119,7 +119,7 @@
   Hint: You know this!
 
 - Class: cmd_question
-  Output: It's time to transform columns order and abs_freq to integers and rel_freq to numeric. We can use as.integer and as.numeric within a mutate. You'll be glad to know that we can actually pass several arguments to mutate, so we can do all this transformations in a single piece of code. And yes, we could've done that also earlier, but I thought it might have been too much… Sorry about that! If you're writing in a script, you can press enter after the comma that separates every argument of mutate, it will be easier to read. Don't forget to save everything as crea_table.
+  Output: It's time to transform columns order and abs_freq to integer and rel_freq to numeric. We can use as.integer and as.numeric within a mutate. You'll be glad to know that we can actually pass several arguments to mutate, so we can do all this transformations in a single piece of code. And yes, we could've done that also earlier, but I thought it'd be too much… Sorry about that! If you're writing in a script, you can press enter after the comma that separates every argument of mutate, so that it will be easier to read. Don't forget to save everything as crea_table.
   CorrectAnswer: crea_table <- mutate(crea_table, order = as.integer(order), abs_freq = as.integer(abs_freq), rel_freq = as.numeric(rel_freq))
   AnswerTests: omnitest(correctExpr='crea_table <- mutate(crea_table, order = as.integer(order), abs_freq = as.integer(abs_freq), rel_freq = as.numeric(rel_freq))')
   Hint: Are all your parentheses in the right place? The whole expression should end with two parentheses…
@@ -131,7 +131,7 @@
   Hint: You are bored of doing this already, so you might have mistyped something.
   
 - Class: cmd_question
-  Output: It looks like values in rel_freq got rounded up/down, but actually that's not what happened. It's a representation thing, R gave you only five digits, because it has a default limit. But you can ask it to give you more! Run head() again, byt this time, pass crea_table$rel_freq as its first argument and add a second argument that reads digits = 8.
+  Output: It looks like values in rel_freq got rounded up/down, but actually that's not what happened. It's just a representation thing. That is, R gave you only five digits, because it has a default limit. But you can ask it to give you more! Run head() again, byt this time, pass crea_table$rel_freq as its first argument and add a second argument that reads digits = 8.
   CorrectAnswer: head(crea_table$rel_freq, digits = 8)
   AnswerTests: omnitest(correctExpr='head(crea_table$rel_freq, digits = 8)')
   Hint: Remember that you're asking for a single column, not the whole tibble now.

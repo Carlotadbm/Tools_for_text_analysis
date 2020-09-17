@@ -11,33 +11,33 @@
  
 
 - Class: text
-  Output: In this lesson we will convert the text file we used in the previous lesson into a tabulated object, cleaning it a little. The text file encoded in UTF-8 has already been saved to you environment as an object called quijote.
+  Output: In this lesson we will convert the text file we used in the previous lesson into a tabulated object, cleaning it a little. The text file encoded in UTF-8 has already been saved in your environment as an object called quixote.
 
 - Class: cmd_question
-  Output: Let's first check what quijote looks like. Print the first 15 elements.
-  CorrectAnswer: head(quijote, 15)
-  AnswerTests: omnitest(correctExpr='head(quijote, 15)')
+  Output: Let's first check what quixote looks like. Print the first 15 elements.
+  CorrectAnswer: head(quixote, 15)
+  AnswerTests: omnitest(correctExpr='head(quixote, 15)')
   Hint: The function you're looking for is head()
 
 - Class: cmd_question
-  Output: Right now, quijote is a character vector. In order to use the tidyverse, we want to convert it into a tibble. Create a tibble, called quijote_clean, using the function as_tibble().
-  CorrectAnswer: quijote_clean <- as_tibble(quijote)
-  AnswerTests: omnitest(correctExpr='quijote_clean <- as_tibble(quijote)')
+  Output: Right now, quixote is a character vector. In order to use the tidyverse, we want to convert it into a tibble. Create a tibble, called quixote_clean, using the function as_tibble().
+  CorrectAnswer: quixote_clean <- as_tibble(quixote)
+  AnswerTests: omnitest(correctExpr='quixote_clean <- as_tibble(quixote)')
   Hint: The single argument that as_tibble needs is our character vector. Don't forget to assign the new name to your new object!
   
 - Class: text
   Output: Now we have a tabulated object! But it only has one column. We want it to have two columns, namely, word and number of occurrences. As you saw, the first 9 elements don't have this information. We'll have to exclude them.
 
 - Class: cmd_question
-  Output: For that we will use the function slice(), which as its first argument takes your tibble and, as its second argument, the rows you want to select (1:9). Because you want to remove them, you'll have to type minus sign (-) before the parenthesis. Update quijote_clean now.
-  CorrectAnswer: quijote_clean <- slice(quijote_clean, -(1:9))
-  AnswerTests: omnitest(correctExpr='quijote_clean <- slice(quijote_clean, -(1:9))')
-  Hint: The second argument should read -(1:9), while the first one is the name of your tibble. Don't forget to save your result to quijote_clean!
+  Output: For that we will use the function slice(), which takes your tibble as its first argument and the rows you want to select (1:9) as its second argument. Because you want to remove them, you'll have to type minus sign (-) before the parenthesis. Update quixote_clean now.
+  CorrectAnswer: quixote_clean <- slice(quixote_clean, -(1:9))
+  AnswerTests: omnitest(correctExpr='quixote_clean <- slice(quixote_clean, -(1:9))')
+  Hint: The second argument should read -(1:9), while the first one is the name of your tibble. Don't forget to save your result to quixote_clean!
   
 - Class: cmd_question
-  Output: Check the first 15 rows of quijote_clean, did it work?
-  CorrectAnswer: head(quijote_clean, 15)
-  AnswerTests: omnitest(correctExpr='head(quijote_clean, 15)')
+  Output: Check the first 15 rows of quixote_clean, did it work?
+  CorrectAnswer: head(quixote_clean, 15)
+  AnswerTests: omnitest(correctExpr='head(quixote_clean, 15)')
   Hint: You're again looking for the function head().
   
 - Class: text
@@ -52,37 +52,37 @@
   Hint: Note that there are initial spaces!
   
 - Class: text
-  Output: Yes, we will get three columns, but the first one will be empty. Let's do it now.
+  Output: We will get three columns, but the first one will be empty. Let's do it now.
 
 
 - Class: cmd_question
-  Output: The function separate() does exactly that. Its first argument is your tibble; the second one, the name of the column you want to separate (note that it's called value); an argument called "into" that should be a character vector with the names of your 3 new columns (which will be called nothing, occurrences and word), and a last argument called sep which equals the characters that indicate the separation between fields that R should look for. Here it should read " +", indicating 'one or more spaces'. Update quijote_clean now.
-  CorrectAnswer: quijote_clean <- separate(quijote_clean, value, into = c("nothing", "occurrences", "word"), sep = " +")
-  AnswerTests: omnitest(correctExpr='quijote_clean <- separate(quijote_clean, value, into = c("nothing", "occurrences", "word"), sep = " +")')
-  Hint: This is a long function… Recall that named arguments require the name followed by the equal sign and the the value. Also recall the character elements in a vector need quotation signs! And don't forget to save evertyhing to quijote_clean.
+  Output: The function separate() does exactly that. Its first argument is your tibble; the second one, the name of the column you want to separate (note that it's called value); an argument called "into" that should be a character vector with the names of your 3 new columns (which will be called nothing, occurrences and word), and a last argument called sep which equals the characters that indicate the separation between fields that R should look for. Here it should read " +", indicating 'one or more spaces'. Update quixote_clean now.
+  CorrectAnswer: quixote_clean <- separate(quixote_clean, value, into = c("nothing", "occurrences", "word"), sep = " +")
+  AnswerTests: omnitest(correctExpr='quixote_clean <- separate(quixote_clean, value, into = c("nothing", "occurrences", "word"), sep = " +")')
+  Hint: This is a long function… Recall that named arguments require the name followed by the equal sign and the the value. Also recall the character elements in a vector need quotation signs! And don't forget to save evertyhing to quixote_clean.
 
 - Class: cmd_question
   Output: Ok, this was a lot, well done! I promise it only gets easier now :) Note that you got an error - there were missing values in the last row, which is row 1397. Check what's going on using tail(). 
-  CorrectAnswer: tail(quijote_clean)
-  AnswerTests: omnitest(correctExpr='tail(quijote_clean)')
+  CorrectAnswer: tail(quixote_clean)
+  AnswerTests: omnitest(correctExpr='tail(quixote_clean)')
   Hint: tail() is like head(), but will show you the last few elements (6 by default)
   
 - Class: cmd_question
-  Output: There you go, so the last row doesn't have any useful information… This row only had a tab (\t), probably due to the codification of the line breaks in the text file we downloaded. Simply remove that row with slice() and save it to quijote_clean.
-  CorrectAnswer: quijote_clean <- slice(quijote_clean, -1397)
-  AnswerTests: omnitest(correctExpr='quijote_clean <- slice(quijote_clean, -1397)')
+  Output: There you go, so the last row doesn't have any useful information… This row only had a tab (\t). Simply remove that row with slice() and save it to quixote_clean.
+  CorrectAnswer: quixote_clean <- slice(quixote_clean, -1397)
+  AnswerTests: omnitest(correctExpr='quixote_clean <- slice(quixote_clean, -1397)')
   Hint: The row you're looking for is number 1397. You want to remove it, so type - before.
   
 - Class: cmd_question
-  Output: Now we need to get rid of our column "nothing". We'll do that using select(). First argument is your tibble, the second one is the columns you want to select. Because you want to remove one, type - before the name of that column. Update quijote_clean now.
-  CorrectAnswer: quijote_clean <- select(quijote_clean, -nothing)
-  AnswerTests: omnitest(correctExpr='quijote_clean <- select(quijote_clean, -nothing)')
-  Hint: The second argument should read -nothing (no quotations). And don't forget to save it to quijote_clean!
+  Output: Now we need to get rid of our column "nothing". We'll do that using select(). First argument is your tibble, the second one is the columns you want to select. Because you want to remove one, type - before the name of that column. Update quixote_clean now.
+  CorrectAnswer: quixote_clean <- select(quixote_clean, -nothing)
+  AnswerTests: omnitest(correctExpr='quixote_clean <- select(quixote_clean, -nothing)')
+  Hint: The second argument should read -nothing (no quotations). And don't forget to save it to quixote_clean!
   
 - Class: cmd_question
-  Output: Check the first few elements of quijote_clean again, how is this going?
-  CorrectAnswer: head(quijote_clean)
-  AnswerTests: omnitest(correctExpr='head(quijote_clean)')
+  Output: Check the first few elements of quixote_clean again, how is this going?
+  CorrectAnswer: head(quixote_clean)
+  AnswerTests: omnitest(correctExpr='head(quixote_clean)')
   Hint: You're again looking for the function head().
   
 - Class: text
@@ -90,33 +90,33 @@
 
 
 - Class: cmd_question
-  Output: The first argument of mutate() is your tibble, an the second one assigns some value to a column name (occurrences), using the = sign. The value you want to assign is as.integer(occurrences). Update quijote_clean now.
-  CorrectAnswer: quijote_clean <- mutate(quijote_clean, occurrences = as.integer(occurrences))
-  AnswerTests: omnitest(correctExpr='quijote_clean <- mutate(quijote_clean, occurrences = as.integer(occurrences))')
-  Hint: Before the equal sing you write the name of the column. After = you write the new value. And don't forget to save it to quijote_clean!
+  Output: The first argument of mutate() is your tibble, an the second one assigns some value to a column name (occurrences), using the = sign. The value you want to assign is as.integer(occurrences). Update quixote_clean now.
+  CorrectAnswer: quixote_clean <- mutate(quixote_clean, occurrences = as.integer(occurrences))
+  AnswerTests: omnitest(correctExpr='quixote_clean <- mutate(quixote_clean, occurrences = as.integer(occurrences))')
+  Hint: Before the equal sing you write the name of the column. After = you write the new value. And don't forget to save it to quixote_clean!
   
 - Class: cmd_question
-  Output: Check again the first few elements of quijote_clean, occurrences should now read <int>! 
-  CorrectAnswer: head(quijote_clean)
-  AnswerTests: omnitest(correctExpr='head(quijote_clean)')
+  Output: Check again the first few elements of quixote_clean, occurrences should now read <int>! 
+  CorrectAnswer: head(quixote_clean)
+  AnswerTests: omnitest(correctExpr='head(quixote_clean)')
   Hint: You're again looking for the function head().
 
 - Class: cmd_question
-  Output: Let's practice mutate() a bit further. Create a new column called rel_freq (for "relative frequencies") where the value of occurrences is divided by the total sum of all elements of occurrences. You can obtain the latter with sum(occurrences). Save it to quijote_clean.
-  CorrectAnswer: quijote_clean <- mutate(quijote_clean, rel_freq = occurrences/sum(occurrences))
-  AnswerTests: omnitest(correctExpr='quijote_clean <- mutate(quijote_clean, rel_freq = occurrences/sum(occurrences))')
+  Output: Let's practice mutate() a bit further. Create a new column called rel_freq (for "relative frequencies") where the value of occurrences is divided by the total sum of all elements of occurrences. You can obtain the latter with sum(occurrences). Save it to quixote_clean.
+  CorrectAnswer: quixote_clean <- mutate(quixote_clean, rel_freq = occurrences/sum(occurrences))
+  AnswerTests: omnitest(correctExpr='quixote_clean <- mutate(quixote_clean, rel_freq = occurrences/sum(occurrences))')
   Hint: The new column rel_freq should equal occurrences/sum(occurrences).
 
 - Class: cmd_question
-  Output: Just check quijote_table's head again to see your new column. 
-  CorrectAnswer: head(quijote_clean)
-  AnswerTests: omnitest(correctExpr='head(quijote_clean)')
+  Output: Just check quixote_table's head again to see your new column. 
+  CorrectAnswer: head(quixote_clean)
+  AnswerTests: omnitest(correctExpr='head(quixote_clean)')
   Hint: You're again looking for the function head().
 
 - Class: cmd_question
-  Output: This was amazing. You probably want to save all this hard work to a file in your computer… Let's get this done! The function write_delim() takes your tibble as a first argument; a character vector with the name and file extension as a second (let's make it "quijote_freq.csv") and an argument called delim that indicates the character used to separate fields (columns). I recommend using the tab character, so set it to "\t".
-  CorrectAnswer: write_delim(quijote_clean, "quijote_freq.csv", delim = "\t")
-  AnswerTests: omnitest(correctExpr='write_delim(quijote_clean, "quijote_freq.csv", delim = "\t")')
+  Output: This was amazing. You probably want to save all this hard work to a file in your computer… Let's get this done! The function write_delim() takes your tibble as a first argument; a character vector with the name and file extension as a second (let's make it "quixote_freq.csv") and an argument called delim that indicates the character used to separate fields (columns). I recommend using the tab character, so set it to "\t".
+  CorrectAnswer: write_delim(quixote_clean, "quixote_freq.csv", delim = "\t")
+  AnswerTests: omnitest(correctExpr='write_delim(quixote_clean, "quixote_freq.csv", delim = "\t")')
   Hint: Recall that named arguments require the name followed by the equal sign and the the value.
 
 - Class: text
