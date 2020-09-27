@@ -1,0 +1,154 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 4. Tidytext. Unnest tokens
+  Author: Carlota de Benito Moreno
+  Type: Standard
+  Organization: University of Zurich
+  Version: 2.4.5
+
+- Class: text
+  Output: Hi there! In this lesson we will get started with text analysis. For that we will need the libraries tidyverse and tidytext. I've loaded them for you, but that only works if you had installed them previously. You should've also downloaded the file "verne_text_clean.txt" from OLAT and have it in your working directory. The file has Jules Verne's "Le tour du monde en quatre-vingt jours" and that's what will be working with today. Ideally you have already checked the file with a text editor, to see how it looks like.
+
+- Class: cmd_question
+  Output: First thing is reading our text file. So far we have only read files from a URL, but now we'll read one that is in our computer. For simplicity, I recommend that you have the files you want to work with in your working directory. For this exercise, it must be there! Use read_lines() and instead of calling a URL, call the name of the file, that is, "verne_text_clean.txt". Save it in an object called verne. 
+  CorrectAnswer: verne <- read_lines("verne_text_clean.txt")
+  AnswerTests: omnitest(correctExpr='verne <- read_lines("verne_text_clean.txt")')
+  Hint: Did you inclued the file extension? And quotation marks?
+  
+- Class: cmd_question
+  Output: As you can now see in you environment, verne is a chartacter vector with 2333 elements. Let's check the first 15.
+  CorrectAnswer: head(verne, 15)
+  AnswerTests: omnitest(correctExpr='head(verne, 15)')
+  Hint: Use head()!
+  
+- Class: text
+  Output: Each element of verne is a paragraph. As you can see, there are some empty rows that we don't need. Moreover, we would prefer to have a tibble. Also, it'd be a good idea to number the paragraphs. That's what we'll do now. I want you to 1) use pipes and 2) don't save it until the last step. Let's go!
+
+- Class: cmd_question
+  Output: First thing is to transform our vector into a tibble, so that we can start working with rows and columns, because they make everything easier. Use as_tibble() with a pipe.
+  CorrectAnswer: verne %>% as_tibble()
+  AnswerTests: omnitest(correctExpr='verne %>% as_tibble()')
+  Hint: Remember that the pipe indicates that the first argument is whatever it is before the pipe, so you don't have to write anything inside as_tibble()
+
+- Class: cmd_question
+  Output: The console printed the result. As you can see, when we convert a vector into a tibble using as_tibble it automatically gives the column the name "value" (careful, this is a bit different if you're using the function tibble()). We want to rename the column as "text", which is more explanatory. The function rename() has a similar syntax to mutate()'s, with an equal sign between the new name and the old one (new = old).  Rename value by adding a new pipe to your previous code.
+  CorrectAnswer: verne %>% as_tibble() %>% rename(text = value)
+  AnswerTests: omnitest(correctExpr='verne %>% as_tibble() %>% rename(text = value)')
+  Hint: Remember that you don't use quotation marks for the names of the columns, this is the tidyverse!
+  
+- Class: cmd_question
+  Output: Again, you can see the result in the console, because we didn't save it. We now want to remove all empty files and for that we'll use filter(), that selects rows based on information on one or more columnn. That information is expressed as a logical expression and filter will only keep rows which meet the logical expression (i.e. they are TRUE). You want to select all rows that have no characters in column text. The logical expression that defines that set is text != "" The operator != means 'not equal to'. You want to exclude rows with value "" in column text. Try adding this to your pipe. The logical expression is the second argument of filter(), but because you're using a pipe it is its only argument.
+  CorrectAnswer: verne %>% as_tibble() %>% rename(text = value) %>% filter(text != "")
+  AnswerTests: omnitest(correctExpr='verne %>% as_tibble() %>% rename(text = value) %>% filter(text != "")')
+  Hint: Add this to your pipe  %>% filter(text != "")
+  
+- Class: text
+  Output: In the console you saw now that row 4 is not empty anymore. They're all gone now. If you found that line of code a bit difficult, that's completely normal. Logical expressions are kind of hard to get at the beginning. As extra practice I recommend that you do swirl's R Programming cours on Logical (see the recommended homework in OLAT).
+
+- Class: cmd_question
+  Output: Let's now add a new column called paragraph that numbers our paragraphs. One way to do it is using seq_along(), embedded in a mutate, of course. The new column paragraph then should contain the result of applying seq_along() to column text. Add that to your pipe
+  CorrectAnswer: verne %>% as_tibble() %>% rename(text = value) %>% filter(text != "") %>% mutate(paragraph = seq_along(text))
+  AnswerTests: omnitest(correctExpr='verne %>% as_tibble() %>% rename(text = value) %>% filter(text != "") %>% mutate(paragraph = seq_along(text))')
+  Hint: Remember that you have to embed this in mutate(), that takes the name of the new column before the equal sign, and the result of the new column after =
+  
+- Class: cmd_question
+  Output: Well done! I think we should be satisfied with these changes, so it's time to save them. Save all your code above to a new object called verne_text
+  CorrectAnswer: verne_text <- verne %>% as_tibble() %>% rename(text = value) %>% filter(text != "") %>% mutate(paragraph = seq_along(text))
+  AnswerTests: omnitest(correctExpr='verne_text <- verne %>% as_tibble() %>% rename(text = value) %>% filter(text != "") %>% mutate(paragraph = seq_along(text))')
+  Hint: The name of the new variable precedes the assignment operator <- at the beginning of all your code.
+
+- Class: text
+  Output: Now that we're happy with our tibble, we can start doing some basic text analysis. How many word tokens does our text have? How many word types? This is where the library tidytext, already loaded, comes in handy.
+
+- Class: cmd_question
+  Output: The function unnest_tokens() creates a new row for each word, keeping the information the tibble already had. Its first argument is, of course, the tibble you'll be working with. Second argument is the name you want to give to the column with the new tokens - call it word. The third argument is the name of the column with the text you want to tokenize. Use a pipe to tokenize the text column in verne_text.
+  CorrectAnswer: verne_text %>% unnest_tokens(word, text)
+  AnswerTests: omnitest(correctExpr='verne_text %>% unnest_tokens(word, text)')
+  Hint: Remember that you're using a pipe, you only need to write the second and third argument within the parentheses of unnest_tokens()
+
+- Class: text
+  Output: Cool, right? As you can see, we have one row per word token and we also have the location of each word within the different paragraphs, in column paragraph. As you can see in the info printed to the console, the tibble has 68,773 rows - that's the number of word tokens in our text. Not bad, Jules Verne, not bad.
+
+- Class: cmd_question
+  Output: In order to see how many word types there are, we can use the count() function. It creates a new column called n with the number of occurrences of every unique value in the column you gave it as its second argument (first in a pipe). Add a count() to your previous code with pipe, also adding the argument sort = TRUE, so that the most frequent words appear on top.
+  CorrectAnswer: verne_text %>% unnest_tokens(word, text) %>% count(word, sort = TRUE) 
+  AnswerTests: omnitest(correctExpr='verne_text %>% unnest_tokens(word, text) %>% count(word, sort = TRUE)')
+  Hint: In your pipe, the firs argument of count() is word.
+  
+- Class: text
+  Output: Also cool! So the console tells you now that our text has 9449 word types (beautiful number, Jules). Unsurprisingly, the most common ones are grammatical words like articles and prepositions. We'll address that in our next lesson. Note that the information of the paragraphs disappeared, that is because count() grouped all identical words together, regardless of the paragraph they were in.
+
+- Class: cmd_question
+  Output: It'd be nice to have some statistics on this distribution of word types, so let's save this new tibble. Call it verne_words.
+  CorrectAnswer: verne_words <- verne_text %>% unnest_tokens(word, text) %>% count(word, sort = TRUE) 
+  AnswerTests: omnitest(correctExpr='verne_words <- verne_text %>% unnest_tokens(word, text) %>% count(word, sort = TRUE)')
+  Hint: The name of the new variable precedes the assignment operator <- at the beginning of all your code.
+  
+- Class: cmd_question
+  Output: How often does a word type appear on average? The function mean() can calculate this, but it is a base R function. That means we cannot use a pipe and that we must use the $ notation to indicate the name of the column.
+  CorrectAnswer: mean(verne_words$n)
+  AnswerTests: omnitest(correctExpr='mean(verne_words$n)')
+  Hint: The argument of mean() should be verne_words$n
+
+- Class: cmd_question
+  Output: Let's now calculate the median. The function median() will do that, same syntax as mean().
+  CorrectAnswer: median(verne_words$n)
+  AnswerTests: omnitest(correctExpr='median(verne_words$n)')
+  Hint: The argument of median() should be verne_words$n
+
+- Class: cmd_question
+  Output: As you can see, there is a large difference between the mean and the median. The function summary() will give us a number of summary statistics, namely, the minimal and maximal values, the mean, the median, and the first and third quartiles. Try it out, it has the same syntax as mean() and median().
+  CorrectAnswer: summary(verne_words$n)
+  AnswerTests: omnitest(correctExpr='summary(verne_words$n)')
+  Hint: The argument of summary() should be verne_words$n
+
+- Class: text
+  Output: As you can see, most words appear 1 to 3 times, while some words are quite frequent… Grammar words, most likely! That's basically the result of how languages work. We'll talk about that in next lesson, but let's go back now and play around with unnest_tokens().
+
+- Class: cmd_question
+  Output: By default, unnest_tokens() transforms all higher case letters to lower case and tokenizes the text by word. But we could change these options. Check how by runing ? before the name of the function, so that RStudio opens a help file for you.
+  CorrectAnswer: ?unnest_tokens
+  AnswerTests: omnitest(correctExpr='?unnest_tokens')
+  Hint: Write ?unnest_tokens
+  
+- Class: text
+  Output: From the help file you can see that we can customize a good number of things. For instance, if you don't want to transform every character to lower case, you simply have to turn the argument to_lower to FALSE.
+
+- Class: cmd_question
+  Output: Let's try it with one of the previous pipes, where you first tokenized text into column word and then counted each unique word. Repeat the code you used before, but now set to_lower to FALSE. Don't save it as an object, simply print the results to the console. Remember that with the cursor in the console you can press the upper arrow in your keyboard to access the code you typed earlier.
+  CorrectAnswer: verne_text %>% unnest_tokens(word, text, to_lower = FALSE) %>% count(word, sort = TRUE) 
+  AnswerTests: omnitest(correctExpr='verne_text %>% unnest_tokens(word, text, to_lower = FALSE) %>% count(word, sort = TRUE)')
+  Hint: Add the argument to_lower = FALSE to unnest_tokens()
+
+- Class: text
+  Output: You got a tibble with 10,135 rows, that is, around 600 more than before, because now words that start with an upper case letter are considered different from the same words if they start with a lower case letter.
+  
+- Class: cmd_question
+  Output: By default, unnest_tokens() tokenizes by word, but it also offers other possibilities, thanks to the argument token=. Try unnesting verne_text by "sentences", to a column called sentence (keep setting to_lower as FALSE). Use a pipe, as before, but don't count the results. However, because the first rows that we see are the table of contents, add a second pipe so that you see the last rows of verne_text
+  CorrectAnswer: verne_text %>% unnest_tokens(sentence, text, token = "sentences", to_lower = FALSE) %>% tail()
+  AnswerTests: any_of_exprs('verne_text %>% unnest_tokens(sentence, text, token = "sentences", to_lower = FALSE) %>% tail()', 'verne_text %>% unnest_tokens(sentence, text, to_lower = FALSE, token = "sentences") %>% tail()')
+  Hint: The last pipe should be adding the function tail()
+  
+- Class: cmd_question
+  Output: If you compare it to the tail() of verne_text (use a pipe!), you'll see that unnes_tokens turned into a single row every string of characters that ends by a punctuation mark like the full stop or the question and exclamation marks. Do it now.
+  CorrectAnswer: verne_text %>% tail()
+  AnswerTests: omnitest(correctExpr='verne_text %>% tail()')
+  Hint: Just one pipe, with tail() 
+  
+- Class: cmd_question
+  Output: Let's try now tokenizing verne_text in 2-grams. For that, you'll have to add the argument token = "ngrams" and an argument n = 2. Call the new column ngram. Use a pipe and don't specify a value for to_lower.
+  CorrectAnswer: verne_text %>% unnest_tokens(ngram, text, token = "ngrams", n = 2)
+  AnswerTests: omnitest(correctExpr='verne_text %>% unnest_tokens(ngram, text, token = "ngrams", n = 2)')
+  Hint: Did you add n = 2? 
+  
+- Class: text
+  Output: Well, well, so you can now tokenize a text in several types of tokens and calculate word types, as well as a few summary statistics of the resulting distribution. I think you earned a break. Next lesson we'll deal with stop words!
+  
+- Class: mult_question
+  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
+  AnswerChoices: Yes;No
+  CorrectAnswer: NULL
+  AnswerTests: submit_log()
+  Hint: As you feel!
+
+  
