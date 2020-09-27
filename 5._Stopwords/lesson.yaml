@@ -1,0 +1,147 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 5. Stopwords
+  Author: Carlota de Benito Moreno
+  Type: Standard
+  Organization: University of Zurich
+  Version: 2.4.5
+
+- Class: text
+  Output: Hi there! In this session we'll be working with stop words. We'll need the libraries tidyverse, tidytext and stopwords. I loaded them for you, but you should have installed them before. I've also loaded the tibble verne_words that we worked on before in your environment.
+
+- Class: cmd_question
+  Output: Print verne_words to the console so that you can recall how it looks like.
+  CorrectAnswer: verne_words
+  AnswerTests: omnitest(correctExpr='verne_words')
+  Hint: hint
+  
+- Class: text
+  Output: The package stopwords provides a series of lists of stop words of different languages that we can simply load into R in order to use them in our analysis. You can check the documentation of the package going here https://cran.r-project.org/web/packages/stopwords/stopwords.pdf
+
+- Class: text
+  Output: This lists come from different sources and different languages are included. These languages are represented by the ISO-639-1 language codes - you have a list of these codes here https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+
+- Class: cmd_question
+  Output: In order to find out what sources are available you can run the function stopwords_getsources(). No argument is needed. Check it out.
+  CorrectAnswer: stopwords_getsources()
+  AnswerTests: omnitest(correctExpr='stopwords_getsources()')
+  Hint: hint
+
+- Class: cmd_question
+  Output: You got a list of several sources and you can explore the languages for which these sources have stop words lists available using the function stopwords_getlanguages(). In this case, the single argument is a character vector with the name of the source. Try it for the snowball source.
+  CorrectAnswer: stopwords_getlanguages("snowball")
+  AnswerTests: omnitest(correctExpr='stopwords_getlanguages("snowball")')
+  Hint: Did you use quotation marks for introducing your the "snowball" source?
+  
+- Class: cmd_question
+  Output: Good, French (fr) is there! In order to get the list of French stop words we'll use the function get_stopwords(). Its first argument is the language code (use quotation marks!). Its second argument is the source, but "snowball" is the default source, so you don't need to add it. Try it, assigning the result to an object called fr_sw.
+  CorrectAnswer: fr_sw <- get_stopwords("fr")
+  AnswerTests: omnitest(correctExpr='fr_sw <- get_stopwords("fr")')
+  Hint: Did you assign it the name fr_sw?
+
+- Class: cmd_question
+  Output: Let's take a look, print fr_sw to the console
+  CorrectAnswer: fr_sw
+  AnswerTests: omnitest(correctExpr='fr_sw')
+  Hint: Just run fr_sw.
+  
+- Class: mult_question
+  Output: What kind of object is it?
+  AnswerChoices: tibble;data frame;matrix
+  CorrectAnswer: tibble
+  AnswerTests: omnitest(correctVal= 'tibble')
+  Hint: I'm pretty sure you got this!
+  
+- Class: text
+  Output: We got a tidy tibble, with the relevant words and the source. Isn't that nice?
+
+- Class: text
+  Output: We want to remove the stop words of our list of words in Verne's text, because they're very frequent and they really don't give us much information about the content of our text. The function anti_join() allows us to do that. It takes two arguments, both of them data frames or tibbles. By looking at one or more columns that both tibbles have in common, it removes all the rows from the first tibble that appear in the second one.
+  
+- Class: cmd_question
+  Output: Try it now, using a pipe. We want to remove the rows that appear in fr_sw from verne_words.
+  CorrectAnswer: verne_words %>% anti_join(fr_sw)
+  AnswerTests: omnitest(correctExpr='verne_words %>% anti_join(fr_sw)')
+  Hint: verne_words is the first argument, so it must appear before the pipe operator.
+  
+- Class: text
+  Output: R detected that both our tibbles had a column with the samen name (word), and used it to recognise which observations appear in both tables. As you can see, now the most frequent words give us a better clue of the content of Le tour du monde en quatre-vingt jours. Now we can detect who the main characters are and that time seems to play an important role in the story. Oook, so the title already might have hinted at that, but now we have scientific proof!
+
+- Class: text
+  Output: But you can also see that some grammar words lingered, because they were not included in the snowball list, such as the contraction "qu'il". So it might be a good idea to review the most frequent words that we got left and select those that we still want to remove. That is, we can personalise our stop words list!
+  
+- Class: cmd_question
+  Output: But we only want to check the most frequent words, let's say those that appear more than 65 times (note that this is completely arbitrary, you should think of a reasonable threshold when you're working on your own). Add a pipe filtering only those words that appear more than 65 times to your previous pipe and save our almost clean table to an object called fr_sw_own.
+  CorrectAnswer: fr_sw_own <- verne_words %>% anti_join(fr_sw) %>% filter(n > 65)
+  AnswerTests: omnitest(correctExpr='fr_sw_own <- verne_words %>% anti_join(fr_sw) %>% filter(n > 65)')
+  Hint: The argument of filter() should be a logical expression that responds true to n being larger than 65. The operator you need for that is >
+  
+- Class: cmd_question
+  Output: This tibble has only 76 observations, so we can easily inspect it manually. The function View() will open a new tab in RStudio that will allow us to see the whole tibble. Its single argument is the name of the tibble you want to inspect. Try it now and take a look at fr_sw_own, I think there are still some words we would like to exclude…
+  CorrectAnswer: View(fr_sw_own)
+  AnswerTests: omnitest(correctExpr='View(fr_sw_own)')
+  Hint: If you click on fr_sw_own in your environment RStudio will run the View() for you. It's not cheating if you now what you're doing!
+
+- Class: text
+  Output: Cool tip - If you click on fr_sw_own in your environment RStudio will run the View() for you. 
+
+- Class: cmd_question
+  Output: Deciding which words you want to keep and which words you want to remove really depends on what you are interest in. Because this is just a "scholarly exercise", I decide for you. Remove rows c(1:9, 13, 18, 23:25, 27, 30, 32, 36, 39, 41, 47:54, 58, 61, 63, 64, 67) from fr_sw_own and save it to fr_sw_own. Use a pipe!
+  CorrectAnswer: fr_sw_own <- fr_sw_own %>% slice(-c(1:9, 13, 18, 23:25, 27, 30, 32, 36, 39, 41, 47:54, 58, 61, 63, 64, 67))
+  AnswerTests: omnitest(correctExpr='fr_sw_own <- fr_sw_own %>% slice(-c(1:9, 13, 18, 23:25, 27, 30, 32, 36, 39, 41, 47:54, 58, 61, 63, 64, 67))')
+  Hint: Did you use slice()? And did you remember to use the operator - to indicate that you want to remove those rows instead of keeping them?
+
+- Class: cmd_question
+  Output: Now we can use anti_join() twice, to remove first fr_sw and later fr_sw_own from verne_words. Do that now and save everything to an object called verne_words_clean.
+  CorrectAnswer: verne_words_clean <- verne_words %>% anti_join(fr_sw) %>% anti_join(fr_sw_own)
+  AnswerTests: omnitest(correctExpr='verne_words_clean <- verne_words %>% anti_join(fr_sw) %>% anti_join(fr_sw_own)')
+  Hint: You should've used two pipes this time.
+  
+- Class: cmd_question
+  Output: Check verne_words_clean with View()
+  CorrectAnswer: View(verne_words_clean)
+  AnswerTests: omnitest(correctExpr='View(verne_words_clean)')
+  Hint: View() only takes one argument, namely, the name of the tibble you want to explore. 
+
+- Class: text
+  Output: It's possible that we want to keep enlarging our own stop words in French, maybe because we will be working with French texts quite often. Then it might be a good idea to save our own list, even combined with the snowball list. Let's do that now.
+
+- Class: cmd_question
+  Output: First we want to add to fr_sw_own a new column called lexicon with the value "verne_80", so that we remember where we took these words from. Do that now. Don't save it and use a pipe.
+  CorrectAnswer: fr_sw_own %>% mutate(lexicon = "verne_80")
+  AnswerTests: omnitest(correctExpr='fr_sw_own %>% mutate(lexicon = "verne_80")')
+  Hint: The function your looking for is mutate()
+
+- Class: cmd_question
+  Output: Now we want to remove column n, since we don't really care how often these words appear in a specific text, only that they are stop words. Add a new pipe to your previous code and don't save it yet.
+  CorrectAnswer: fr_sw_own %>% mutate(lexicon = "verne_80") %>% select(-n)
+  AnswerTests: any_of_exprs('fr_sw_own %>% mutate(lexicon = "verne_80") %>% select(-n)', 'fr_sw_own %>% mutate(lexicon = "verne_80") %>% select(word, lexicon)')
+  Hint: The function your looking for is select(). Because you want to remove one column, remember to use the operator -
+ 
+- Class: cmd_question
+  Output: Last thing will be to combine this result with fr_sw. For that we'll use rbind(), that pastes tibbles or data frames with the same variables (i.e. columns) together. Its arguments are the names of the relevant tibbles. Add a new pipe to your previous code. Save it now to fr_sw_own.
+  CorrectAnswer: fr_sw_own <- fr_sw_own %>% mutate(lexicon = "verne_80") %>% select(-n) %>% rbind(fr_sw)
+  AnswerTests: omnitest(correctExpr='fr_sw_own <- fr_sw_own %>% mutate(lexicon = "verne_80") %>% select(-n) %>% rbind(fr_sw)')
+  Hint: Did you remeber to save it this time? The last pipe should read cbind(fr_sw)
+  
+- Class: cmd_question
+  Output: Check fr_sw_own with View()
+  CorrectAnswer: View(fr_sw_own)
+  AnswerTests: omnitest(correctExpr='View(fr_sw_own)')
+  Hint: View() only takes one argument, namely, the name of the tibble you want to explore. 
+
+- Class: cmd_question
+  Output: Nice! Now we can save it as a .csv file to our computer, using write_delim. Can you remember how this function works? Try it now. Call your file "fr_sw_own.csv" and use "\t" as delimiters.
+  CorrectAnswer: write_delim(fr_sw_own, "fr_sw_own.csv", delim = "\t")
+  AnswerTests: omnitest(correctExpr='write_delim(fr_sw_own, "fr_sw_own.csv", delim = "\t")')
+  Hint: The first argument is the name of the tibble you want to save (fr_sw_own), the second one is the name of the file, between quotation marks and with file extension (.csv). Last comes delim = "\t"
+
+- Class: text
+  Output: Removing stop words is very useful for analysing the content of a text. Moreover, you practised quite a few tidyverse functions for transforming data. We'll keep on practising in the next lesson, but you might need a break now… Enjoy!
+
+- Class: mult_question
+  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
+  AnswerChoices: Yes;No
+  CorrectAnswer: NULL
+  AnswerTests: submit_log()
+  Hint: As you feel!

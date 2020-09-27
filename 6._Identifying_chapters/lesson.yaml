@@ -1,0 +1,128 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 6. Identifying chapters
+  Author: Carlota de Benito Moreno
+  Type: Standard
+  Organization: University of Zurich
+  Version: 2.4.5
+
+- Class: cmd_question
+  Output: Hi there, welcome to the last lesson in session 3. Again, we'll be using the packages tidyverse and tidytext. I have loaded them for you. In you environment you should also see the object verne_text, that you already now. But, just as a reminder, check it out by calling View() on it. Pay attention to the table of contents (lines 5 to 41) and to the beginning of the first chapter (lines 42 and 43).
+  CorrectAnswer: View(verne_text)
+  AnswerTests: omnitest(correctExpr='View(verne_text)')
+  Hint: Recall that you can call View() also by clicking on the name of the object in your environment.
+  
+- Class: text
+  Output: As you can see, in lines lines 5 to 41 we have a Roman numeral for every chapter followed by its title. In lines 42 and 43 we saw that the beginning of every chapter consists of one line with the Roman numeral and another line with the chapter's title.
+
+- Class: text
+  Output: Numbering paragraphs was quite easy, but knowing what chapter each paragraph belongs to seems quite useful if we're working with a novel. This is much harder, however. So, obviously, that's what we'll do in this lesson. We'll create a new column where we can see the chapter to which each paragraph belongs.
+
+- Class: text
+  Output: Before we start I'd like to ask you to think of how you would do that, with the functions you already know, but also with what you think is likely that R can do. Take a piece of paper and write down the different steps you think we'll need.
+  
+- Class: text
+  Output: Hopefully you have thought a little bit about how to create this column. You might have reached a solution, but maybe you got blocked at some point. I must confess that I had to think for while before I found a way to do it. I'm also sure that "my way" is not the only one and it might also not be the best one. But it's the one we're stuck with at the moment!
+  
+- Class: text
+  Output: So I propose three basic steps. 1) Getting the first word (i.e. each chapter's numeral) of all the rows in the table of contents. 2) Finding the rows in verne_text that coincide with them, in order to get the paragraphs where every new chapter begins… 
+  
+- Class: text
+  Output: And 3) creating a new vector where the chapter numeral is repeated as many times as paragraphs each chapter has. This can be calculated with the list of paragraphs we got, by substracting the result of one line from the next line. The we can just combine that vector with verne_text. Easy! (Hum.)
+
+- Class: text
+  Output: I hope that made sense. This is also a good moment to get a piece of paper (or an empty script) and try to imagine how these steps look like (at least 1 and 2, because step 3 requires a couple of functions you don't know). When you're ready, press enter to go on with the lesson, we'll get to coding now!
+  
+- Class: cmd_question
+  Output: So let's start now! First thing is retrieving all rows in the table of contents, which were columns 5 to 41. Do it now. Use a pipe, because we'll have to add another line before we save it. 
+  CorrectAnswer: verne_text %>% slice(5:41)
+  AnswerTests: omnitest(correctExpr='verne_text %>% slice(5:41)')
+  Hint: The function you're loking for is slice()
+  
+- Class: cmd_question
+  Output: We just want to keep the first word in these rows. We can use separate() for that! We'll separate column text into a new column called "chapter", using a single space (" ") as the separator. Although there are more elements in every row, if we only ask for one new column, separate() will discard all other words, so it'll do the trick. Add it as a pipe to the code you wrote before.
+  CorrectAnswer: verne_text %>% slice(5:41) %>% separate(text, into = "chapter", sep = " ")
+  AnswerTests: omnitest(correctExpr='verne_text %>% slice(5:41) %>% separate(text, into = "chapter", sep = " ")')
+  Hint: The first argument of separate() is the column you want to separate. The new column is specified in the argument into= (and its name requires quotation marks), while the separator is indicated in sep= (also between quotation marks).
+  
+- Class: text
+  Output: You got a warning that a lot of pieces were discarded. Exactly what we wanted! An the console printed a tibble where the column chapter has every Roman numeral for every chapter. Yay! Of course, we could've typed a vector with that information, but how tedious is that? R makes you lazy in a way, but active in another way, because you won't mind struggling to find a clever but complicated solution to avoid extra typing!
+
+- Class: cmd_question
+  Output: Let's save it now to an object called verne_chapters.
+  CorrectAnswer: verne_chapters <- verne_text %>% slice(5:41) %>% separate(text, into = "chapter", sep = " ")
+  AnswerTests: omnitest(correctExpr='verne_chapters <-verne_text %>% slice(5:41) %>% separate(text, into = "chapter", sep = " ")')
+  Hint: Just assign the name verne_chapters to the code you had before.
+  
+- Class: cmd_question
+  Output: Our second step starts filtering all rows of verne_text whose content coincides exactly with the column chapter in verne_chapters. We can use filter() for that. The operator %in% identifies elements that belong to a vector. The vector you're looking for is verne_chapters$chapter. Use a pipe!
+  CorrectAnswer: verne_text %>% filter(text %in% verne_chapters$chapter)
+  AnswerTests: omnitest(correctExpr='verne_text %>% filter(text %in% verne_chapters$chapter)')
+  Hint: Recall that filter selects rows by applying a logical vector (%in% verne_chapters$chapter) to a column (text)
+
+- Class: text
+  Output: Now we know the paragraphs where every new chapter begins. We want to create a new column (so you'll have to use mutate()) that tells us how many paragraphs each chapter has. That is, we need to substract the paragraph where every chapter starts from the paragraph where the next chapter starts.
+
+- Class: cmd_question
+  Output: And R has the perfect function for that. lead() gives you the "next" value of a vector or column. Once you have that, you just need to substract the column paragraph from the result. But you'll also have to add a default= argument to lead() so that it can also give you a result for the last row (there's no next element it can find for the last row). Since verne_text has 2125 observations, you should add default = 2126 (where a new hypothetical chapter would start). Call your new column diff and add it with a new pipe to your previous code.
+  CorrectAnswer: verne_text %>% filter(text %in% verne_chapters$chapter) %>% mutate(diff = lead(paragraph, default = 2126) - paragraph)
+  AnswerTests: omnitest(correctExpr='verne_text %>% filter(text %in% verne_chapters$chapter) %>% mutate(diff = lead(paragraph, default = 2126) - paragraph)')
+  Hint: Did you use mutate? And did you recall to include paragraph as the first argument of lead? And to substract paragraph from lead()? Check your parentheses.
+
+- Class: cmd_question
+  Output: Looking good, right? Now save it to a tibble called chapters_length
+  CorrectAnswer: chapters_length <- verne_text %>% filter(text %in% verne_chapters$chapter) %>% mutate(diff = lead(paragraph, default = 2126) - paragraph)
+  AnswerTests: omnitest(correctExpr='chapters_length <- verne_text %>% filter(text %in% verne_chapters$chapter) %>% mutate(diff = lead(paragraph, default = 2126) - paragraph)')
+  Hint: Just assign the name chapters_length to the code you had before.
+
+- Class: text
+  Output: Now we need a vector that repeats the content of the column text in chapters_length as many consecutive times as the valies of diff in chapters_length. And, obviously, R has the perfect function for that. 
+
+- Class: cmd_question
+  Output: rep() takes the element you want to repeat as its first argument and the number of times each element should be repeated as its second argument. In this case these elements are vectors, namely columns text and diff in our tibble chapters_length. Because it's a base function, you should use the $ notation to call these columns. Call your vector chapters_full.
+  CorrectAnswer: chapters_full <- rep(chapters_length$text, chapters_length$diff)
+  AnswerTests: omnitest(correctExpr='chapters_full <- rep(chapters_length$text, chapters_length$diff)')
+  Hint: The vectors you need to call are chapters_length$text and chapters_length$diff
+
+- Class: text
+  Output: Note that chapters_full has a few less elements than the number of rows of verne_text (you can see it in your environment). That's because we don't have a chapter number for the first few rows of verne_text, the ones with the title and the table of contents.
+
+- Class: cmd_question
+  Output: But do we really need those rows (1 to 41)? I don't think so, so let's remove them. Use a pipe, but don't save it just yet.
+  CorrectAnswer: verne_text %>% slice(-(1:41))
+  AnswerTests: omnitest(correctExpr='verne_text %>% slice(-(1:41))')
+  Hint: The function you're looking for is slice()
+  
+- Class: cmd_question
+  Output: Now we can combine verne_text and chapters_full. Recall the function rbind, that pastes new rows at the bottom of a tibble? Well, cbind pastes new columns at the right of a tibble. Add it to your previous code with a new pipe.
+  CorrectAnswer: verne_text %>% slice(-(1:41)) %>% cbind(chapters_full)
+  AnswerTests: omnitest(correctExpr='verne_text %>% slice(-(1:41)) %>% cbind(chapters_full)')
+  Hint: The only argument you have to add to cbind is our vector chapters_full.
+
+- Class: cmd_question
+  Output: The console printed out so many lines that you can be sure that your result is not a tibble. But we love tibbles, so let's transform it into one. Add as_tibble() with a new pipe.
+  CorrectAnswer: verne_text %>% slice(-(1:41)) %>% cbind(chapters_full) %>% as_tibble()
+  AnswerTests: omnitest(correctExpr='verne_text %>% slice(-(1:41)) %>% cbind(chapters_full) %>% as_tibble()')
+  Hint: No arguemnt needed inside as_tibble.
+  
+- Class: cmd_question
+  Output: That's what we were looking for! Now save it to a new tibble called verne_text_full.
+  CorrectAnswer: verne_text_full <- verne_text %>% slice(-(1:41)) %>% cbind(chapters_full) %>% as_tibble()
+  AnswerTests: omnitest(correctExpr='verne_text_full <- verne_text %>% slice(-(1:41)) %>% cbind(chapters_full) %>% as_tibble()')
+  Hint: Just assign the name verne_text_full to the code you had before.
+  
+- Class: text
+  Output: This is work well done, congratulations! This was probably a bit demanding, but hopefully it got you excited about finding ways of making R do whatever you want it to do. For me, writing code is both creative and intellectually challenging, so… what I call a lot of fun. 
+
+- Class: text
+  Output: You absolutely earned a break now. In the activities folder you'll find a few suggestions for exploring verne_text_full in more detail using some of the things we learnt this week. But I also suggest that, if you had a different idea for getting the column with the chapters that we created in this lesson, you try it out. When you're done or if you're struggling with it, post it in the forum, cause we'll love to see it! And keep in mind that I only learnt abouth lead() because I thought that it'd be nice if it existed for this exercise… And it did! So don't be afraid to google in your quest for new amzing R functions.
+
+- Class: mult_question
+  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
+  AnswerChoices: Yes;No
+  CorrectAnswer: NULL
+  AnswerTests: submit_log()
+  Hint: As you feel!
+ 
+  
+
