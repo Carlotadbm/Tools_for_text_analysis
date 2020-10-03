@@ -1,0 +1,3 @@
+tidytext
+tidyverse
+base64enc
