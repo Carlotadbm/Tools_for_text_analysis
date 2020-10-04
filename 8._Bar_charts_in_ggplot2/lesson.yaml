@@ -45,7 +45,7 @@
   FigureType: new
   
 - Class: cmd_question
-  Output: "Let's go for our plot. We need `ggplot()`, which you'll apply to verne_words_freq using a pipe. Remember that it also taked the `aes()` function as an argument. It'll need three arguments this time: x, y and fill, since we coloured the columns depending on the frequency of the word. Try it out."
+  Output: "Let's go for it. We need `ggplot()`, which you'll apply to verne_words_freq using a pipe. Remember that it also taked the `aes()` function as an argument. It'll need three arguments this time: x, y and fill, since we coloured the columns depending on the frequency of the word. Try it out."
   CorrectAnswer: verne_words_freq %>% ggplot(aes(x = word, y = n, fill = n))
   AnswerTests: omnitest(correctExpr='verne_words_freq %>% ggplot(aes(x = word, y = n, fill = n))')
   Hint: In the x-axis you're plotting column word, while in the y-axis and you're plotting n, same value that you're using to colour the bars.
@@ -63,7 +63,7 @@
   Output: For changing a column we need to use mutate() applied to out tibble, which means that it shoud go before our ggplot() function. The function that can reorder the factors is fct_reorder, whose first argument is the column you want to rearrange (`word`) and the second, the column by which you want to rearrange it (`n`). By default it will rearrange it in ascending order, but because we want the highest value on top, use `desc(n)`.
   CorrectAnswer: verne_words_freq %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col()
   AnswerTests: omnitest(correctExpr='verne_words_freq %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col()')
-  Hint: Recall that mutate() must go after the pipe you had and before ggplot(). Of course, before ggplot() you need another pipe now. 
+  Hint: Did you remember that `mutate()` syntax requires assigning the result of `fct_reorder()` to the column you want to change (`word`) by means of the equal sign?
 
 - Class: cmd_question
   Output: You know what's coming now… `labs()`! The title of the chart should be "Most frequent words in Verne (80 Jours)". We can leave the other labels as they are, since they're quite self-explanatory.
@@ -83,23 +83,29 @@
   AnswerTests: omnitest(correctExpr='verne_words_freq %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count")')
   Hint: You need quotations for your title now, just like you have them in the `labs()` function.
 
+- Class: cmd_question
+  Output: "If you wanted to change the palette of colours used for filling the bars, there's a similar function: `scale_fill_gradient()`. You can create your own palette, by choosing its two extreme values. Set argument `low` to 'gold' and argument `high` to 'dodgerblue'."
+  CorrectAnswer: verne_words_freq %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count") + scale_fill_gradient(low = "gold", high = "dodgerblue")
+  AnswerTests: omnitest(correctExpr='verne_words_freq %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count") + scale_fill_gradient(low = "gold", high = "dodgerblue")')
+  Hint: Did you remember that colour names are values and thus require quotations?
+
 - Class: text
   Output: Not bad, right? As you can see, you could have simply adapted most of the functions you used for the plots in the previous lesson. That's one of the greater advantes of coding (and using scripts for it).
 
 - Class: text
-  Output: "Our next plot will be similar to the one we just created, but we'll include a new variable: the chapter where the words appear. We will actually create one plot per chapter, because ggplot allows for us to do that quite easily!"
+  Output: "Our next plot will be similar to the one we just created, but we'll include a new variable: the chapter where the words appear. We will actually create one plot per chapter, because ggplot2 allows for us to do that quite easily!"
 
 - Class: text
   Output: Our tibble verne_words_freq didn't have information about the chapters, because when we applied `count()`, all words got grouped together. We can avoid that with the function `group_by()`, where we can indicate the column by which we want to group our data. The functions that come after `group_by()` will act within and across these groups. 
 
 - Class: cmd_question
-  Output: So copy the code you used above to create verne_words_freq and add group_by to your pipe, after anti_join(), but before count(). We should also change the conditions of our filter, because now our highest numbers will be much lower. Leave only words that appear 15 or more times in a given chapter. Don't save your result yet, so you can see what happens in the console.
+  Output: So, in your script, copy again the code you used above to create `verne_words_freq` and add `group_by()` to your pipe, after `anti_join()`, but before `count()`. We should also change the conditions of our filter, because now our highest numbers will be much lower. Leave only words that appear 15 or more times in a given chapter. Don't save your result yet, so you can see what happens in the console.
   CorrectAnswer: verne_text %>% unnest_tokens(word, text) %>% anti_join(fr_sw_own) %>% group_by(chapter) %>% count(word, sort = T) %>% filter(n >= 15)
   AnswerTests: any_of_exprs('verne_text %>% unnest_tokens(word, text) %>% anti_join(fr_sw_own) %>% group_by(chapter) %>% count(word, sort = T) %>% filter(n >= 15)', 'verne_text %>% unnest_tokens(word, text) %>% anti_join(fr_sw_own) %>% group_by(chapter) %>% count(word, sort = TRUE) %>% filter(n >= 15)')
   Hint: You should add a new line to your pipe, `group_by(chapter)`, before the line with count(). And you should change 70 by 15 in your filter!
 
 - Class: cmd_question
-  Output: "As you can see, our tibble has information about the chapters. Nice. You can also see that the tibble is grouped, because the console tells you so, with the line `Groups: chapter [31]`. Besides that line, however, the grouping has no visible effects and it's easy to forget about it. So if we don't need the groups anymore, it's better to remove them. Add the function `ungroup()` as the last element of your pipeline. It needs no extra arguemnts."
+  Output: "As you can see, this new tibble has information about the chapters. Nice. You can also see that the tibble is grouped, because the console tells you so, with the line `Groups: chapter [31]`. Besides that line, however, the grouping has no visible effects and it's easy to forget about it. So if we don't need the groups anymore, it's better to remove them. Add the function `ungroup()` as the last element of your pipeline. It needs no extra arguments."
   CorrectAnswer: verne_text %>% unnest_tokens(word, text) %>% anti_join(fr_sw_own) %>% group_by(chapter) %>% count(word, sort = T) %>% filter(n >= 15) %>% ungroup()
   AnswerTests: any_of_exprs('verne_text %>% unnest_tokens(word, text) %>% anti_join(fr_sw_own) %>% group_by(chapter) %>% count(word, sort = T) %>% filter(n >= 15) %>% ungroup()', 'verne_text %>% unnest_tokens(word, text) %>% anti_join(fr_sw_own) %>% group_by(chapter) %>% count(word, sort = TRUE) %>% filter(n >= 15) %>% ungroup()')
   Hint: Simply add ungroup() after your filter, using a pipe, of course.
@@ -111,39 +117,39 @@
   Hint: Just save the code above using the assignment operator!
 
 - Class: cmd_question
-  Output: "We can also recycle the code we used above for our previous plot. As you can see, scripst are very sustainable ;) Try it out, all you have to do is update the name of the tibble."
-  CorrectAnswer: verne_words_freq_ch %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count")
-  AnswerTests: omnitest(correctExpr='verne_words_freq_ch %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count")')
+  Output: "We can also recycle the code we used above for our previous plot. As you can see, scripst are very sustainable ;) Try it out, all you have to do is update the name of the tibble. (Copy the code you had already used and paste it to the bottom of your script, so that you don't lose what you did before.)"
+  CorrectAnswer: verne_words_freq_ch %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count") + scale_fill_gradient(low = "gold", high = "dodgerblue")
+  AnswerTests: omnitest(correctExpr='verne_words_freq_ch %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count") + scale_fill_gradient(low = "gold", high = "dodgerblue")')
   Hint: Don't forget to change the name of the tibble!
 
 - Class: text
   Output: Three things changed. First, our plot has less words than before, which makes sense, because the number of words that passed the cut was affected by our grouping. 
   
 - Class: text
-  Output: Second, the columns have different colours within themselves! If you click on `Zoom` in your plot window, you will see that the coloumns are sort of made up from shorter columns. Each one of those is linked to each of the rows in our tibble, since many of them referred to the same words.
+  Output: Second, the columns have different colours within themselves! If you click on `Zoom` in your plot window, you will see that the coloumns are sort of made up from shorter columns. Each one of those refers to one of the rows in our tibble, since many of them had information about the same words, but in different chapters.
 
 - Class: text
   Output: Third, our sorting by size got messed up. That's because our fct_reorder() is being applied now to a column where many of the values are repeated. And if I am to tell the truth, I have no idea how it reordered column `word` now (I was expecting `passepartout` as the first value but…) We'll leave it anyways, because the end result is somehow better than if we remove it!
  
 - Class: cmd_question
   Output: "We're only missing one function in our plot, which will automatically create 31 smaller graphs, one per chapter. That magic function is `facet_wrap()`. Its first argument is the `facet` by which you want to divide your previous chart in new mini-charts, that is, column `chapter`. However, it must be preceded by the tilde operator: ~ Copy the tilde from this paragraph if you don't know where to find it in your keyboard"
-  CorrectAnswer: verne_words_freq_ch %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count") + facet_wrap(~ chapter)
-  AnswerTests: omnitest(correctExpr='verne_words_freq_ch %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count") + facet_wrap(~ chapter)')
+  CorrectAnswer: verne_words_freq_ch %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count") + scale_fill_gradient(low = "gold", high = "dodgerblue") + facet_wrap(~ chapter)
+  AnswerTests: omnitest(correctExpr='verne_words_freq_ch %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count") + scale_fill_gradient(low = "gold", high = "dodgerblue") + facet_wrap(~ chapter)')
   Hint: "This is how your addition should look like: facet_wrap(~ chapter). Don't forget the + sing!"
  
 - Class: text
   Output: If you're looking at your new plot (it probably took a while to appear) in your small Plot window, it most likely looks a bit disappointing. Click on Zoom to see what happened. (If a new window is not opening up, it might be because you clicked Zoom before and didn't close the window that opened up. It then stayed on your desktop, hidden behind your RStudio window, so go find it!)
 
 - Class: cmd_question
-  Output: Pretty impressive, right? But also quite messy, because every mini-plot has room for every word, even if they don't appear in the relevant chapter. Also, we can't really read the words like this. But that's easily fixable. We'll "free" the x-axis by setting the `scales` argument in facet_wrap() to "free_x" (keep the quotations!). Do it now (and remember clicking zoom to see a reasonable version of your chart, make the window larger if you need it).
-  CorrectAnswer: verne_words_freq_ch %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count") + facet_wrap(~ chapter, scales = "free_x")
-  AnswerTests: omnitest(correctExpr='verne_words_freq_ch %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count") + facet_wrap(~ chapter, scales = "free_x")')
+  Output: Pretty impressive, right? But also quite messy, because every x-axis of every mini-plot takes every word into account, even if they don't appear in the relevant chapter. Also, we can't really read the words like this. But that's easily fixable. We'll "free" the x-axis by setting the `scales` argument in facet_wrap() to "free_x" (keep the quotations!). Do it now (and remember clicking zoom to see a reasonable version of your chart, make the window larger if you need to).
+  CorrectAnswer: verne_words_freq_ch %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count") + scale_fill_gradient(low = "gold", high = "dodgerblue") + facet_wrap(~ chapter, scales = "free_x")
+  AnswerTests: omnitest(correctExpr='verne_words_freq_ch %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count") + scale_fill_gradient(low = "gold", high = "dodgerblue") + facet_wrap(~ chapter, scales = "free_x")')
   Hint: Did you remember the comma after the first argument of facet_wrap()?
  
 - Class: cmd_question
   Output: Another useful argument of facet_wrap is `ncol`, which allows you to choose the number of columns of mini-plots that you will have in your final desing. Set it to 8.
-  CorrectAnswer: verne_words_freq_ch %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count") + facet_wrap(~ chapter, scales = "free_x", ncol = 8)
-  AnswerTests: omnitest(correctExpr='verne_words_freq_ch %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count") + facet_wrap(~ chapter, scales = "free_x", ncol = 8)')
+  CorrectAnswer: verne_words_freq_ch %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count") + scale_fill_gradient(low = "gold", high = "dodgerblue") + facet_wrap(~ chapter, scales = "free_x", ncol = 8)
+  AnswerTests: omnitest(correctExpr='verne_words_freq_ch %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count") + scale_fill_gradient(low = "gold", high = "dodgerblue") + facet_wrap(~ chapter, scales = "free_x", ncol = 8)')
   Hint: Did you remember the comma after the second argument of facet_wrap()?
   
 - Class: text
@@ -167,12 +173,12 @@
 
 - Class: cmd_question
   Output: Can you now assign a name to our first plot in this lesson? Call it verne_words_freq_plot.
-  CorrectAnswer: verne_words_freq_plot <- verne_words_freq %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count")
-  AnswerTests: omnitest(correctExpr='verne_words_freq_plot <- verne_words_freq %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count")')
+  CorrectAnswer: verne_words_freq_plot <- verne_words_freq %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count") + scale_fill_gradient(low = "gold", high = "dodgerblue")
+  AnswerTests: omnitest(correctExpr='verne_words_freq_plot <- verne_words_freq %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count") + scale_fill_gradient(low = "gold", high = "dodgerblue")')
   Hint: It works exactly the same as with tibbles, vectors, etc. Name, assigning operator and all the code you used for generating your plot.
 
 - Class: cmd_question
-  Output: "It didn't appear in your Plot window, because you merely saved it. Before you were printing it everytime. But you're used to this already! :) We'll save it now, using its name as second argument of ggsave(). The file name, 'verne_words_freq.png', should be the first argument."
+  Output: "It didn't appear in your Plot window, because you merely saved it. Before, you were printing it everytime. But you're used to this already! :) We'll save it now, using its name as second argument of ggsave(). The file name, 'verne_words_freq.png', should be the first argument."
   CorrectAnswer: ggsave("verne_words_freq.png", verne_words_freq_plot)
   AnswerTests: omnitest(correctExpr='ggsave("verne_words_freq.png", verne_words_freq_plot)')
   Hint: It's very similar to what you did before, but now you have a second argument that is the name of the plot, with no quotations, of course.
