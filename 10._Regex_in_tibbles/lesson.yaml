@@ -1,0 +1,179 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 10. Regex in tibbles
+  Author: Carlota de Benito Moreno
+  Type: Standard
+  Organization: University of Zurich
+  Version: 2.4.5
+
+- Class: text
+  Output: Hi there! In this second session on regex we'll be again using the tibbles `quijote` and `verne` that we used in the previous one. 
+
+- Class: text
+  Output: We now know how to view the matches of a regex we designed. Now we'll learn to detect where they are in a string, count them, extract them and replace them. Let's do this!
+  
+- Class: cmd_question
+  Output: First, check quijote, to remeber how it looks like.
+  CorrectAnswer: quijote
+  AnswerTests: omnitest(correctExpr='quijote')
+  Hint: Simply run its name.
+  
+- Class: cmd_question
+  Output: Check verne now.
+  CorrectAnswer: verne
+  AnswerTests: omnitest(correctExpr='verne')
+  Hint: Simply run its name.
+
+- Class: text
+  Output: When you run the function `str_detect()` on a vector, it returns a logical vector indicating whether the elements of your vector contain (TRUE) or not (FALSE) the regex you specified.
+
+- Class: cmd_question
+  Output: The function `str_detect()` takes the vector as first argument (you'll have to use the $ notation) and the regex as second argument. Detect all words in `quijote` that start by "a".
+  CorrectAnswer: str_detect(quijote$word, "^a")
+  AnswerTests: any_of_exprs('str_detect(quijote$word, "^a")', 'str_detect(quijote$word, "\\ba")', 'quijote$word %>% str_detect("^a")', 'quijote$word %>% str_detect("\\ba")')
+  Hint: You'll need yo use an anchor before "a". And don't forget the quotation marks!
+  
+- Class: cmd_question
+  Output: "Logical vectors can be used in numeric contexts: TRUE becomes 1 and FALSE becomes 0. That means that you can apply a numeric operation, such as `sum()`. Add it to your code above with a pipe to see how many words start with 'a' in `quijote`."
+  CorrectAnswer: str_detect(quijote$word, "^a") %>% sum()
+  AnswerTests: any_of_exprs('str_detect(quijote$word, "^a") %>% sum()', 'str_detect(quijote$word, "\\ba") %>% sum()', 'quijote$word %>% str_detect("^a") %>% sum()', 'quijote$word %>% str_detect("\\ba") %>% sum()')
+  Hint: Add sum() after the pipe operator to your code above.
+  
+- Class: cmd_question
+  Output: So 98 words start by "a". You could also use `mean()` to get the proportion of words that start by "a" in `quijote`. Do it now. 
+  CorrectAnswer: str_detect(quijote$word, "^a") %>% mean()
+  AnswerTests: any_of_exprs('str_detect(quijote$word, "^a") %>% mean()', 'str_detect(quijote$word, "\\ba") %>% mean()', 'quijote$word %>% str_detect("^a") %>% mean()', 'quijote$word %>% str_detect("\\ba") %>% mean()')
+  Hint: Replace sum() by mean() in your code above.
+
+- Class: cmd_question
+  Output: Ok, so around 7 words in every hundred start by "a". So far, we've applied `str_detect()` to a vector using base R notation to get another vector. But what if you wanted to add the result of `str_detect()`as a column in your tibble? You could integrate it in `mutate()`. Can you do it? Call the new column `starts_a`. Use a pipe, of course! 
+  CorrectAnswer: quijote %>% mutate(starts_a = str_detect(word, "^a"))
+  AnswerTests: any_of_exprs('quijote %>% mutate(starts_a = str_detect(word, "^a"))', 'quijote %>% mutate(starts_a = str_detect(word, "\\ba"))')
+  Hint: You'll have to apply your pipe to `quijote`, while the first argument of `str_detect()` will simply be 'word' now.
+
+- Class: cmd_question
+  Output: More frequently you will want to alter the number of rows of your tibble, keeping only words that start by "a". That is, normally you'll want to include `str_detect()` in `filter()`, which, as you might remember, takes a logical expression. Can you do thatn now?
+  CorrectAnswer: quijote %>% filter(str_detect(word, "^a"))
+  AnswerTests: any_of_exprs('quijote %>% filter(str_detect(word, "^a"))', 'quijote %>% filter(str_detect(word, "\\ba"))')
+  Hint: "You just need to adapt your code above a little bit: instead of using `mutate()` you have to use `filter()`, that simply takes thelogical vector, that is, you should not specify a new colum."
+
+- Class: text
+  Output: If your regex involves complex logical operations (such as excluding elements, which is equivalent to negation), it might be easier to apply R logical operators to `str_detect()` than to desing a very complex regex.
+
+- Class: cmd_question
+  Output: For instance, if you want to keep all words with no vowels in `quijote` you could find all words with vowels (defined as '[aeiouáéíóúü]') and then negate `str_detect()` by using the operator `!` right before it. Try it (embedded in `filter()`).
+  CorrectAnswer: quijote %>% filter(!str_detect(word, "[aeiouáéíóúü]"))
+  AnswerTests: omnitest(correctExpr='quijote %>% filter(!str_detect(word, "[aeiouáéíóúü]"))')
+  Hint: Adapt your code above by updating the new regex and wrting `!` before `str_detect()`.
+
+- Class: text
+  Output: You would get the same result by using the much more complicated regex "^[^aeiou]+$", but simplicity is a virtue!
+
+- Class: cmd_question
+  Output: The function `str_count()` tells you how many matches there are in a string. The vector with the strings is its first argument, while the regex is the second one. Find out how many "a" there are in every word in `quijote`. Use the $ notation to identify the column `word`.
+  CorrectAnswer: str_count(quijote$word, "a") 
+  AnswerTests: any_of_exprs('str_count(quijote$word, "a")', 'quijote$word %>% str_count("a")')
+  Hint: "The regular expression you should be using is quite simple: 'a'."
+
+- Class: cmd_question
+  Output: Because you got numeric data as a result, you can apply mathematical operations to it. Calculate the proportion of "a" per word in `quijote` by adding `mean()` to your code above with a pipe.
+  CorrectAnswer: str_count(quijote$word, "a")  %>% mean()
+  AnswerTests: any_of_exprs('str_count(quijote$word, "a") %>% mean()', 'quijote$word %>% str_count("a") %>% mean()')
+  Hint: Simply add `mean()` by means of the pipe operator.
+
+- Class: cmd_question
+  Output: The result of `str_count()` is the kind of information you might want to store in a new column, using `mutate()`. Do it now by creating the column `number_a` (and using a pipe).
+  CorrectAnswer: quijote %>% mutate(number_a = str_count(word, "a"))
+  AnswerTests: omnitest(correctExpr='quijote %>% mutate(number_a = str_count(word, "a"))')
+  Hint: Integrate your code above in a `mutate()` as you did above with `str_detect()`.
+
+- Class: mult_question
+  Output: It is important to notice that regex matches do not overlap. For instance, if you calculate how many times the sequence "aba" appears in "abababa", what do you think you'll get?
+  AnswerChoices: 2;3;1
+  CorrectAnswer: 2
+  AnswerTests: omnitest(correctVal= '2')
+  Hint: Remember, matches won't overlap.
+
+- Class: cmd_question
+  Output: Let's check it. Use `str_count()` to find out how many times "aba" appears in "abababa".
+  CorrectAnswer: str_count("abababa", "aba")
+  AnswerTests: any_of_exprs('str_count("abababa", "aba")', '"abababa" %>% str_count("aba")')
+  Hint: The first argument of `str_count()` is now "abababa".
+
+- Class: cmd_question
+  Output: So that you understand better what's going on, use `str_view_all()` to see the matches.
+  CorrectAnswer: str_view_all("abababa", "aba")
+  AnswerTests: any_of_exprs('str_view_all("abababa", "aba")', '"abababa" %>% str_view_all("aba")')
+  Hint: Adapt your code above replacing `str_count() by `str_view_all()`.
+
+- Class: text
+  Output: As you can see, although "aba" actually appears 3 times in "abababa", the second one overlaps with the first one, so it is ignored.
+
+- Class: text
+  Output: The function `str_extract()` extracts the exact match of your regex. As always, its first argument is the vector with the strings, and the second one is the regex. Again, this is a useful function to use within a mutate. 
+
+- Class: cmd_question
+  Output: "Store the definite feminine noun phrases in `sentences` in `verne` in a new column called `fem_noun`. We'll operationalise definite feminine noun phrases as those where the feminine article 'la' precedes a word using the following regex: '\\\\bla\\\\b\\\\s\\\\w+\\\\b', which matches 'la' as a single word ('\\\\bla\\\\bb') followed by a space ('\\\\s') and any alphanumeric character ('\\\\w') repeated an indefinite number of times ('+') until it finds a word limit ('\\\\b')."
+  CorrectAnswer: verne %>% mutate(fem_noun = str_extract(sentences, "\\\\bla\\\\b\\\\s\\\\w+\\\\b"))
+  AnswerTests: omnitest(correctExpr='verne %>% mutate(fem_noun = str_extract(sentences, "\\\\bla\\\\b\\\\s\\\\w+\\\\b"))')
+  Hint: This is a mutate very similar to the ones you used above, but with a new tibble (`verne`) applied to a new column (`sentences`). The function used to create the new column is `str_extract` and the regex is the one I gave you above!
+
+- Class: cmd_question
+  Output: The function `str_extract()` returns the first match, while `str_extract_all()` returns every result in a string. Adding the argument `simplify` and setting it to `TRUE`, it will store them in new columns. Try it now.
+  CorrectAnswer: verne %>% mutate(fem_noun = str_extract_all(sentences, "\\\\bla\\\\b\\\\s\\\\w+\\\\b", simplify = TRUE))
+  AnswerTests: omnitest(correctExpr='verne %>% mutate(fem_noun = str_extract_all(sentences, "\\\\bla\\\\b\\\\s\\\\w+\\\\b", simplify = TRUE))')
+  Hint: Simply adapt your code above by using `str_extract_all()` and adding `simplify = TRUE`.
+
+- Class: text
+  Output: As you can see, this result is really not ideal. It'd be probably a better idea to tokenise your text in smaller units, such 2-grams, and use `str_detect()` to find the ones matching our regex. But it's good that you know your options!
+
+- Class: text
+  Output: "The last function we'll explore in this session is `str_replace()`, which replaces a match with a new string. Its structure is the same as in the previous functions, but with a third argument: first the vector, second the regex to match and third the string to replace the match with."
+
+- Class: cmd_question
+  Output: Again, this is a function that you'll normally want to use within a mutate. Create a new column called `word_i` where you replace vowels (defined as "[aeouáéíóú]") in the `word` in `quijote` by "i".
+  CorrectAnswer: quijote %>% mutate(word_i = str_replace(word, "[aeouáéíóú]", "i"))
+  AnswerTests: omnitest(correctExpr='quijote %>% mutate(word_i = str_replace(word, "[aeouáéíóú]", "i"))')
+  Hint: This is a mutate very similar to the ones you used above, again with `quijote`. But now you're using the function `str_replace()` and you need a third argument with the string used for the replacement.
+
+- Class: cmd_question
+  Output: As you can see, `str_replace()` only replaced the first match. Replace every vowel by using `str_replace_all()`.
+  CorrectAnswer: quijote %>% mutate(word_i = str_replace_all(word, "[aeouáéíóú]", "i"))
+  AnswerTests: omnitest(correctExpr='quijote %>% mutate(word_i = str_replace_all(word, "[aeouáéíóú]", "i"))')
+  Hint: Same code as above, but using `str_replace_all()` instead of `str_replace()`.
+
+- Class: cmd_question
+  Output: Quite often you won't want to create a new column, but replace the old one. Instead of creating `word_i`, update `word` with the same replacement you last used.
+  CorrectAnswer: quijote %>% mutate(word = str_replace_all(word, "[aeouáéíóú]", "i"))
+  AnswerTests: omnitest(correctExpr='quijote %>% mutate(word = str_replace_all(word, "[aeouáéíóú]", "i"))')
+  Hint: Same code as above, but using `word` instead of `word_i`.
+
+- Class: text
+  Output: Multiple replacements have a slightly different syntax. Your second argument should be a vector created with `c()` where each regex whose matches you want to replace are followed by the equal sign and the string you want to replace it with. Every element must be separated by commas.
+
+- Class: cmd_question
+  Output: Create a new column called `word_new` in `quijote` where you replace all vowels by "i" as you did before, but also all "qu" by "k". Note that, because "qu" contains a vowel, you would like it to be replaced first. 
+  CorrectAnswer: quijote %>% mutate(word_new = str_replace_all(word, c("qu" = "k", "[aeouáéíóú]" = "i")))
+  AnswerTests: omnitest(correctExpr='quijote %>% mutate(word_new = str_replace_all(word, c("qu" = "k", "[aeouáéíóú]" = "i")))')
+  Hint: The second argument of `str_replace_all()` should now read `c("qu" = "k", "[aeouáéíóú]" = "i")`.
+
+- Class: cmd_question
+  Output: Let's complicate it a bit more using back references. Create a new columnd `inverted_word` in `quijote` where every sequence of consonant + vowel (defined as "([bcdfghjklmñpqrstvwxzy])([aeiouáéíóúü])") is replaced by the same consonant and vowel, but in the inverted order vowel + consonant. This is not a multiple replacement, its a single one! But you'll need back references.
+  CorrectAnswer: quijote %>% mutate(inverted_word = str_replace_all(word, "([bcdfghjklmñpqrstvwxzy])([aeiouáéíóúü])", "\\\\2\\\\1"))
+  AnswerTests: omnitest(correctExpr='quijote %>% mutate(inverted_word = str_replace_all(word, "([bcdfghjklmñpqrstvwxzy])([aeiouáéíóúü])", "\\\\2\\\\1"))')
+  Hint: The third argument of `str_replace_all()` needs back references that invert the order of the expressions in parentheses in your regex, that is, it shoudl be "\\2\\1".
+
+- Class: text
+  Output: "I'm sure that last part was a bit demanding… But you're done now! I hope that you can see the potential of regex now, but you'll probably want to practice them a little bit more. Check the homework in OLAT, but maybe take a well-deserved break first :)"
+  
+- Class: mult_question
+  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
+  AnswerChoices: Yes;No
+  CorrectAnswer: NULL
+  AnswerTests: submit_log()
+  Hint: As you feel!
+
+
+
+
+

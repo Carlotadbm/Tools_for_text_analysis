@@ -1,0 +1,206 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 9. Regular expressions with stringr
+  Author: Carlota de Benito Moreno
+  Type: Standard
+  Organization: University of Zurich
+  Version: 2.4.5
+
+- Class: text
+  Output: Hi there! Welcome to this lesson on regular expressions. Before starting you should've watched the video that is available in OLAT.
+
+- Class: text
+  Output: Again, we'll be relying on the tidyverse, using the `stringr` library. In this lesson you'll practice constructing regex and using their most important functionalities.
+
+- Class: cmd_question
+  Output: I have loaded two files for you. `quijote` contains the frequency list of Don Quixote and `verne` contains the sentences of Verne's `Le Tour du monde en quatre-vingts jours`. Check quijote, to remeber how it looks like.
+  CorrectAnswer: quijote
+  AnswerTests: omnitest(correctExpr='quijote')
+  Hint: Simply run its name.
+  
+- Class: cmd_question
+  Output: Check verne now.
+  CorrectAnswer: verne
+  AnswerTests: omnitest(correctExpr='verne')
+  Hint: Simply run its name.
+  
+- Class: text
+  Output: In this lesson we'll be exploring regex by using two functions, `str_view()` and `str_view_all()`, which show how a regular expression matches. `str_view()` shows the first match in a string, while `str_view_all()` shows all matches in a string. We'll use `str_view()` most of the time, I'll specify it when I want you to use `str_view_all()`.
+
+- Class: cmd_question
+  Output: They take a vector as their first argument, not a tibble. That means that we need to use the $ notation to indicate the column we want to apply the regex to. As second argument, they take the regular expression. Check column `word` in `quijote` for the first match of the regular expression "os".
+  CorrectAnswer: str_view(quijote$word, "os")
+  AnswerTests: any_of_exprs('quijote$word %>% str_view("os")', 'str_view(quijote$word, "os")')
+  Hint: You must use quotation marks for your regex! Did you remember to use the $ notation?
+
+- Class: cmd_question
+  Output: The matching sequences got highlighted in the Viewer tab (bottom right). But in the first few words there's only one match. Because it's more interesting to see a large number of matches, add the argument `match` and set it to `TRUE`.
+  CorrectAnswer: str_view(quijote$word, "os", match = TRUE)
+  AnswerTests: any_of_exprs('quijote$word %>% str_view("os", match = TRUE)', 'str_view(quijote$word, "os", match = TRUE)')
+  Hint: Add `match = TRUE` to your code above.
+
+- Class: text
+  Output: We'll keep this argument through the whole lesson.
+
+- Class: mult_question
+  Output: Literal regular expressions are the easiest ones, but we normally want something more complicated (and thus more powerful). What regex should we use to find all instances of `ñ` followed by another character?
+  AnswerChoices: ñ.;ñ+;ñ$
+  CorrectAnswer: ñ.
+  AnswerTests: omnitest(correctVal= 'ñ.')
+  Hint: Check your notes if you forgot!
+
+- Class: cmd_question
+  Output: The dot is extremely useful, because it matches any character. Visualise all sequences of `ñ` followed by another character in column `word` in `quijote`.
+  CorrectAnswer: str_view(quijote$word, "ñ.", match = TRUE)
+  AnswerTests: any_of_exprs('quijote$word %>% str_view("ñ.", match = TRUE)', 'str_view(quijote$word, "ñ.", match = TRUE)')
+  Hint: Adapt the regex in your previous code.
+
+- Class: cmd_question
+  Output: Anchors allow us for defining a position. `^` matches the start of the string, while `$` matches the end of the string. Visualise all strings that start by `f` in column `word` in `quijote`.
+  CorrectAnswer: str_view(quijote$word, "^f", match = TRUE)
+  AnswerTests: any_of_exprs('quijote$word %>% str_view("^f", match = TRUE)', 'str_view(quijote$word, "^f", match = TRUE)')
+  Hint: Adapt the regex in your previous code.
+
+- Class: cmd_question
+  Output: Can you find out now strings that end by `y` in the same column?
+  CorrectAnswer: str_view(quijote$word, "y$", match = TRUE)
+  AnswerTests: any_of_exprs('quijote$word %>% str_view("y$", match = TRUE)', 'str_view(quijote$word, "y$", match = TRUE)')
+  Hint: Adapt the regex in your previous code.
+  
+- Class: cmd_question
+  Output: As you learnt in the video, there are a number of special characters with non-literal meanings in regular expressions. In order to look for those literal characters, you need to scape them, typing two backslashes before them. Look for all occurrences (you'll need `str_view_all()`) of the dot in the column `senteces` in `verne`.
+  CorrectAnswer: str_view_all(verne$sentences, "\\\\.", match = TRUE)
+  AnswerTests: any_of_exprs('verne$sentences %>% str_view_all("\\\\.", match = TRUE)', 'str_view_all(verne$sentences, "\\\\.", match = TRUE)')
+  Hint: Note that you are exploring a different tibble and a different column. For escaping the dot your regex should read "\\\\."
+
+
+- Class: cmd_question
+  Output: The backslash is also used (you'll still need two in R) for defining some special characters. For instance, "\\b" matches a word boundary. Find every character (use `str_view_all()` again) before a word boundary in the column `senteces` in `verne`.
+  CorrectAnswer: str_view_all(verne$sentences, ".\\\\b", match = TRUE)
+  AnswerTests: any_of_exprs('verne$sentences %>% str_view_all(".\\\\b", match = TRUE)', 'str_view_all(verne$sentences, ".\\\\b", match = TRUE)')
+  Hint: You just need to adapt the regex of your code above. Recall that you need two backslashes!
+
+- Class: cmd_question
+  Output: Regex "\\s" matches any whitespace. Adapt your code above to find every character before a space in the column `senteces` in `verne`. Can you see any relevant difference?
+  CorrectAnswer: str_view_all(verne$sentences, ".\\\\s", match = TRUE)
+  AnswerTests: any_of_exprs('verne$sentences %>% str_view_all(".\\\\s", match = TRUE)', 'str_view_all(verne$sentences, ".\\\\s", match = TRUE)')
+  Hint: You just need to adapt the regex of your code above.
+
+- Class: text
+  Output: While ".\\b" matches characters before punctuation marks as well as whitespaces before a word (because that's also a word boundary!), ".\\s" is much more restricted and only matches characters before a whitespace. Note that the end of the paragraph are not new lines (and thus no whitespaces) – they are the end of the string.
+  
+- Class: text
+  Output: Functions `str_view()` and `str_view_all()` are great tools to check what our regular expressions match to check if we designed them correctly.
+
+- Class: cmd_question
+  Output: Could you visualise any sequence at the beginning of a string (you just need `str_view()` now) that starts with a digit and is followed by any other character the column `senteces` in `verne`? "\\d" is a special character that matches any digit.
+  CorrectAnswer: str_view(verne$sentences, "^\\\\d.", match = TRUE)
+  AnswerTests: any_of_exprs('verne$sentences %>% str_view("^\\\\d.", match = TRUE)', 'str_view(verne$sentences, "^\\\\d.", match = TRUE)')
+  Hint: You just need to adapt the regex of your code above. Remember that you're not using `str_view_all()` now!
+
+- Class: text
+  Output: You were familiar with some special characters already. "\\t" matchs tabs, while "\\r" and "\\n" match carraige return and newlines respectively. We talked about them in the first session, since Linux based systems (such as Mac) code newlines with "\\n", while Windows uses the more complex "\\r\\n".
+  
+- Class: cmd_question
+  Output: Brackets are used to delimit character classes, that are used to match only one out of several characters. Could you visualise the Spanish diphthongs "ie" and "ue" in column `word` in `quijote` defining a character class?
+  CorrectAnswer: str_view(quijote$word, "[iu]e", match = TRUE)
+  AnswerTests: any_of_exprs('quijote$word %>% str_view("[iu]e", match = TRUE)', 'str_view(quijote$word, "[iu]e", match = TRUE)', 'quijote$word %>% str_view("[ui]e", match = TRUE)', 'str_view(quijote$word, "[ui]e", match = TRUE)')
+  Hint: Note that we're using `quijote` again. Your character class should be defined with the common elements of these diphthongs.
+
+- Class: cmd_question
+  Output: Hum, we should exclude matches preceded by "g" or "q", since "qu" and "gu" are digraphs in Spanish and "gie" is basically unattested. In order to exclude characters you need to define a character class with the brackets and type `^` before them (inside the brackets, since otherwise you'd be looking for that character class at the beginning of a string). Adapt the code now.
+  CorrectAnswer: str_view(quijote$word, "[^qg][iu]e", match = TRUE)
+  AnswerTests: any_of_exprs('quijote$word %>% str_view("[^qg][iu]e", match = TRUE)', 'str_view(quijote$word, "[^qg][iu]e", match = TRUE)', 'quijote$word %>% str_view("[^qg][ui]e", match = TRUE)', 'str_view(quijote$word, "[^qg][ui]e", match = TRUE)', 'quijote$word %>% str_view("[^gq][iu]e", match = TRUE)', 'str_view(quijote$word, "[^gq][iu]e", match = TRUE)', 'quijote$word %>% str_view("[^gq][ui]e", match = TRUE)', 'str_view(quijote$word, "[^gq][ui]e", match = TRUE)')
+  Hint: Your negated character class should be include "q" and "g", at the beginning of the regex. Careful, spaces are meaningful within regex!
+
+- Class: text
+  Output: "It's good to know about character classes '[a-z]' and '[A-Z]', which are a shortcut to define all ASCII letters in lower and higher case respectively. If you wanted to define all possible letters in Spanish, for instance, you could use the following character class: '[a-zñáéíóúüA-ZÑÁÉÍÓÚÜ]'"
+
+- Class: text
+  Output: We often want to find elements that appear more or less than once. `?` matches the previous character (or character class) if it appears 0 or 1 times (that is, it defines it as optional). `+` matches the previous character or character class 1 or more times and `*` matches the previous character or character class 0 or more times.
+
+- Class: cmd_question
+  Output: "Find all instances (use `str_view_all()`) of 'l' followed by at least one vowel in the column `sentences` in `verne`. We'll define French vowels as the following character class: '[aeiouàèùéâêîôûëïüÿ]' (copy and paste it)"
+  CorrectAnswer: str_view_all(verne$sentences, "l[aeiouàèùéâêîôûëïüÿ]+", match = TRUE)
+  AnswerTests: any_of_exprs('verne$sentences %>% str_view_all("l[aeiouàèùéâêîôûëïüÿ]+", match = TRUE)', 'str_view_all(verne$sentences, "l[aeiouàèùéâêîôûëïüÿ]+", match = TRUE)')
+  Hint: You should be using `+`.
+
+- Class: cmd_question
+  Output: Can you now find all instances (use `str_view_all()`) of 'r' + optional vowel + t in the column `sentences` in `verne`? Use the same definition of French vowels.
+  CorrectAnswer: str_view_all(verne$sentences, "r[aeiouàèùéâêîôûëïüÿ]?t", match = TRUE)
+  AnswerTests: any_of_exprs('verne$sentences %>% str_view_all("r[aeiouàèùéâêîôûëïüÿ]?t", match = TRUE)', 'str_view_all(verne$sentences, "r[aeiouàèùéâêîôûëïüÿ]?t", match = TRUE)')
+  Hint: Now you're looking for `?`.
+  
+- Class: text
+  Output: You can also specify how many times a character or a character class should appear, by using curly braces after the relevant character or character class. `{n}` means 'exactly n', {n,}` means 'n or more', `{,m}` means 'at most m' and `{n,m}` means 'between n and m'.
+
+- Class: cmd_question
+  Output: Match words in column `word` in `quijote` that have exactly two consecutive "l".
+  CorrectAnswer: str_view(quijote$word, "l{2}", match = TRUE)
+  AnswerTests: any_of_exprs('quijote$word %>% str_view("l{2}", match = TRUE)', 'str_view(quijote$word, "l{2}", match = TRUE)')
+  Hint: No need for `str_view_all()`.
+  
+- Class: cmd_question
+  Output: "Now match words in column `word` in `quijote` that have either two or three consecutive characters in the following class: '[eorst]'."
+  CorrectAnswer: str_view(quijote$word, "[eorst]{2,3}", match = TRUE)
+  AnswerTests: any_of_exprs('quijote$word %>% str_view("[eorst]{2,3}", match = TRUE)', 'str_view(quijote$word, "[eorst]{2,3}", match = TRUE)')
+  Hint: You need two elements in the braces now.
+
+- Class: text
+  Output: You can use the vertical bar to match one single regex out of several possible regex (alternations).
+  
+- Class: cmd_question
+  Output: Let's try to find all French articles (use `str_view_all()`) in column `sentences` in `verne`. French articles are "le", "la", "les", "un", "unes", "des". Write them in this order.
+  CorrectAnswer: str_view_all(verne$sentences, "le|la|les|un|unes|des", match = TRUE)
+  AnswerTests: any_of_exprs('verne$sentences %>% str_view_all("le|la|les|un|unes|des", match = TRUE)', 'str_view_all(verne$sentences, "le|la|les|un|unes|des", match = TRUE)')
+  Hint: "Does your regex look like this: 'le|la|les|un|unes|des'?"
+  
+- Class: cmd_question
+  Output: We didn't specify that we're looking for words! In order to do so, we should use parentheses for our alternation and use '\\b' before and after them. The parentheses are useful to delimit the members of the alternation and solve ambiguities (just like in mathematical operations!).
+  CorrectAnswer: str_view_all(verne$sentences, "\\\\b(le|la|les|un|unes|des)\\\\b", match = TRUE)
+  AnswerTests: any_of_exprs('verne$sentences %>% str_view_all("\\\\b(le|la|les|un|unes|des)\\\\b", match = TRUE)', 'str_view_all(verne$sentences, "\\\\b(le|la|les|un|unes|des)\\\\b", match = TRUE)')
+  Hint: "Does your regex look like this: 'le|la|les|un|unes|des'?"
+
+- Class: text
+  Output: "Parentheses can also be used for something quite cool called 'capturing groups'. The part of the string matched by whatever is found within the parentheses gets stored and you can refer to it again by using a back reference: '\\1' for the first parentheses in your regex, '\\2' for the second, etc. Of course, in R you should use '\\\\1'."
+
+- Class: mult_question
+  Output: What regular expression do you think that will give you a repeated sequence of two characters?
+  AnswerChoices: (..)\\1;(..)(..);....
+  CorrectAnswer: (..)\\1
+  AnswerTests: omnitest(correctVal= '(..)\\\\1')
+  Hint: The dot matches any character, so if you want to encode something like 'the same characters' you'll need a capturing group plus a back reference.
+
+- Class: cmd_question
+  Output: Let's try it out. Find all repeated sequence of two characters in column `sentences` in `verne`. Use `str_view_all()`.
+  CorrectAnswer: str_view_all(verne$sentences, "(..)\\\\1", match = TRUE)
+  AnswerTests: any_of_exprs('verne$sentences %>% str_view_all("(..)\\\\1", match = TRUE)', 'str_view_all(verne$sentences, "(..)\\\\1", match = TRUE)')
+  Hint: Adapt the last code you run with the refex in the last question.
+
+- Class: cmd_question
+  Output: "Let's see if you can design you own capturing group, which, as you can see, is not easy. Find words with the following pattern: 'any single character + any single character + same character as the first one' in column `word` in `quijote`." Don't use `str_view_all()`, simply use `str_view()`.
+  CorrectAnswer: str_view(quijote$word, "(.).\\\\1", match = TRUE)
+  AnswerTests: any_of_exprs('quijote$word %>%  str_view("(.).\\\\1", match = TRUE)', 'str_view(quijote$word, "(.).\\\\1", match = TRUE)')
+  Hint: The capturing group should affect only the first element, while you back reference should be the third element of the regex.
+
+- Class: text
+  Output: You just learnt how to deal with one of the most powerful tools of computational analysis of language. Regular expressions will help you find what you're looking for, saving you a lot of time.
+
+- Class: text
+  Output: They must be used with a bit of caution, though, because language is a complex matter and, depending on what we want, regex might not be enough. That's why having a visualisation tool as str_view() is so good, because it helps you evaluating your regex (also by removing the match argument, in order to see what it didn't match).
+
+- Class: text
+  Output: You earned a break now! In the next session you'll see how to integrate regex in your tidyverse workflow.
+  
+- Class: mult_question
+  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
+  AnswerChoices: Yes;No
+  CorrectAnswer: NULL
+  AnswerTests: submit_log()
+  Hint: As you feel!
+
+
+
+
+
+
