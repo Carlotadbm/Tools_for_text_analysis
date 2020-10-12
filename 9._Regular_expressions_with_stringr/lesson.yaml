@@ -178,7 +178,7 @@
   Hint: Adapt the last code you run with the refex in the last question.
 
 - Class: cmd_question
-  Output: "Let's see if you can design you own capturing group, which, as you can see, is not easy. Find words with the following pattern: 'any single character + any single character + same character as the first one' in column `word` in `quijote`." Don't use `str_view_all()`, simply use `str_view()`.
+  Output: "Let's see if you can design you own capturing group, which, as you can see, is not easy. Find words with the following pattern: 'any single character + any single character + same character as the first one' in column `word` in `quijote`." Don't use `str_view_all()`, simply use `str_view()`."
   CorrectAnswer: str_view(quijote$word, "(.).\\\\1", match = TRUE)
   AnswerTests: any_of_exprs('quijote$word %>%  str_view("(.).\\\\1", match = TRUE)', 'str_view(quijote$word, "(.).\\\\1", match = TRUE)')
   Hint: The capturing group should affect only the first element, while you back reference should be the third element of the regex.
