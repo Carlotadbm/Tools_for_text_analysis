@@ -11,7 +11,7 @@ swirl_options(swirl_logging = TRUE)
   )
 }
 
-verne_text <- read_delim(file.path(.get_course_path(), "Tools_for_text_analysis", "10._Regex_in_tibbles", "verne_text_chapters.csv"), delim = "\t") %>%
+verne <- read_delim(file.path(.get_course_path(), "Tools_for_text_analysis", "10._Regex_in_tibbles", "verne_text_chapters.csv"), delim = "\t") %>%
   unnest_tokens(sentences, text, token = "sentences", to_lower = FALSE)
 quijote <- read_delim(file.path(.get_course_path(), "Tools_for_text_analysis", "10._Regex_in_tibbles", "quijote_freq.csv"), delim = "\t") 
 

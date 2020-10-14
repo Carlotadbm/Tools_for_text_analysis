@@ -67,7 +67,7 @@
   Hint: Adapt your code above by updating the new regex and wrting `!` before `str_detect()`.
 
 - Class: text
-  Output: You would get the same result by using the much more complicated regex "^[^aeiou]+$", but simplicity is a virtue!
+  Output: You would get the same result by using the much more complicated regex "^[^aeiouáéíóúü]+$", but simplicity is a virtue!
 
 - Class: cmd_question
   Output: The function `str_count()` tells you how many matches there are in a string. The vector with the strings is its first argument, while the regex is the second one. Find out how many "a" there are in every word in `quijote`. Use the $ notation to identify the column `word`.
