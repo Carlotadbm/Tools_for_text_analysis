@@ -1,0 +1,158 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 12. Working with several files
+  Author: your name goes here
+  Type: Standard
+  Organization: your organization's name goes here
+  Version: 2.4.5
+
+- Class: text
+  Output: "Hi there, welcome back! In this session I will show you how to work with several files at the same time. That's something that you will need very often if you have a corpus. You don't want to read each file individually! Lucky you, this is the 21st century and we have solutions for everything you're feeling lazy about :)"
+
+- Class: text
+  Output: Besides the tidyverse and some of the language recognition libraries we used before, I have also loaded the library `fs`, which helps us dealing with files. This library combined with the `map()` functions we saw in lesson 11 will make you feel powerful! You should've downloaded two zip folders from OLAT (`WA` and `PS`), unzipped them and put them in your working directory.
+
+- Class: text
+  Output: We'll start with the WA folder, which has two WhatsApp chats. OK, actually, they are two copies of the chat we used in lesson 11, because I have permission to use that one. FYI, I deleted the two first lines in both files for this lesson. What we're going to do is read both files into a tibble, add an identifier for the file as a column and detect the language of every row.
+
+- Class: cmd_question
+  Output: "First we must tell R where the files that we want to read are. For that we need a path. Since the folder is already in our working directory, the path is quite simple: 'WA⁄'. Save it to a character vector called `data_dir`."
+  CorrectAnswer: data_dir <- "WA/"
+  AnswerTests: omnitest(correctExpr='data_dir <- "WA/"')
+  Hint: Simply assign the value "WA/" to the name `data_dir`.
+  
+- Class: cmd_question
+  Output: Second, we'll list all the files found in that folder, using the function `dir_ls()`, whose only argument should be `data_dir`.
+  CorrectAnswer: dir_ls(data_dir)
+  AnswerTests: omnitest(correctExpr='dir_ls(data_dir)')
+  Hint: The function you should use is `dir_ls()` and its only argument, `data_dir`.
+
+- Class: cmd_question
+  Output: As you can see, that got the paths for all the files within the directory `WA`. Let's save this result to a vector called `txt_files`.
+  CorrectAnswer: txt_files <- dir_ls(data_dir)
+  AnswerTests: omnitest(correctExpr='txt_files <- dir_ls(data_dir)')
+  Hint: Assign the name `txt_files` to your previous line of code using the operator `<-`. 
+
+- Class: text
+  Output: "We want to read the content of these two files so that all lines appear in the same tibble, the lines from the second file below the ones from the first one. For that we will use `map_dfr()`, which returns a dataframe (df) created by row-binding (that's the `r` in the name: `map_dfc()` creates one by column-binding)."
+
+- Class: cmd_question
+  Output: The first argument of `map_dfr()` is the vector with the paths (`txt_files`). Use a pipe. As a second argument it takes the function you want to use. Since we want to create a tibble, we'll use `read_delim()` instead of `read_lines()`, as we did in session 11. The arguments of `read_delim()` are also passed as arguments of `map_dfr()`. So add `delim = "\t"` and `col_names = "text"`.
+  CorrectAnswer: txt_files %>% map_dfr(read_delim, delim = "\t", col_names = "text")
+  AnswerTests: omnitest(correctExpr='txt_files %>% map_dfr(read_delim, delim = "\t", col_names = "text")')
+  Hint: You only need to introduce the name `read_delim`, without the parentheses it takes when working as a function. And its arguments are simply added after commas.
+  
+- Class: text
+  Output: "Note that the code beforewe just used assumes that there are no tabs ('\t') in any of the lines of these files, since we specify only one column name. This assumption is true for the files we have, but I'm not sure if it holds for all WhatsApp chats… If there were tabs in the lines, reading them like this would actually create a separation and, thus, a new column, that might get lost. If that were to happen, you would get a warning from R. Adding more columns (by expanding `col_names` with a longer vector) until you read everything in the lines would be one possible solution."
+
+- Class: text
+  Output: You can see that both files were read into the tibble, because it has 112 rows, instead of the 56 rows the single file had in the last lesson. Moreover, our new tibble has a single column called text.
+
+- Class: cmd_question
+  Output: Now we could start separating the text column into other rows. However, I think it'd be wiser to have a column indicating the source of each line, so you know from what file they came from. We'll use the `id` argument for that. This is and argument of `map_dfr()`, not of `read_delim()`, and in order to indicate that, you will need to write a dot before the name (`.id`). This argument equals "source" (with the quotation marks).
+  CorrectAnswer: txt_files %>% map_dfr(read_delim, delim = "\t", col_names = "text", .id = "source")
+  AnswerTests: omnitest(correctExpr='txt_files %>% map_dfr(read_delim, delim = "\t", col_names = "text", .id = "source")')
+  Hint: Just add `.id = "source"` as the last argument of `map_dfr()`.
+
+- Class: cmd_question
+  Output: The new `source` column contains the whole path to each file. We could remove at least the "WA/" part of the string, using `str_replace`. Pass it into a `mutate()` and replace it by nothing (""). Add it with a pipe.
+  CorrectAnswer: txt_files %>% map_dfr(read_delim, delim = "\t", col_names = "text", .id = "source") %>% mutate(source = str_replace(source, "WA/", ""))
+  AnswerTests: omnitest(correctExpr='txt_files %>% map_dfr(read_delim, delim = "\t", col_names = "text", .id = "source") %>% mutate(source = str_replace(source, "WA/", ""))')
+  Hint: Check your notes from the regex lessons if you don't remember how `str_replace()` works. It'll need the name of the column, the regex (a literal one in this case) you want to replace and the string to replace it with. Don't forget the quotation marks where you need them!
+
+- Class: cmd_question
+  Output: As you can see, you now have a tibble with the lines of all files and you can do whatever you want with it. For instance, you could create a column called `lang_1` with the guesses of function `textcat()` applied to `text`. Do that now.
+  CorrectAnswer: txt_files %>% map_dfr(read_delim, delim = "\t", col_names = "text", .id = "source") %>% mutate(source = str_replace(source, "WA/", ""), lang_1 = textcat(text))
+  AnswerTests: any_of_exprs('txt_files %>% map_dfr(read_delim, delim = "\t", col_names = "text", .id = "source") %>% mutate(source = str_replace(source, "WA/", ""), lang_1 = textcat(text))', 'txt_files %>% map_dfr(read_delim, delim = "\t", col_names = "text", .id = "source") %>% mutate(source = str_replace(source, "WA/", "")) %>% mutate(lang_1 = textcat(text))')
+  Hint: Either add a new mutate() or expand the one you already have.
+  
+- Class: text
+  Output: Obviously, it would've been wiser to do that after separating `text` into several columns, but you already know how to do that. Better move to new things, right?
+
+- Class: text
+  Output: "We'll turn now to a more complex but also quite usual problem. Your corpus might be divided in meaningful folders. That's the case in the folder PS that you downloaded, which contains four folders that group the documents (Portuguese letters in this case) by century. I downloaded these folders from the corpus Post Scriptum (http://ps.clul.ul.pt/index.php?action=downloads), so this is a very real life example."
+
+- Class: text
+  Output: We want to read the content of these folders and preserve the name of each folder and each file, in order to create a single tibble with all the lines of text and the metadata that the folders and the files provide us with. Sounds fun, right? Let's do this!
+
+- Class: cmd_question
+  Output: "Again, the first thing is to tell R where the folders that we want to read are. The new path, since the folder is also in our working directory, is simply 'PS⁄'. Save it to a character vector called `infolder`."
+  CorrectAnswer: infolder <- "PS/"
+  AnswerTests: omnitest(correctExpr='infolder <- "PS/"')
+  Hint: Simply assign the value "PS/" to the name `infolder`.
+
+- Class: cmd_question
+  Output: Again, we'll use the function `dir_ls` to read the content of `infolder`. Try it.
+  CorrectAnswer: dir_ls(infolder)
+  AnswerTests: omnitest(correctExpr='dir_ls(infolder)')
+  Hint: The function you should use is `dir_ls()` and its only argument, `infolder`.
+
+- Class: cmd_question
+  Output: "As you can see, because the files that `dir_ls()` read are directories, we see them in blue and in bold. We would like to have this information (the names of the folders) as the first column of our tibble, which should be called `century`. Use the function `tibble()`, which has a syntax similar to `mutate()`: name_of_the_column = value. But note that there's no pipe in here!"
+  CorrectAnswer: tibble(century = dir_ls(infolder))
+  AnswerTests: omnitest(correctExpr='tibble(century = dir_ls(infolder))')
+  Hint: Within `tibble()`, the name of the column is `century` and its value is `dir_ls(infolder)`. They are separated by an equal sign.
+
+- Class: cmd_question
+  Output: "Now let's create a new column called `textID` adding `mutate()` with a pipe. We want to have the name of the files of each folder there, so we'll use `map()`. Its first argument should be the place where the folders are stored (`century`), while the second one is the function you want to apply to each folder, which is, again, `dir_ls()`."
+  CorrectAnswer: tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls))
+  AnswerTests: omnitest(correctExpr='tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls))')
+  Hint: In `mutate()`, `textID` should be equal to `map(century, dir_ls))`.
+  
+- Class: text
+  Output: "I hope this was clear, because we've used some `map()` functions before: we applied the function `dir_ls()` to all elements in `century`. That is, we got the names of all the files in each folder. As you can see, though, the result is a list: we still have four rows and we can't really see the values in column `textID`. I told you lists are inconvenient…"
+
+- Class: cmd_question
+  Output: "But we can deal with inconvenience already! There is a great function that will allow us to transform the elements of lists stored in a column into rows of a tibble: `unnest()`. Its first argument is the tibble, but because you will add it with a pipe, you only need its second argument, which is the column where the lists are stored: `textID`."
+  CorrectAnswer: tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID)
+  AnswerTests: omnitest(correctExpr='tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID)')
+  Hint: Simply add `unnest()`, with the single argument `textID`.
+
+- Class: cmd_question
+  Output: "That's exactly what we're looking for! Now we want another column, but with the lines those text files. Hopefully you can see where this is going: we need a new `mutate()` with `map()`. The new column will be called `text` and you should use `map()` to apply `read_lines()` to column `textID`."
+  CorrectAnswer: tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines))
+  AnswerTests: omnitest(correctExpr='tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines))')
+  Hint: Check the code above to understand how to use `map()` if you're still a bit confused. Remember that the functions that are used as arguments of `map()` do not require the parentheses (it should be `read_lines`, not `read_lines()`).
+
+- Class: text
+  Output: So again we've used `map()` to apply one function (`read_lines()`) to all the files stored in `textID`.
+
+- Class: cmd_question
+  Output: "And, again, we got a column full of lists as a result. But you know what to do with this already: use `unnest()`."
+  CorrectAnswer: tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines)) %>% unnest(text)
+  AnswerTests: omnitest(correctExpr='tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines)) %>% unnest(text)')
+  Hint: With a pipe you should now add `unnest()`, that takes the argument `text`, which is the column with the lists.
+
+- Class: text
+  Output: This is looking very good now! Let's clean columns `century` and `textID` a little bit. For instance, in `century` we only want to leave the information regarding the century (1500, 1600, 1700, 1800).
+
+- Class: cmd_question
+  Output: That is, we don't need the string "PS/PT" that appears before the numbers and neither we need the string "_ORIG_TXT" that appears after. You can create a regex that matches both strings and remove them using `str_replace_all()`. Try it now (obviously, you need `mutate()`).
+  CorrectAnswer: tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines)) %>% unnest(text) %>% mutate(century = str_replace_all(century, "(PS/PT|_ORIG_TXT)", ""))
+  AnswerTests: any_of_exprs('tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines)) %>% unnest(text) %>% mutate(century = str_replace_all(century, "(PS/PT|_ORIG_TXT)", ""))', 'tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines)) %>% unnest(text) %>% mutate(century = str_replace_all(century, "PS/PT|_ORIG_TXT", ""))')
+  Hint: I think the most logical regex is "(PS/PT|_ORIG_TXT)" (the parentheses are not really needed, but they make me feel safer). If you used something very different I probably didn't plan for that in the answers, although it might be correct, sorry. As before, you should replace them by nothing ("").
+
+- Class: cmd_question
+  Output: "The 'PT' sequence that we just removed was actually meaningful too: it means 'Portuguese'. The corpus also has documents in Spanish, so it makes sense that we keep that information. Add a new line to the last `mutate()` (not a new `mutate()`, for the sake of keeping low the number of answers I have to anticipate…) creating a column called `language` that should have the value 'pt' in every row."
+  CorrectAnswer: tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines)) %>% unnest(text) %>% mutate(century = str_replace_all(century, "(PS/PT|_ORIG_TXT)", ""), language = "pt")
+  AnswerTests: any_of_exprs('tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines)) %>% unnest(text) %>% mutate(century = str_replace_all(century, "(PS/PT|_ORIG_TXT)", ""), language = "pt")', 'tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines)) %>% unnest(text) %>% mutate(century = str_replace_all(century, "PS/PT|_ORIG_TXT", ""), language = "pt")')
+  Hint: The new line in `mutate()` should read `language = "PT"` and be separated from the previous one by a comma.
+
+- Class: cmd_question
+  Output: We're almost there, now we want to clean `textID` too. We'll use `str_replace_all()`, as a new line in the same `mutate()`. Every line starts by something like 'PS/PT1500_ORIG_TXT/', so we can use the regex 'PS/PT1[5678]00_ORIG_TXT/' to include all possible centuries. And every line ends by ".txt". Remove all these characters that we don't need with a regex similar to the one you used above.
+  CorrectAnswer: tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines)) %>% unnest(text) %>% mutate(century = str_replace_all(century, "(PS/PT|_ORIG_TXT)", ""), language = "pt", textID = str_replace_all(textID, "(PS/PT1[5678]00_ORIG_TXT/|.txt)", ""))
+  AnswerTests: any_of_exprs('tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines)) %>% unnest(text) %>% mutate(century = str_replace_all(century, "(PS/PT|_ORIG_TXT)", ""), language = "pt", textID = str_replace_all(textID, "(PS/PT1[5678]00_ORIG_TXT/|.txt)", ""))', 'tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines)) %>% unnest(text) %>% mutate(century = str_replace_all(century, "PS/PT|_ORIG_TXT", ""), language = "pt", textID = str_replace_all(textID, "(PS/PT1[5678]00_ORIG_TXT/|.txt)", ""))', 'tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines)) %>% unnest(text) %>% mutate(century = str_replace_all(century, "(PS/PT|_ORIG_TXT)", ""), language = "pt", textID = str_replace_all(textID, "PS/PT1[5678]00_ORIG_TXT/|.txt", ""))', 'tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines)) %>% unnest(text) %>% mutate(century = str_replace_all(century, "PS/PT|_ORIG_TXT", ""), language = "pt", textID = str_replace_all(textID, "PS/PT1[5678]00_ORIG_TXT/|.txt", ""))')
+  Hint: The regex I used was "(PS/PT1[5678]00_ORIG_TXT/|.txt)" (again, parentheses are optional), so if you used something else, although it might have worked, swirl won't recognise it, sorry!
+
+- Class: text
+  Output: The end result was that we read our whole corpus automatically (we didn't have to add every file manually) and we used the informations in the folder names (for the centuries and language) and in the file names (as ids of every text). Now we have a tidy tibble we can use to extract linguistic information from our corpus.
+
+- Class: text
+  Output: "And we will do so, but not now. You earned your break! This week there isn't any homework, so that you have time to let everything we have been doing sink in or maybe finish some old homework you didn't get the chance to finish. Or just relax if you're completely up to date. Again: very well done. This will pay off, I'm positive!"
+  
+- Class: mult_question
+  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
+  AnswerChoices: Yes;No
+  CorrectAnswer: NULL
+  AnswerTests: submit_log()
+  Hint: As you feel!

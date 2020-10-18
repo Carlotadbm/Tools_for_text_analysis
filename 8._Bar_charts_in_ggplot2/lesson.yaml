@@ -84,9 +84,9 @@
   Hint: You need quotations for your title now, just like you have them in the `labs()` function.
 
 - Class: cmd_question
-  Output: "If you wanted to change the palette of colours used for filling the bars, there's a similar function: `scale_fill_gradient()`. You can create your own palette, by choosing its two extreme values. Set argument `low` to 'gold' and argument `high` to 'dodgerblue'."
-  CorrectAnswer: verne_words_freq %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count") + scale_fill_gradient(low = "gold", high = "dodgerblue")
-  AnswerTests: omnitest(correctExpr='verne_words_freq %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_continuous(name="Word count") + scale_fill_gradient(low = "gold", high = "dodgerblue")')
+  Output: "If you wanted to change the palette of colours used for filling the bars, there's a similar function: `scale_fill_gradient()`. You can create your own palette, by choosing its two extreme values. Replace `scale_fill_continuous()` by `scale_fill_gradient()`, keeping the name argument and add arguments `low` (set it to 'gold') and `high` (set it to 'dodgerblue')."
+  CorrectAnswer: verne_words_freq %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_gradient(name="Word count", low = "gold", high = "dodgerblue")
+  AnswerTests: omnitest(correctExpr='verne_words_freq %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col() + labs(title = "Most frequent words in Verne (80 Jours)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_fill_gradient(name="Word count", low = "gold", high = "dodgerblue")')
   Hint: Did you remember that colour names are values and thus require quotations?
 
 - Class: text

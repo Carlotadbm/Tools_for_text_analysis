@@ -1,0 +1,6 @@
+tidyverse
+cld2
+cld3
+textcat
+franc
+base64enc
