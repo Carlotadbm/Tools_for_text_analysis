@@ -114,13 +114,15 @@
 
 - Class: cmd_question
   Output: "Store the definite feminine noun phrases in `sentences` in `verne` in a new column called `fem_noun`. We'll operationalise definite feminine noun phrases as those where the feminine article 'la' precedes a word using the following regex: '\\\\bla\\\\b\\\\s\\\\w+\\\\b', which matches 'la' as a single word ('\\\\bla\\\\bb') followed by a space ('\\\\s') and any alphanumeric character ('\\\\w') repeated an indefinite number of times ('+') until it finds a word limit ('\\\\b')."
-  CorrectAnswer: verne %>% mutate(fem_noun = str_extract(sentences, "\\\\bla\\\\b\\\\s\\\\w+\\\\b"))
+  CorrectAnswer: >
+    verne %>% mutate(fem_noun = str_extract(sentences, "\\bla\\b\\s\\w+\\b"))
   AnswerTests: omnitest(correctExpr='verne %>% mutate(fem_noun = str_extract(sentences, "\\\\bla\\\\b\\\\s\\\\w+\\\\b"))')
   Hint: This is a mutate very similar to the ones you used above, but with a new tibble (`verne`) applied to a new column (`sentences`). The function used to create the new column is `str_extract` and the regex is the one I gave you above!
 
 - Class: cmd_question
   Output: The function `str_extract()` returns the first match, while `str_extract_all()` returns every result in a string. Adding the argument `simplify` and setting it to `TRUE`, it will store them in new columns. Try it now.
-  CorrectAnswer: verne %>% mutate(fem_noun = str_extract_all(sentences, "\\\\bla\\\\b\\\\s\\\\w+\\\\b", simplify = TRUE))
+  CorrectAnswer: >
+    verne %>% mutate(fem_noun = str_extract_all(sentences, "\\bla\\b\\s\\w+\\b", simplify = TRUE))
   AnswerTests: omnitest(correctExpr='verne %>% mutate(fem_noun = str_extract_all(sentences, "\\\\bla\\\\b\\\\s\\\\w+\\\\b", simplify = TRUE))')
   Hint: Simply adapt your code above by using `str_extract_all()` and adding `simplify = TRUE`.
 
@@ -159,7 +161,8 @@
 
 - Class: cmd_question
   Output: Let's complicate it a bit more using back references. Create a new columnd `inverted_word` in `quijote` where every sequence of consonant + vowel (defined as "([bcdfghjklmñpqrstvwxzy])([aeiouáéíóúü])") is replaced by the same consonant and vowel, but in the inverted order vowel + consonant. This is not a multiple replacement, its a single one! But you'll need back references.
-  CorrectAnswer: quijote %>% mutate(inverted_word = str_replace_all(word, "([bcdfghjklmñpqrstvwxzy])([aeiouáéíóúü])", "\\\\2\\\\1"))
+  CorrectAnswer: >
+    quijote %>% mutate(inverted_word = str_replace_all(word, "([bcdfghjklmñpqrstvwxzy])([aeiouáéíóúü])", "\\2\\1"))
   AnswerTests: omnitest(correctExpr='quijote %>% mutate(inverted_word = str_replace_all(word, "([bcdfghjklmñpqrstvwxzy])([aeiouáéíóúü])", "\\\\2\\\\1"))')
   Hint: The third argument of `str_replace_all()` needs back references that invert the order of the expressions in parentheses in your regex, that is, it shoudl be "\\2\\1".
 
