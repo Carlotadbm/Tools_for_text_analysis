@@ -69,20 +69,23 @@
   
 - Class: cmd_question
   Output: As you learnt in the video, there are a number of special characters with non-literal meanings in regular expressions. In order to look for those literal characters, you need to scape them, typing two backslashes before them. Look for all occurrences (you'll need `str_view_all()`) of the dot in the column `senteces` in `verne`.
-  CorrectAnswer: str_view_all(verne$sentences, "\\\\.", match = TRUE)
+  CorrectAnswer: >
+    str_view_all(verne$sentences, "\\.", match = TRUE)
   AnswerTests: any_of_exprs('verne$sentences %>% str_view_all("\\\\.", match = TRUE)', 'str_view_all(verne$sentences, "\\\\.", match = TRUE)')
   Hint: Note that you are exploring a different tibble and a different column. For escaping the dot your regex should read "\\\\."
 
 
 - Class: cmd_question
   Output: The backslash is also used (you'll still need two in R) for defining some special characters. For instance, "\\b" matches a word boundary. Find every character (use `str_view_all()` again) before a word boundary in the column `senteces` in `verne`.
-  CorrectAnswer: str_view_all(verne$sentences, ".\\\\b", match = TRUE)
+  CorrectAnswer: >
+    str_view_all(verne$sentences, ".\\b", match = TRUE)
   AnswerTests: any_of_exprs('verne$sentences %>% str_view_all(".\\\\b", match = TRUE)', 'str_view_all(verne$sentences, ".\\\\b", match = TRUE)')
   Hint: You just need to adapt the regex of your code above. Recall that you need two backslashes!
 
 - Class: cmd_question
   Output: Regex "\\s" matches any whitespace. Adapt your code above to find every character before a space in the column `senteces` in `verne`. Can you see any relevant difference?
-  CorrectAnswer: str_view_all(verne$sentences, ".\\\\s", match = TRUE)
+  CorrectAnswer: >
+    str_view_all(verne$sentences, ".\\s", match = TRUE)
   AnswerTests: any_of_exprs('verne$sentences %>% str_view_all(".\\\\s", match = TRUE)', 'str_view_all(verne$sentences, ".\\\\s", match = TRUE)')
   Hint: You just need to adapt the regex of your code above.
 
@@ -94,7 +97,8 @@
 
 - Class: cmd_question
   Output: Could you visualise any sequence at the beginning of a string (you just need `str_view()` now) that starts with a digit and is followed by any other character the column `senteces` in `verne`? "\\d" is a special character that matches any digit.
-  CorrectAnswer: str_view(verne$sentences, "^\\\\d.", match = TRUE)
+  CorrectAnswer: >
+    str_view(verne$sentences, "^\\d.", match = TRUE)
   AnswerTests: any_of_exprs('verne$sentences %>% str_view("^\\\\d.", match = TRUE)', 'str_view(verne$sentences, "^\\\\d.", match = TRUE)')
   Hint: You just need to adapt the regex of your code above. Remember that you're not using `str_view_all()` now!
 
@@ -157,7 +161,8 @@
   
 - Class: cmd_question
   Output: We didn't specify that we're looking for words! In order to do so, we should use parentheses for our alternation and use '\\b' before and after them. The parentheses are useful to delimit the members of the alternation and solve ambiguities (just like in mathematical operations!).
-  CorrectAnswer: str_view_all(verne$sentences, "\\\\b(le|la|les|un|unes|des)\\\\b", match = TRUE)
+  CorrectAnswer: >
+    str_view_all(verne$sentences, "\\b(le|la|les|un|unes|des)\\b", match = TRUE)
   AnswerTests: any_of_exprs('verne$sentences %>% str_view_all("\\\\b(le|la|les|un|unes|des)\\\\b", match = TRUE)', 'str_view_all(verne$sentences, "\\\\b(le|la|les|un|unes|des)\\\\b", match = TRUE)')
   Hint: "Does your regex look like this: 'le|la|les|un|unes|des'?"
 
@@ -173,13 +178,15 @@
 
 - Class: cmd_question
   Output: Let's try it out. Find all repeated sequence of two characters in column `sentences` in `verne`. Use `str_view_all()`.
-  CorrectAnswer: str_view_all(verne$sentences, "(..)\\\\1", match = TRUE)
+  CorrectAnswer: >
+    str_view_all(verne$sentences, "(..)\\1", match = TRUE)
   AnswerTests: any_of_exprs('verne$sentences %>% str_view_all("(..)\\\\1", match = TRUE)', 'str_view_all(verne$sentences, "(..)\\\\1", match = TRUE)')
   Hint: Adapt the last code you run with the refex in the last question.
 
 - Class: cmd_question
   Output: "Let's see if you can design you own capturing group, which, as you can see, is not easy. Find words with the following pattern: 'any single character + any single character + same character as the first one' in column `word` in `quijote`. Don't use `str_view_all()`, simply use `str_view()`."
-  CorrectAnswer: str_view(quijote$word, "(.).\\\\1", match = TRUE)
+  CorrectAnswer: >
+    str_view(quijote$word, "(.).\\1", match = TRUE)
   AnswerTests: any_of_exprs('quijote$word %>%  str_view("(.).\\\\1", match = TRUE)', 'str_view(quijote$word, "(.).\\\\1", match = TRUE)')
   Hint: The capturing group should affect only the first element, while you back reference should be the third element of the regex.
 
