@@ -1,0 +1,216 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 13. Cleaning data and visualization III
+  Author: your name goes here
+  Type: Standard
+  Organization: your organization's name goes here
+  Version: 2.4.5
+
+- Class: text
+  Output: Hi there! In this session we will be working further with the WhatsApp dataset we used last week. Coding is mostly about solving problems and we left some unresolved details last time.
+
+- Class: text
+  Output: "But remember: problems can be solved in many different ways. I'll now be guiding you through one of many possibilities, which will hopefully help you enlarge you coding toolbox. But I suggest that you try to think how would you addres each of these issues before you follow my instructions."
+
+- Class: text
+  Output: "And if your way was different… maybe try it later? And maybe share it in the forum, so that we can all learn from it? :)"
+  
+- Class: cmd_question
+  Output: First look at the dataset, called wa_df. As you can see, I performed some language recognition (using libraries `textcat`, `cld2` and `cld3`) and added one column with the correct languages, which I annotated manually.
+  CorrectAnswer: wa_df
+  AnswerTests: omnitest(correctExpr='wa_df')
+  Hint: Simply print the name of the dataset.
+
+- Class: text
+  Output: "First thing: let's replace user names with anonymous codes. (Of course, they are alredy anonymised in this tibble, so this is just a theoretical example.)"
+  
+- Class: cmd_question
+  Output: First step is finding out which are the unique user names in our dataset. We'll do that with `distinct()`, which takes the tibble as its first argument and the relevant column (`user`) as its second one. Use a pipe.
+  CorrectAnswer: wa_df %>% distinct(user)
+  AnswerTests: omnitest(correctExpr='wa_df %>% distinct(user)')
+  Hint: Remember that the first argument appears before the pipe.
+  
+- Class: text
+  Output: As you can see, there are 9 distinct users in our dataset. That means that we need 9 different codes to replace them.
+
+- Class: cmd_question
+  Output: "And we want them in a new column of our tibble, so that they are already associated with the names we have. We'll use the function `sample()` to create random numbers, which needs a vector as its first argument. We want our codes to have 7 figures (just because), so let's make it '1000000:9999999'. As second argument it needs the number of results you want, which is 9. Store these values in a new column called `ID_user`. Add it to your pipe with mutate()."
+  CorrectAnswer: wa_df %>% distinct(user) %>% mutate(ID_user = sample(1000000:9999999, 9))
+  AnswerTests: any_of_exprs('wa_df %>% distinct(user) %>% mutate(ID_user = sample(1000000:9999999, 9))', 'wa_df %>% distinct(user) %>% mutate(ID_user = sample(c(1000000:9999999), 9))')
+  Hint: The column `ID_user` should be equal to `sample(1000000:9999999, 9)`.
+  
+- Class: cmd_question
+  Output: We want our codes to be alphanumeric (again, just because). They'll start by "A" and end by "Z". We can use `str_c()`, which is used to combine multiple strings into a single one. Modify `ID_user` accordingly.
+  CorrectAnswer: wa_df %>% distinct(user) %>% mutate(ID_user = sample(1000000:9999999, 9), ID_user = str_c("A", ID_user, "Z"))
+  AnswerTests: any_of_exprs('wa_df %>% distinct(user) %>% mutate(ID_user = sample(1000000:9999999, 9), ID_user = str_c("A", ID_user, "Z"))', 'wa_df %>% distinct(user) %>% mutate(ID_user = sample(1000000:9999999, 9)) %>% mutate(ID_user = str_c("A", ID_user, "Z"))', 'wa_df %>% distinct(user) %>% mutate(ID_user = sample(c(1000000:9999999), 9), ID_user = str_c("A", ID_user, "Z"))', 'wa_df %>% distinct(user) %>% mutate(ID_user = sample(c(1000000:9999999), 9)) %>% mutate(ID_user = str_c("A", ID_user, "Z"))')
+  Hint: "The function `str_c()` should have three arguments: 'A', the content of ID_user and 'Z'."
+ 
+- Class: cmd_question
+  Output: "If you're anonymising a dataset, you might want to keep the equivalences between the original name and the anonymous code, in case you need that information later. Write it as a file called 'wa_users.csv' (use tabs as delimiters.)."
+  CorrectAnswer: wa_df %>% distinct(user) %>% mutate(ID_user = sample(1000000:9999999, 9), ID_user = str_c("A", ID_user, "Z")) %>% write_delim("wa_users.csv", delim = "\t")
+  AnswerTests: any_of_exprs('wa_df %>% distinct(user) %>% mutate(ID_user = sample(1000000:9999999, 9), ID_user = str_c("A", ID_user, "Z")) %>% write_delim("wa_users.csv", delim = "\t")', 'wa_df %>% distinct(user) %>% mutate(ID_user = sample(1000000:9999999, 9)) %>% mutate(ID_user = str_c("A", ID_user, "Z")) %>% write_delim("wa_users.csv", delim = "\t")', 'wa_df %>% distinct(user) %>% mutate(ID_user = sample(c(1000000:9999999), 9), ID_user = str_c("A", ID_user, "Z")) %>% write_delim("wa_users.csv", delim = "\t")', 'wa_df %>% distinct(user) %>% mutate(ID_user = sample(c(1000000:9999999), 9)) %>% mutate(ID_user = str_c("A", ID_user, "Z")) %>% write_delim("wa_users.csv", delim = "\t")')
+  Hint: "You can add `write_delim()` to your pipe: it'll require the file name and the `delim` argument."
+
+- Class: text
+  Output: Now that we made sure we won't lose that information, we need to replace the user information in wa_df with the new codes. We'll do that in two steps.
+
+- Class: cmd_question
+  Output: "We'll first use `full_join`, which combines two tables by a common column (`user` in this case). (You knew already about `anti_join()`, `full_join` is basically the opposite.) You can add it to your pipe (but remove first the `write_delim()` part). Its arguments are the tibbles you want to join: the one you have been creating and the original one, `wa_df`."
+  CorrectAnswer: wa_df %>% distinct(user) %>% mutate(ID_user = sample(1000000:9999999, 9), ID_user = str_c("A", ID_user, "Z")) %>% full_join(wa_df)
+  AnswerTests: any_of_exprs('wa_df %>% distinct(user) %>% mutate(ID_user = sample(1000000:9999999, 9), ID_user = str_c("A", ID_user, "Z")) %>% full_join(wa_df)', 'wa_df %>% distinct(user) %>% mutate(ID_user = sample(1000000:9999999, 9)) %>% mutate(ID_user = str_c("A", ID_user, "Z")) %>% full_join(wa_df)', 'wa_df %>% distinct(user) %>% mutate(ID_user = sample(c(1000000:9999999), 9), ID_user = str_c("A", ID_user, "Z")) %>% full_join(wa_df)', 'wa_df %>% distinct(user) %>% mutate(ID_user = sample(c(1000000:9999999), 9)) %>% mutate(ID_user = str_c("A", ID_user, "Z")) %>% full_join(wa_df)')
+  Hint: Simply add the function to the pipe and write `wa_df` as its argument.
+ 
+- Class: cmd_question
+  Output: Now we'll remove the column `user`. We have `select()` for that. Remember that you need `-` to indicate that you want to remove the column instead of keeping it.
+  CorrectAnswer: wa_df %>% distinct(user) %>% mutate(ID_user = sample(1000000:9999999, 9), ID_user = str_c("A", ID_user, "Z")) %>% full_join(wa_df) %>% select(-user)
+  AnswerTests: any_of_exprs('wa_df %>% distinct(user) %>% mutate(ID_user = sample(1000000:9999999, 9), ID_user = str_c("A", ID_user, "Z")) %>% full_join(wa_df) %>% select(-user)', 'wa_df %>% distinct(user) %>% mutate(ID_user = sample(1000000:9999999, 9)) %>% mutate(ID_user = str_c("A", ID_user, "Z")) %>% full_join(wa_df) %>% select(-user)', 'wa_df %>% distinct(user) %>% mutate(ID_user = sample(c(1000000:9999999), 9), ID_user = str_c("A", ID_user, "Z")) %>% full_join(wa_df) %>% select(-user)', 'wa_df %>% distinct(user) %>% mutate(ID_user = sample(c(1000000:9999999), 9)) %>% mutate(ID_user = str_c("A", ID_user, "Z")) %>% full_join(wa_df) %>% select(-user)')
+  Hint: Don't forget to use `-`.
+
+- Class: text
+  Output: Our second unsolved issue is comparing the results of our three language detection algorithms, since it seems reasonable to trust the results they all agree upon. You might remember that the problem there was that the results were given in different formats.
+
+- Class: cmd_question
+  Output: Our first step will be checking the unique values of each column. Start by lang_1.
+  CorrectAnswer: wa_df %>% distinct(lang_1)
+  AnswerTests: omnitest(correctExpr='wa_df %>% distinct(lang_1)')
+  Hint: Use `distinct()` as before.
+
+- Class: cmd_question
+  Output: Now lang_2.
+  CorrectAnswer: wa_df %>% distinct(lang_2)
+  AnswerTests: omnitest(correctExpr='wa_df %>% distinct(lang_2)')
+  Hint: Simply adapt the name of the column now.
+
+- Class: cmd_question
+  Output: Now lang_3.
+  CorrectAnswer: wa_df %>% distinct(lang_3)
+  AnswerTests: omnitest(correctExpr='wa_df %>% distinct(lang_3)')
+  Hint: Simply adapt the name of the column now.
+
+- Class: text
+  Output: We'll transform values in lang_2 and lang_3 into the full English names used in lang_1. As you noticed, there are fewer values in lang_2, which means that we don't need to replace values in lang_3 that are not in lang_2, since they won't be equivalent anyway. (I told you I am lazy when it comes to typing.)
+
+- Class: cmd_question
+  Output: >
+    Modify lang_2 using `str_replace_all()`. You might remember that you can replace several values at the same time by using a vector of equivalences as its second argument (the first one is the name of the column). This is the vector you should use: c("de" = "german", "es" = "spanish", "en" = "english", "ro" = "romanian", "pt" = "portuguese", "fr" = "french", "no" = "norsk", "it" = "italian"). Use a pipe!
+  CorrectAnswer: wa_df %>% mutate(lang_2 = str_replace_all(lang_2, c("de" = "german", "es" = "spanish", "en" = "english", "ro" = "romanian", "pt" = "portuguese", "fr" = "french", "no" = "norsk", "it" = "italian")))
+  AnswerTests: omnitest(correctExpr='wa_df %>% mutate(lang_2 = str_replace_all(lang_2, c("de" = "german", "es" = "spanish", "en" = "english", "ro" = "romanian", "pt" = "portuguese", "fr" = "french", "no" = "norsk", "it" = "italian")))')
+  Hint: Did you remember to use `mutate()`?
+
+- Class: cmd_question
+  Output: Now simply do the same with lang_3.
+  CorrectAnswer: wa_df %>% mutate(lang_2 = str_replace_all(lang_2, c("de" = "german", "es" = "spanish", "en" = "english", "ro" = "romanian", "pt" = "portuguese", "fr" = "french", "no" = "norsk", "it" = "italian"))) %>% mutate(lang_3 = str_replace_all(lang_3, c("de" = "german", "es" = "spanish", "en" = "english", "ro" = "romanian", "pt" = "portuguese", "fr" = "french", "no" = "norsk", "it" = "italian")))
+  AnswerTests: any_of_exprs('wa_df %>% mutate(lang_2 = str_replace_all(lang_2, c("de" = "german", "es" = "spanish", "en" = "english", "ro" = "romanian", "pt" = "portuguese", "fr" = "french", "no" = "norsk", "it" = "italian"))) %>% mutate(lang_3 = str_replace_all(lang_3, c("de" = "german", "es" = "spanish", "en" = "english", "ro" = "romanian", "pt" = "portuguese", "fr" = "french", "no" = "norsk", "it" = "italian")))', 'wa_df %>% mutate(lang_2 = str_replace_all(lang_2, c("de" = "german", "es" = "spanish", "en" = "english", "ro" = "romanian", "pt" = "portuguese", "fr" = "french", "no" = "norsk", "it" = "italian")), lang_3 = str_replace_all(lang_3, c("de" = "german", "es" = "spanish", "en" = "english", "ro" = "romanian", "pt" = "portuguese", "fr" = "french", "no" = "norsk", "it" = "italian")))')
+  Hint: Simply add a new `mutate()` identical to the one you used before, but updating the name of the columns.
+  
+- Class: text
+  Output: "Small digression: at the beginning of this session we replaced user names with new values using full_join. That was only possible because we already had a tibble. If you'd like to anonymise the name in the .txt file directly, you should use a code similar to the one we just used, with `str_replace_all()` and pairs of values. But that requires much more typing, so transforming it into a tibble when possible pays off :)"
+
+- Class: cmd_question
+  Output: Now that our columns are minimally comparable, we can find out which values are the same across all three columns. We'll create a new column called `full_coincidence` with logical values. In order to check for full coincidence we need to make sure that lang_1 has the same values as lang_2 (using `==`) and that lang_1 has the same values as lang_3. These are two logical expressions that need to be 1) delimited by parentheses and 2) coordinated with the operator `&`. Create the new column adding a new `mutate()`.
+  CorrectAnswer: wa_df %>% mutate(lang_2 = str_replace_all(lang_2, c("de" = "german", "es" = "spanish", "en" = "english", "ro" = "romanian", "pt" = "portuguese", "fr" = "french", "no" = "norsk", "it" = "italian"))) %>% mutate(lang_3 = str_replace_all(lang_3, c("de" = "german", "es" = "spanish", "en" = "english", "ro" = "romanian", "pt" = "portuguese", "fr" = "french", "no" = "norsk", "it" = "italian"))) %>% mutate(full_coincidence = (lang_1 == lang_2) & (lang_1 == lang_3)) 
+  AnswerTests: any_of_exprs('wa_df %>% mutate(lang_2 = str_replace_all(lang_2, c("de" = "german", "es" = "spanish", "en" = "english", "ro" = "romanian", "pt" = "portuguese", "fr" = "french", "no" = "norsk", "it" = "italian"))) %>% mutate(lang_3 = str_replace_all(lang_3, c("de" = "german", "es" = "spanish", "en" = "english", "ro" = "romanian", "pt" = "portuguese", "fr" = "french", "no" = "norsk", "it" = "italian"))) %>% mutate(full_coincidence = (lang_1 == lang_2) & (lang_1 == lang_3))', 'wa_df %>% mutate(lang_2 = str_replace_all(lang_2, c("de" = "german", "es" = "spanish", "en" = "english", "ro" = "romanian", "pt" = "portuguese", "fr" = "french", "no" = "norsk", "it" = "italian")), lang_3 = str_replace_all(lang_3, c("de" = "german", "es" = "spanish", "en" = "english", "ro" = "romanian", "pt" = "portuguese", "fr" = "french", "no" = "norsk", "it" = "italian"))) %>% mutate(full_coincidence = (lang_1 == lang_2) & (lang_1 == lang_3))')
+  Hint: The logical expression you're looking for is `(lang_1 == lang_2) & (lang_1 == lang_3)`.
+
+- Class: cmd_question
+  Output: This code is getting too long for 'swirl purposes', so let's save it to wa_df_new.
+  CorrectAnswer: wa_df_new <- wa_df %>% mutate(lang_2 = str_replace_all(lang_2, c("de" = "german", "es" = "spanish", "en" = "english", "ro" = "romanian", "pt" = "portuguese", "fr" = "french", "no" = "norsk", "it" = "italian"))) %>% mutate(lang_3 = str_replace_all(lang_3, c("de" = "german", "es" = "spanish", "en" = "english", "ro" = "romanian", "pt" = "portuguese", "fr" = "french", "no" = "norsk", "it" = "italian"))) %>% mutate(full_coincidence = (lang_1 == lang_2) & (lang_1 == lang_3)) 
+  AnswerTests: any_of_exprs('wa_df_new <- wa_df %>% mutate(lang_2 = str_replace_all(lang_2, c("de" = "german", "es" = "spanish", "en" = "english", "ro" = "romanian", "pt" = "portuguese", "fr" = "french", "no" = "norsk", "it" = "italian"))) %>% mutate(lang_3 = str_replace_all(lang_3, c("de" = "german", "es" = "spanish", "en" = "english", "ro" = "romanian", "pt" = "portuguese", "fr" = "french", "no" = "norsk", "it" = "italian"))) %>% mutate(full_coincidence = (lang_1 == lang_2) & (lang_1 == lang_3))', 'wa_df_new <- wa_df %>% mutate(lang_2 = str_replace_all(lang_2, c("de" = "german", "es" = "spanish", "en" = "english", "ro" = "romanian", "pt" = "portuguese", "fr" = "french", "no" = "norsk", "it" = "italian")), lang_3 = str_replace_all(lang_3, c("de" = "german", "es" = "spanish", "en" = "english", "ro" = "romanian", "pt" = "portuguese", "fr" = "french", "no" = "norsk", "it" = "italian"))) %>% mutate(full_coincidence = (lang_1 == lang_2) & (lang_1 == lang_3))')
+  Hint:  Save it using the `<-` operator.
+
+- Class: cmd_question
+  Output: "Let's see how many full coincidences we got. We can use `count()` for that. Remember: first argument is the tibble, second argument is the column."
+  CorrectAnswer: wa_df_new %>% count(full_coincidence)
+  AnswerTests: any_of_exprs('wa_df_new %>% count(full_coincidence)', 'count(wa_df_new, full_coincidence)')
+  Hint: Use `wa_df_new`.
+  
+- Class: text
+  Output: "So about half of the results were full coincidences. That's not great. Third unresolved issue: you might remember that these algorithms work worse with short messages, as the ones we had. It'd be nice to know if that had an effect in our dataset, so we'll visualise the relationship between number of characters of each message and whether it got a full coincidence in language recognition."
+
+- Class: cmd_question
+  Output: First we'll need a new column (call it `n_chr`) with the number of characters in each `text` cell. The function str_length() will get you exactly that. Use the tibble `wa_df_new` and a pipe.
+  CorrectAnswer: wa_df_new %>% mutate(n_chr = str_length(text))
+  AnswerTests: omnitest(correctExpr='wa_df_new %>% mutate(n_chr = str_length(text))')
+  Hint: Did you remember to use mutate() to create the new column? And that you don't need `count()` anymore?
+ 
+- Class: cmd_question
+  Output: "Our plot will have the categories in `full_coincidence` in the x-axis and the number of characters in the y-axis. We need the function `ggplot()` for that: you can add it with a pipe. Remember that in order to specify the values of the axes you need to use the function `aes()` inside `ggplot()`."
+  CorrectAnswer: wa_df_new %>% mutate(n_chr = str_length(text)) %>% ggplot(aes(x = full_coincidence, y = n_chr))
+  AnswerTests: omnitest(correctExpr='wa_df_new %>% mutate(n_chr = str_length(text)) %>% ggplot(aes(x = full_coincidence, y = n_chr))')
+  Hint: "Remember: `aes()` is the only argument of `ggplot()`, and it takes two arguments, `x` and `y`, whose values are the relevant columns."
+
+- Class: cmd_question
+  Output: "Of course, because we didn't add a `geom_` argument, we didn't get any visualisation. Let's try one you already know: use `geom_boxplot()`. Remember that you must add it with `+`, not with a pipe."
+  CorrectAnswer: wa_df_new %>% mutate(n_chr = str_length(text)) %>% ggplot(aes(x = full_coincidence, y = n_chr)) + geom_boxplot() 
+  AnswerTests: omnitest(correctExpr='wa_df_new %>% mutate(n_chr = str_length(text)) %>% ggplot(aes(x = full_coincidence, y = n_chr)) + geom_boxplot()')
+  Hint: Simply add `+ geom_boxplot()` to your code above.
+
+- Class: text
+  Output: The plot shows quite clearly that full coincidences were more likely in longer messages.
+
+- Class: cmd_question
+  Output: Let's try a few different visualisations, though. Replace `geom_boxplot()` by `geom_violin()`. Violin plots are similar to boxplots, but they also show the probability density of the data at different values (you'll see what I mean). Add the argument `draw_quantiles = c(0.25, 0.5, 0.75)` to get a representation of the quartiles and `scale = "count"` to scale the size of each violin to the number of observations.
+  CorrectAnswer: wa_df_new %>% mutate(n_chr = str_length(text)) %>% ggplot(aes(x = full_coincidence, y = n_chr)) + geom_violin(draw_quantiles = c(0.25, 0.5, 0.75), scale = "count")
+  AnswerTests: omnitest(correctExpr='wa_df_new %>% mutate(n_chr = str_length(text)) %>% ggplot(aes(x = full_coincidence, y = n_chr)) + geom_violin(draw_quantiles = c(0.25, 0.5, 0.75), scale = "count")')
+  Hint: Simply replace `+ geom_boxplot()` by `geom_violin(draw_quantiles = c(0.25, 0.5, 0.75))` in your code above.
+
+- Class: text
+  Output: As you can see, the shape of the 'violins' changes accordingly to the number of occurrences of the different values.
+
+- Class: cmd_question
+  Output: A quite clear visualisation (but less syntetic) is produced by `geom_dotplot()`, where the values are represented by dots. These dots do not necessarily represent each individual value, since they can be grouped together. Add the argument `binwidth` and set it to 2 (2 values represented in each dot), the argument `binaxis` which needs to be set to "y" (with quotations), which indicates that you want to bin the values found in the y-axis, and the argument `stackdir`, set to "center", which simply indicates how to stack the dots.
+  CorrectAnswer: wa_df_new %>% mutate(n_chr = str_length(text)) %>% ggplot(aes(x = full_coincidence, y = n_chr)) + geom_dotplot(binwidth = 2, binaxis = "y", stackdir = "center") 
+  AnswerTests: omnitest(correctExpr='wa_df_new %>% mutate(n_chr = str_length(text)) %>% ggplot(aes(x = full_coincidence, y = n_chr)) + geom_dotplot(binwidth = 2, binaxis = "y", stackdir = "center")')
+  Hint: Did you remember to replace `geom_violin()` in your code above?
+
+- Class: text
+  Output: As a rule, you need to decide which visualisation is clearer depending on your purposes and your audience. If you're still not sure what these representations mean exactly, you can check the helpfile in R or google their names to get more information!
+
+- Class: text
+  Output: A fourth issue that'd be useful would be checking how the language detection algorithms behaved for certain values that you knew could be difficult (remember that we have our `correct_1` column.) 
+
+- Class: cmd_question
+  Output: For instance, if you want to manually explore the results you got for the messages that had several langauges (which I coded as "mixed") you can filter your tibble by this value. You'll need to use `==` for that.
+  CorrectAnswer: wa_df_new %>% filter(correct_1 == "mixed")
+  AnswerTests: any_of_exprs('wa_df_new %>% filter(correct_1 == "mixed")', 'filter(wa_df_new, correct_1 == "mixed")')
+  Hint: Remember that filter takes a logical expression, which in this case should state that column `correct_1` is equal to (`==`) "mixed" (with quotations!)
+
+- Class: text
+  Output: That's an easy piece of code that allows you to manually explore the results of each algorithm. For the first mixed message, which had German and Asturian (an Ibero-Romance language), the latter was never detected (since it's not even considered in these algorithms). The second one, however, was in Spanish and German and those are the languages that were guessed. However, `cld2` failed to detect that this is a mixed message, which is amongst its possibilities.
+
+- Class: text
+  Output: The last issue I'd like to tackle today has to do with random sampling. As we said last week, random sampling is very useful to get a representative sample of your data. You can use that sample for evaluating some automatic results through manual annotation, to do statistics… But what if you want to make sure that you have a similar number of occurrences of each of the possible values in one column in your random sample?
+
+- Class: cmd_question
+  Output: For example, you might want to make sure that you have at least 5 examples of each value recognised by cld2 (the ones stored in `lang_2`). Well, first thing is to group the rows in the tibble by the values of that column. Use `group_by()` for that, adding it with a pipe.
+  CorrectAnswer: wa_df_new %>% group_by(lang_2)
+  AnswerTests: omnitest(correctExpr='wa_df_new %>% group_by(lang_2)')
+  Hint: Its first argument is the tibble, but because it's in a pipe, it only takes the second one, which is `lang_2`.
+
+- Class: cmd_question
+  Output: Once grouped you can extract the random sample, using `slice_sample()`. Remember that it takes the argument `n`, which should be equal to 5 here. Add it to your pipe.
+  CorrectAnswer: wa_df_new %>% group_by(lang_2) %>% slice_sample(n = 5)
+  AnswerTests: omnitest(correctExpr='wa_df_new %>% group_by(lang_2) %>% slice_sample(n = 5)')
+  Hint: Simply add `slice_sample(n = 5)` with a pipe to the code above.
+
+- Class: cmd_question
+  Output: Let's make sure we got 5 examples of each language. Count the unique values of lang_2 with the function `count()`. But add `ungroup()` first, not because you need it, but so that you don't forget.
+  CorrectAnswer: wa_df_new %>% group_by(lang_2) %>% slice_sample(n = 5) %>% ungroup() %>% count(lang_2)
+  AnswerTests: omnitest(correctExpr='wa_df_new %>% group_by(lang_2) %>% slice_sample(n = 5) %>% ungroup() %>% count(lang_2)')
+  Hint: You had to add two pipes this time, the first one with `ungroup()` (no extra arguments) and the second one with `count()` (which takes `lang_2` as its argument).
+
+- Class: text
+  Output: Well, we didn't get 5 results of each language. Why? Because for some languages there weren't that many results, so we simply got all that there were. But when there were more, 5 is all we got!
+
+- Class: text
+  Output: Ok, that was a lot of thinking you just did! Good job! There's only one lesson this week, so if you've watched the videos already, you're done! 
+  
+- Class: text
+  Output: But if you feel like keep on coding, you could maybe make the plots above prettier, or try out the analysis of Trump's tweets mentioned in the video (the link is in the PPT presentation). Have fun!
+  
+- Class: mult_question
+  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
+  AnswerChoices: Yes;No
+  CorrectAnswer: NULL
+  AnswerTests: submit_log()
+  Hint: As you feel!

@@ -41,7 +41,7 @@
   Output: Now we can separate the text into columns (with `separate()`). As you can see, the single column we have right now is called `value`, let's separate it into `time` and `text` using the separator ' - '. Add it to your pipe.
   CorrectAnswer: wa %>% as_tibble() %>% slice(-c(1:2)) %>% separate(value, into = c("time", "text"), sep = " - ")
   AnswerTests: any_of_exprs('wa %>% as_tibble() %>% slice(-c(1:2)) %>% separate(value, into = c("time", "text"), sep = " - ")', 'wa %>% as_tibble() %>% slice(-(1:2)) %>% separate(value, into = c("time", "text"), sep = " - ")', 'wa %>% as_tibble() %>% slice(-c(1, 2)) %>% separate(value, into = c("time", "text"), sep = " - ")')
-  Hint: "Recall that the arguments you need in `separate()` are the column that you want to split, the argument `into` that takes a character vector with the names of the two new columns and the argument `sep` that takes a string with the character sequence you want to be used as a border between columns. Check your previous scripts and notes if you're confused!"
+  Hint: "Recall that the arguments you need in `separate()` are the column that you want to split, the argument `into`, which takes a character vector with the names of the two new columns, and the argument `sep`, which takes a string with the character sequence you want to be used as the border between columns. Check your previous scripts and notes if you're confused!"
 
 - Class: cmd_question
   Output: "We still need to perform another `separate()`. Split `text` into `user` and `text` using the separator 'Z: '. As you can see, I included the last character of the user name in the separator, that is because there are colons in our messages, so if we only use ': ' we'll lose some parts of the text."
@@ -63,7 +63,7 @@
   Output: Let's try our language detection functions now. Function `textcat()` from package `textcat` can be applied to a vector and will give you a vector of the same length with the full names of the languages it guessed. As most of language recognition techniques, it's based on character n-grams. Try it on `wa_df$text`.
   CorrectAnswer: wa_df$text %>% textcat() 
   AnswerTests: any_of_exprs('wa_df$text %>% textcat()', 'textcat(wa_df$text)')
-  Hint: "Remember: `textcat()` is the function, `wa_df$text` its only argument."
+  Hint: "Remember: `textcat()` is the function, `wa_df$text` is its only argument."
   
 - Class: text
   Output: "The packages cld2 and cld3 are both based in Google language recognition algorithms, but in different ones. The packages are very similar and their functions have the same names: `detect_language()`. It works quite similarly to `textcat()` except that it returns 2-character codes for the guessed languages."
@@ -72,7 +72,7 @@
   Output: "Because we have two `detect_language()` functions in our environment, we'll need to specify the package we are referring, so that R knows which one to pick. We do that by writing the name of the package before the name of the function, separated by two colons. Try now cld2::detect_language() on `wa_df$text`."
   CorrectAnswer: wa_df$text %>% cld2::detect_language() 
   AnswerTests: any_of_exprs('wa_df$text %>% cld2::detect_language()', 'cld2::detect_language(wa_df$text)')
-  Hint: "Remember: `cld2::detect_language()` is the function, `wa_df$text` its only argument."
+  Hint: "Remember: `cld2::detect_language()` is the function, `wa_df$text` is its only argument."
 
 - Class: cmd_question
   Output: "Ok, let's try now cld3::detect_language() on `wa_df$text`."
@@ -87,13 +87,13 @@
   Output: "The last function I want to show you is `franc()`, from the package `franc`. This one works a bit differently, because it can only be applied to vectors of length one. Also, it returns 3-character ISO-language codes, because why shouldn't we have different standards? That's exactly the point of developing a standard, right? Try it on the first element of `wa_df$text`, which you can simply call using the square braces: `wa_df$text[1]`"
   CorrectAnswer: wa_df$text[1] %>% franc() 
   AnswerTests: any_of_exprs('wa_df$text[1] %>% franc()', 'franc(wa_df$text[1])')
-  Hint: "Remember: `franc()` is the function, `wa_df$text[1]` its only argument."
+  Hint: "Remember: `franc()` is the function, `wa_df$text[1]` is its only argument."
 
 - Class: cmd_question
   Output: Of course, there is a way to apply `franc()` to all elements of `wa_df$text`, there always is! The function family `map()` applies a function to a collection of items. `map()` returns a list. But lists are hard to work with, so I try to avoid them. Thank God there is a `map_chr()` function, that when applied to a character vector will return another one. These functions take the collection of items as their first argument (`wa_df$text` in this case), and the function you want to apply recursively as the second argument (`franc` here). Try it now.
   CorrectAnswer: wa_df$text %>% map_chr(franc)
   AnswerTests: any_of_exprs('wa_df$text %>% map_chr(franc)', 'map_chr(wa_df$text, franc)')
-  Hint: "Remember: `map_chr()` is the function, `wa_df$text` its first argument and `franc` the second one."
+  Hint: "Remember: `map_chr()` is the function, `wa_df$text` is its first argument and `franc` is the second one."
 
 - Class: text
   Output: "Because I don't know if you have used a pipe or not, I'll show you here the two possible ways of calling this, with a pipe: `wa_df$text %>% map_chr(franc)` and without the pipe: `map_chr(wa_df$text, franc)`. What is especial here is that you have a function as a regular argument, separated by commas, instead of embedded in another function. I hope that makes sense!"
@@ -102,7 +102,7 @@
   Output: Because you probably know me a little bit already, you know I want to add this information we just collected to our tibble. Can you add, with a single `mutate()`, four new columns, called `lang_1`, `lang_2`, `lang_3` and `lang_4` with the results of applying `textcat()`, `cld2::detect_language()`, `cld3::detect_language()` and `franc()` (with `map_chr()`) respectively to the `text` column in `wa_df`? The answer is 'Yes, I can', so go ahead!
   CorrectAnswer: wa_df %>% mutate(lang_1 = textcat(text), lang_2 = cld2::detect_language(text), lang_3 = cld3::detect_language(text), lang_4 = sapply(text, franc))
   AnswerTests: omnitest(correctVal = 'wa_df %>% mutate(lang_1 = textcat(text), lang_2 = cld2::detect_language(text), lang_3 = cld3::detect_language(text), lang_4 = sapply(text, franc))')
-  Hint: Remember that you can press enter in your script after the instructions (and the comma) for creating every new column in your single mutate, so that it is more readable and easier to check if you're missing commas or parentheses. In all cases you should have `text` as the single argument of your language detection function, except in the last case, where your main function is `map_chr()`, which needs `franc` as a second argument. Also, use the order indicated in the instructions above or swirl won't know you're right! 
+  Hint: Remember that you can press enter in your script after the instructions (and the comma) for creating every new column in your single mutate, so that it is more readable and easier to check for missing commas or parentheses. In all cases you should have `text` as the single argument of your language detection function, except in the last case, where your main function is `map_chr()`, which needs `franc` as a second argument. Also, use the order indicated in the instructions above or swirl won't know you're right! 
 
 - Class: text
   Output: "As I mentioned before, each function is giving different answers. Which one should we trust? Well, we need a bit of manual analysis for that. I manually annotated the language of each message of the chat and created 3 vectors (because the answers where expressed in three different ways: full names, 2-character ISO codes and 3-character ISO codes) that are loaded for you. `correct_1` store the languages in full names, so it corresponds to `lang_1`, `correct_2_3` uses 2-character ISO codes, so it corresponds to `lang_2` and `lang_3` and `correct_4` uses 3-character ISO codes, so it corresponds to `lang_4`. This was a bit tedious, yes, but it's important that we evaluate our results and we will always have to do some manual annotation for that. Also, manual annotation is the only way that you really get to know your data and the problems in the analysis you're performing, so I absolutely recommend it - always!"
@@ -111,25 +111,25 @@
   Output: "Add these vectors as columns to your tibble. We've used `cbind()` for that before, but there's actually a tidy way of doing it, with the function `add_column()`. Add it to your pipe: its arguments are the three vectors I loaded for you. Load them in order, please, so that swirl identifies your answer as correct."
   CorrectAnswer: wa_df %>% mutate(lang_1 = textcat(text), lang_2 = cld2::detect_language(text), lang_3 = cld3::detect_language(text), lang_4 = sapply(text, franc)) %>% add_column(correct_1, correct_2_3, correct_4)
   AnswerTests: omnitest(correctVal = 'wa_df %>% mutate(lang_1 = textcat(text), lang_2 = cld2::detect_language(text), lang_3 = cld3::detect_language(text), lang_4 = sapply(text, franc)) %>% add_column(correct_1, correct_2_3, correct_4)')
-  Hint: This is an easy one, the function is `add_column()` and its three arguments are vectors `correct_1`, `correct_2_3` and `correct_4`.
+  Hint: This is an easy one, the function is `add_column()` and its three arguments are the vectors `correct_1`, `correct_2_3` and `correct_4`.
 
 - Class: cmd_question
   Output: Now that we have the automatically recognised languages and the correct answers, we can easily compare them. For that we will create four new columns, with logical values, that will identify whether the values in columns `lang` are the same as the ones in columns `correct`. We'll call these new columns `coincidence_1`, `coincidence_2`, `coincidence_3` and `coincidence_4`, which should check for the corresponding `lang` column, compared to the adequate `correct` column. Can you do that adding a single `mutate()` to your code now? In order to check for equivalence you will have to use the operator `==`.
   CorrectAnswer: wa_df %>% mutate(lang_1 = textcat(text), lang_2 = cld2::detect_language(text), lang_3 = cld3::detect_language(text), lang_4 = sapply(text, franc)) %>% add_column(correct_1, correct_2_3, correct_4) %>% mutate(coincidence_1 = lang_1 == correct_1, coincidence_2 = lang_2 == correct_2_3, coincidence_3 = lang_3 == correct_2_3, coincidence_4 = lang_4 == correct_4) 
   AnswerTests: omnitest(correctVal = 'wa_df %>% mutate(lang_1 = textcat(text), lang_2 = cld2::detect_language(text), lang_3 = cld3::detect_language(text), lang_4 = sapply(text, franc)) %>% add_column(correct_1, correct_2_3, correct_4) %>% mutate(coincidence_1 = lang_1 == correct_1, coincidence_2 = lang_2 == correct_2_3, coincidence_3 = lang_3 == correct_2_3, coincidence_4 = lang_4 == correct_4) ')
-  Hint: Column `coincidence_1`, for instance, equal to `lang_1 == correct_1`. Again, recall that you can press enter in you script to make it more readable and easier to spot mistakes.
+  Hint: Column `coincidence_1`, for instance, equals to `lang_1 == correct_1`. Again, recall that you can press enter in you script to make it more readable and easier to spot mistakes.
 
 - Class: cmd_question
   Output: "Easy task now: save it to `wa_df_lang`."
   CorrectAnswer: wa_df_lang <- wa_df %>% mutate(lang_1 = textcat(text), lang_2 = cld2::detect_language(text), lang_3 = cld3::detect_language(text), lang_4 = sapply(text, franc)) %>% add_column(correct_1, correct_2_3, correct_4) %>% mutate(coincidence_1 = lang_1 == correct_1, coincidence_2 = lang_2 == correct_2_3, coincidence_3 = lang_3 == correct_2_3, coincidence_4 = lang_4 == correct_4) 
   AnswerTests: omnitest(correctVal = 'wa_df_lang <- wa_df %>% mutate(lang_1 = textcat(text), lang_2 = cld2::detect_language(text), lang_3 = cld3::detect_language(text), lang_4 = sapply(text, franc)) %>% add_column(correct_1, correct_2_3, correct_4) %>% mutate(coincidence_1 = lang_1 == correct_1, coincidence_2 = lang_2 == correct_2_3, coincidence_3 = lang_3 == correct_2_3, coincidence_4 = lang_4 == correct_4) ')
-  Hint: Just assign it the new name using the `<-`operator.
+  Hint: Just assign it the new name using the `<-` operator.
 
 - Class: cmd_question
   Output: If we want to check how often `textcat()` got the right answer, we simply have to `count` the values of `coincidence_1` column and see how many TRUE results it got. Do it now.
   CorrectAnswer: wa_df_lang %>% count(coincidence_1)
   AnswerTests: any_of_exprs('wa_df_lang %>% count(coincidence_1)', 'count(wa_df_lang, coincidence_1)')
-  Hint: "Remember: `count()` is the function, `wa_df_lang` its first argument and `coincidence_1` the second one."
+  Hint: "Remember: `count()` is the function, `wa_df_lang` is its first argument and `coincidence_1` is the second one."
 
 - Class: cmd_question
   Output: Try it now with `coincidence_2`.
@@ -172,7 +172,7 @@
   Output: Function `slice_sample()` does exactly that. Its first argument is the tibble you want to select a random sample from. You also need an `n` argument, with the number of rows you want to randomly select. Select 40 random rows of `wa_df`. Note that 40 is actually a very small number and that you should normally analyse a much larger sample, also depending on your sample size and the values you expect. But since we only have 56 here we'll select 40 just to see how it works.
   CorrectAnswer: wa_df %>% slice_sample(n = 40)
   AnswerTests: any_of_exprs('wa_df %>% slice_sample(n = 40)', 'slice_sample(wa_df, n = 40)')
-  Hint: "Remember: `slice_sample()` is the function, `wa_df` its first argument and `n = 40` the second one."
+  Hint: "Remember: `slice_sample()` is the function, `wa_df` is its first argument and `n = 40` is the second one."
 
 - Class: text
   Output: "I think you earned a break now. And I'd like to add that I'm very impressed by the great job you're doing, solving these lessons on your own. I know how complex it is (since I have to write the instructions I'm quite conscious of that), and I'm proud and impressed! Just wanted to tell you :) I really hope it's not only hard, but also fun (and useful)."

@@ -72,22 +72,21 @@
   CorrectAnswer: >
     str_view_all(verne$sentences, "\\.", match = TRUE)
   AnswerTests: any_of_exprs('verne$sentences %>% str_view_all("\\\\.", match = TRUE)', 'str_view_all(verne$sentences, "\\\\.", match = TRUE)')
-  Hint: Note that you are exploring a different tibble and a different column. For escaping the dot your regex should read "\\\\."
-
+  Hint: Note that you are exploring a different tibble and a different column. For escaping the dot your regex should read "\\."
 
 - Class: cmd_question
   Output: The backslash is also used (you'll still need two in R) for defining some special characters. For instance, "\\b" matches a word boundary. Find every character (use `str_view_all()` again) before a word boundary in the column `senteces` in `verne`.
   CorrectAnswer: >
     str_view_all(verne$sentences, ".\\b", match = TRUE)
   AnswerTests: any_of_exprs('verne$sentences %>% str_view_all(".\\\\b", match = TRUE)', 'str_view_all(verne$sentences, ".\\\\b", match = TRUE)')
-  Hint: You just need to adapt the regex of your code above. Recall that you need two backslashes!
+  Hint: You just need to adapt the regex in your code above. Recall that you need two backslashes!
 
 - Class: cmd_question
   Output: Regex "\\s" matches any whitespace. Adapt your code above to find every character before a space in the column `senteces` in `verne`. Can you see any relevant difference?
   CorrectAnswer: >
     str_view_all(verne$sentences, ".\\s", match = TRUE)
   AnswerTests: any_of_exprs('verne$sentences %>% str_view_all(".\\\\s", match = TRUE)', 'str_view_all(verne$sentences, ".\\\\s", match = TRUE)')
-  Hint: You just need to adapt the regex of your code above.
+  Hint: You just need to adapt the regex in your code above.
 
 - Class: text
   Output: While ".\\b" matches characters before punctuation marks as well as whitespaces before a word (because that's also a word boundary!), ".\\s" is much more restricted and only matches characters before a whitespace. Note that the end of the paragraph are not new lines (and thus no whitespaces) – they are the end of the string.
@@ -100,7 +99,7 @@
   CorrectAnswer: >
     str_view(verne$sentences, "^\\d.", match = TRUE)
   AnswerTests: any_of_exprs('verne$sentences %>% str_view("^\\\\d.", match = TRUE)', 'str_view(verne$sentences, "^\\\\d.", match = TRUE)')
-  Hint: You just need to adapt the regex of your code above. Remember that you're not using `str_view_all()` now!
+  Hint: You just need to adapt the regex in your code above. Remember that you're not using `str_view_all()` now!
 
 - Class: text
   Output: You were familiar with some special characters already. "\\t" matchs tabs, while "\\r" and "\\n" match carraige return and newlines respectively. We talked about them in the first session, since Linux based systems (such as Mac) code newlines with "\\n", while Windows uses the more complex "\\r\\n".
@@ -164,7 +163,7 @@
   CorrectAnswer: >
     str_view_all(verne$sentences, "\\b(le|la|les|un|unes|des)\\b", match = TRUE)
   AnswerTests: any_of_exprs('verne$sentences %>% str_view_all("\\\\b(le|la|les|un|unes|des)\\\\b", match = TRUE)', 'str_view_all(verne$sentences, "\\\\b(le|la|les|un|unes|des)\\\\b", match = TRUE)')
-  Hint: "Does your regex look like this: 'le|la|les|un|unes|des'?"
+  Hint: "Does your regex look like this: '\\\\ble|la|les|un|unes|des\\\\b'?"
 
 - Class: text
   Output: "Parentheses can also be used for something quite cool called 'capturing groups'. The part of the string matched by whatever is found within the parentheses gets stored and you can refer to it again by using a back reference: '\\1' for the first parentheses in your regex, '\\2' for the second, etc. Of course, in R you should use '\\\\1'."
@@ -181,14 +180,14 @@
   CorrectAnswer: >
     str_view_all(verne$sentences, "(..)\\1", match = TRUE)
   AnswerTests: any_of_exprs('verne$sentences %>% str_view_all("(..)\\\\1", match = TRUE)', 'str_view_all(verne$sentences, "(..)\\\\1", match = TRUE)')
-  Hint: Adapt the last code you run with the refex in the last question.
+  Hint: Adapt the last code you run with the regex in the last question.
 
 - Class: cmd_question
   Output: "Let's see if you can design you own capturing group, which, as you can see, is not easy. Find words with the following pattern: 'any single character + any single character + same character as the first one' in column `word` in `quijote`. Don't use `str_view_all()`, simply use `str_view()`."
   CorrectAnswer: >
     str_view(quijote$word, "(.).\\1", match = TRUE)
   AnswerTests: any_of_exprs('quijote$word %>%  str_view("(.).\\\\1", match = TRUE)', 'str_view(quijote$word, "(.).\\\\1", match = TRUE)')
-  Hint: The capturing group should affect only the first element, while you back reference should be the third element of the regex.
+  Hint: The capturing group should affect only the first element, while your back reference should be the third element of the regex.
 
 - Class: text
   Output: You just learnt how to deal with one of the most powerful tools of computational analysis of language. Regular expressions will help you find what you're looking for, saving you a lot of time.
