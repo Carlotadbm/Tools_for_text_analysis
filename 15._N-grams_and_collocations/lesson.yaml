@@ -106,7 +106,7 @@
   Hint: Remember to use `+` instead of the pipe for adding `coord_flip()`.
 
 - Class: text
-  Output: I'll leave to you to make this plot prettier later. We'll now compare the most frequent collocations in each text using their (TF-IDF), which shows the frequency of a term adjusted for how rarely it is used in a collection of documents. That way we make sure that we have the collocations that are most relevant for a given text.
+  Output: I'll leave to you to make this plot prettier later. We'll now compare the most frequent collocations in each text using their TF-IDF, which shows the frequency of a term adjusted for how rarely it is used in a collection of documents. That way we make sure that we have the collocations that are most relevant for a given text.
 
 - Class: cmd_question
   Output: "We'll be using the tibble `europarl_pt_bigrams` now. Let's count the times each bigram appears per document: use `count()`. It'll need two arguments, `source` for counting within each document, and `bigram, for counting the bigrams. Use a pipe."
@@ -115,7 +115,7 @@
   Hint: "This is how the code after the pipe should look like: `count(source, bigram)`."
 
 - Class: cmd_question
-  Output: "We'll calculate the inverse document frequency (IDF) with the function `bind_tf_idf()` from the tidyverse. It needs three arguments: the column with the strings for which it has to calculate the TF-IDF (`bigram`), the column with the different documents (`source`) and the raw count of strings (`n`), in this order."
+  Output: "We'll calculate the TF-IDF with the function `bind_tf_idf()` from the tidyverse. It needs three arguments: the column with the strings for which it has to calculate the TF-IDF (`bigram`), the column with the different documents (`source`) and the raw count of strings (`n`), in this order."
   CorrectAnswer: europarl_pt_bigrams %>% count(source, bigram) %>% bind_tf_idf(bigram, source, n)
   AnswerTests: omnitest(correctExpr='europarl_pt_bigrams %>% count(source, bigram) %>% bind_tf_idf(bigram, source, n)')
   Hint: Did you add it with a pipe?
