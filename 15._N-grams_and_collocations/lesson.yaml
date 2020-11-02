@@ -1,0 +1,171 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 15. N-grams and collocations
+  Author: Carlota de Benito Moreno
+  Type: Standard
+  Organization: University of Zurich
+  Version: 2.4.5
+
+- Class: text
+  Output: Hi there! Welcome to this session on collocations. We know already how to unnest a text in ngrams, but we haven't used them much.
+
+- Class: cmd_question
+  Output: We'll be using the `europarl_pt` tibble we created in last lesson, which I have loaded for you already. Remember that you saved it as a .csv, so you can use it later if you want to practice. Check it out.
+  CorrectAnswer: europarl_pt
+  AnswerTests: omnitest(correctExpr='europarl_pt')
+  Hint: Simply print `europarl_pt`.
+  
+- Class: cmd_question
+  Output: Let's unnest it in 2-grams. We'll need `unnest_tokens()` for that. Its first argument is the tibble, the second one is the name of the new column with the bigrams (call it `bigram`), the third one is the column you want to tokenize (`content`). We need to specify that we are tokenizing in n-grams by adding the argument `token = "ngrams"` and that we want them to be 2-grams by adding `n = 2`. Go ahead.
+  CorrectAnswer: europarl_pt %>% unnest_tokens(bigram, content, token = "ngrams", n = 2)
+  AnswerTests: any_of_exprs('europarl_pt %>% unnest_tokens(bigram, content, token = "ngrams", n = 2)',  'unnest_tokens(europarl_pt, bigram, content, token = "ngrams", n = 2)')
+  Hint: Write the arguments in the order I told you about them.
+
+- Class: cmd_question
+  Output: Save this tibble as `europarl_pt_bigrams` now, we'll be working with it.
+  CorrectAnswer: europarl_pt_bigrams <- europarl_pt %>% unnest_tokens(bigram, content, token = "ngrams", n = 2)
+  AnswerTests: any_of_exprs('europarl_pt_bigrams <- europarl_pt %>% unnest_tokens(bigram, content, token = "ngrams", n = 2)',  'europarl_pt_bigrams <- unnest_tokens(europarl_pt, bigram, content, token = "ngrams", n = 2)')
+  Hint: Assign it the name `europarl_pt_bigrams` with the operator `<-`. 
+
+- Class: cmd_question
+  Output: "Let's see which 2-grams are the most frequent ones. That's what we have `count()` for. Remember: its first argument is the tibble, the second one is the column you want to count (`bigram`). Add the argument `sort = TRUE` to see the most frequent bigrams first."
+  CorrectAnswer: europarl_pt_bigrams %>% count(bigram, sort = TRUE) 
+  AnswerTests: any_of_exprs('europarl_pt_bigrams %>% count(bigram, sort = TRUE)',  'count(europarl_pt_bigrams, bigram, sort = TRUE)')
+  Hint: Write the arguments in the order I told you about them.
+
+- Class: text
+  Output: Even if you don't speak Portuguese, I'm sure you can tell that most of these bigrams are combinations of grammar words (which tend to be rather short crosslinguistically, so that's a good hint). They don't say much about the text, so it's better to remove them.
+
+- Class: cmd_question
+  Output: We'll first get the list of Portuguese stopwords from the library `stopwords`. We need the function `get_stopwords()`, with the single argument "pt". Save it as `pt_sw`.
+  CorrectAnswer: pt_sw <- get_stopwords("pt")
+  AnswerTests: omnitest(correctExpr='pt_sw <- get_stopwords("pt")')
+  Hint: This (`get_stopwords("pt")`) is the function you should assign the name `pt_sw`.
+  
+- Class: cmd_question
+  Output: Print it to remember how it looks like.
+  CorrectAnswer: pt_sw
+  AnswerTests: omnitest(correctExpr='pt_sw')
+  Hint: Simply print `pt_sw`.
+
+- Class: cmd_question
+  Output: "Because we have bigrams instead of single words we'll have to separate them before we can remove stopwords. As you might remember, `separate()` takes at least four arguments: the tibble (`europarl_pt_bigram`), the column you want to separate (`bigram`), an argument `into` with a vector of with the names of the new columns (`word1` and `word2`) and `sep`, which should be set to `' '` in order to indicate that the 2 words are separated by a whitespace. Use a pipe to separate `europarl_pt_bigrams`."
+  CorrectAnswer: europarl_pt_bigrams %>% separate(bigram, into = c("word1", "word2"), sep = " ")
+  AnswerTests: omnitest(correctExpr='europarl_pt_bigrams %>% separate(bigram, into = c("word1", "word2"), sep = " ")')
+  Hint: Do not forget that you'll need quotations within the `into` vector and for the whitespace in the `sep` argument.
+
+- Class: cmd_question
+  Output: "Once the bigrams have been separated, we can filter out all stopwords from `word1` and `word2`. The operator `%in%` is used to identify if an element belongs to a vector. You'll need two logical expressions in your filter. The first one is: `!word1 %in% pt_sw$word`, which means 'remove elements in `word1` that appear in the column `word` of `pt_sw`'. The second one is exactly the same, but with `word2` instead of `word1`. Separate both logical expressions with a comma within `filter()`."
+  CorrectAnswer: europarl_pt_bigrams %>% separate(bigram, into = c("word1", "word2"), sep = " ") %>% filter(!word1 %in% pt_sw$word, !word2 %in% pt_sw$word) 
+  AnswerTests: omnitest(correctExpr='europarl_pt_bigrams %>% separate(bigram, into = c("word1", "word2"), sep = " ") %>% filter(!word1 %in% pt_sw$word, !word2 %in% pt_sw$word)')
+  Hint: Did you remember about the `!` before both logical vectors? We want to remove these words, not keep them!
+
+- Class: cmd_question
+  Output: Now save the whole thing to `europarl_pt_bigrams_sep`.
+  CorrectAnswer: europarl_pt_bigrams_sep <- europarl_pt_bigrams %>% separate(bigram, into = c("word1", "word2"), sep = " ") %>% filter(!word1 %in% pt_sw$word, !word2 %in% pt_sw$word) 
+  AnswerTests: omnitest(correctExpr='europarl_pt_bigrams_sep <- europarl_pt_bigrams %>% separate(bigram, into = c("word1", "word2"), sep = " ") %>% filter(!word1 %in% pt_sw$word, !word2 %in% pt_sw$word)')
+  Hint: Assign it the name `europarl_pt_bigrams_sep` with the operator `<-`. 
+
+- Class: cmd_question
+  Output: Let's create a barplot that shows the 30 most frequent collocations in our dataset. This will take a number of steps. First, let's collapse `word1` and `word2` back into a single column called `bigram`. Use `unite()`, which takes the tibble (`europarl_pt_bigrams_sep`) as its first argument, new column (`bigram`) as its second argument, the columns two unite after that (`word1` and `word2`) and, last, `sep = " "`, that indicates they should have a whitespace in-between the collapsed values. Apply it to `europarl_pt_bigrams_sep` with a pipe.
+  CorrectAnswer: europarl_pt_bigrams_sep %>% unite(bigram, word1, word2, sep = " ")
+  AnswerTests: omnitest(correctExpr='europarl_pt_bigrams_sep %>% unite(bigram, word1, word2, sep = " ")')
+  Hint: You don't need quotations for the columns here, they're not strings in a vector, but simply different arguments.
+
+- Class: cmd_question
+  Output: Now we'll count and sort `brigram`. You did that just a few miutes ago, simply add the same line to this piece of code with a pipe.
+  CorrectAnswer: europarl_pt_bigrams_sep %>% unite(bigram, word1, word2, sep = " ") %>% count(bigram, sort = TRUE)
+  AnswerTests: omnitest(correctExpr='europarl_pt_bigrams_sep %>% unite(bigram, word1, word2, sep = " ") %>% count(bigram, sort = TRUE)')
+  Hint: Use `count()`, that needs the column you want to count (`bigram`) plus the argument `sort = TRUE`
+
+- Class: cmd_question
+  Output: "Because there about 47,000 rows in this tibbe, we cannot plot them all, so we'll keep the top 30. There's a great function for that: `top_n()`. It just needs 30 as its argument. It will select the top 30 rows according to the value of the last column of the plot (the console will let you know what column was that). Add it with a pipe."
+  CorrectAnswer: europarl_pt_bigrams_sep %>% unite(bigram, word1, word2, sep = " ") %>% count(bigram, sort = TRUE) %>% top_n(30)
+  AnswerTests: omnitest(correctExpr='europarl_pt_bigrams_sep %>% unite(bigram, word1, word2, sep = " ") %>% count(bigram, sort = TRUE) %>% top_n(30)')
+  Hint: This new pipe just needs `top_n(30)`.
+
+- Class: text
+  Output: Now it's time to plot these data. We'll create a barplot with the 30 most frequent collocations ordered by frequency. We'll flip the chart so that the words appear in the y-axis and the frequencies in the x-axis, which makes it easier to read.
+
+- Class: cmd_question
+  Output: "Add `ggplot()` with a pipe. Remember that it takes the function `aes()` as its argument. Within `aes()` we need two arguments: `y` should be set to `n` and  `x` to `bigram`. But because we want to have the collocations ordered by the number of times they appear, set `x` to `reorder(bigram,n)`, which does exactly that."
+  CorrectAnswer: europarl_pt_bigrams_sep %>% unite(bigram, word1, word2, sep = " ") %>% count(bigram, sort = TRUE) %>% top_n(30) %>% ggplot(aes(y = n, x = reorder(bigram,n)))
+  AnswerTests: omnitest(correctExpr='europarl_pt_bigrams_sep %>% unite(bigram, word1, word2, sep = " ") %>% count(bigram, sort = TRUE) %>% top_n(30) %>% ggplot(aes(y = n, x = reorder(bigram,n)))')
+  Hint: "This is how the argument of `ggplot()` looks like `aes(y = n, x = reorder(bigram,n))`."
+
+- Class: cmd_question
+  Output: Of course, we haven't added a `geom_` function to the plot yet so you see nothing in the plot. Add `geom_col()` (with a plus sign, not a pipe!) and add the argument `fill = "darkgreen"` inside.
+  CorrectAnswer: europarl_pt_bigrams_sep %>% unite(bigram, word1, word2, sep = " ") %>% count(bigram, sort = TRUE) %>% top_n(30) %>% ggplot(aes(y = n , x = reorder(bigram,n))) + geom_col(fill = "darkgreen")
+  AnswerTests: omnitest(correctExpr='europarl_pt_bigrams_sep %>% unite(bigram, word1, word2, sep = " ") %>% count(bigram, sort = TRUE) %>% top_n(30) %>% ggplot(aes(y = n , x = reorder(bigram,n))) + geom_col(fill = "darkgreen")')
+  Hint: Remember to use `+` instead of the pipe for adding `geom_col()`.
+
+- Class: cmd_question
+  Output: "Add a last function with the plus sign to your plot: `coord_flip()`. This will flip the chart and make it readable."
+  CorrectAnswer: europarl_pt_bigrams_sep %>% unite(bigram, word1, word2, sep = " ") %>% count(bigram, sort = TRUE) %>% top_n(30) %>% ggplot(aes(y = n , x = reorder(bigram,n))) + geom_col(fill = "darkgreen") + coord_flip()
+  AnswerTests: omnitest(correctExpr='europarl_pt_bigrams_sep %>% unite(bigram, word1, word2, sep = " ") %>% count(bigram, sort = TRUE) %>% top_n(30) %>% ggplot(aes(y = n , x = reorder(bigram,n))) + geom_col(fill = "darkgreen") + coord_flip()')
+  Hint: Remember to use `+` instead of the pipe for adding `coord_flip()`.
+
+- Class: text
+  Output: I'll leave to you to make this plot prettier later. We'll now compare the most frequent collocations in each text using their (TF-IDF), which shows the frequency of a term adjusted for how rarely it is used in a collection of documents. That way we make sure that we have the collocations that are most relevant for a given text.
+
+- Class: cmd_question
+  Output: "We'll be using the tibble `europarl_pt_bigrams` now. Let's count the times each bigram appears per document: use `count()`. It'll need two arguments, `source` for counting within each document, and `bigram, for counting the bigrams. Use a pipe."
+  CorrectAnswer: europarl_pt_bigrams %>% count(source, bigram)
+  AnswerTests: omnitest(correctExpr='europarl_pt_bigrams %>% count(source, bigram)')
+  Hint: "This is how the code after the pipe should look like: `count(source, bigram)`."
+
+- Class: cmd_question
+  Output: "We'll calculate the inverse document frequency (IDF) with the function `bind_tf_idf()` from the tidyverse. It needs three arguments: the column with the strings for which it has to calculate the TF-IDF (`bigram`), the column with the different documents (`source`) and the raw count of strings (`n`), in this order."
+  CorrectAnswer: europarl_pt_bigrams %>% count(source, bigram) %>% bind_tf_idf(bigram, source, n)
+  AnswerTests: omnitest(correctExpr='europarl_pt_bigrams %>% count(source, bigram) %>% bind_tf_idf(bigram, source, n)')
+  Hint: Did you add it with a pipe?
+
+- Class: cmd_question
+  Output: We again want to keep only the few most frequent ones, but this time in each document, so we'll have to group them first. Add `group_by()` with a pipe, its argument is `source`.
+  CorrectAnswer: europarl_pt_bigrams %>% count(source, bigram) %>% bind_tf_idf(bigram, source, n) %>% group_by(source)
+  AnswerTests: omnitest(correctExpr='europarl_pt_bigrams %>% count(source, bigram) %>% bind_tf_idf(bigram, source, n) %>% group_by(source)')
+  Hint: After your new pipe you need `group_by(source)`.
+
+- Class: cmd_question
+  Output: Now we'll get the top 10 elements with `top_n`. They will be selected according to their tf_idf, which is the last column and the value we're interested in.
+  CorrectAnswer: europarl_pt_bigrams %>% count(source, bigram) %>% bind_tf_idf(bigram, source, n) %>% group_by(source) %>% top_n(10)
+  AnswerTests: omnitest(correctExpr='europarl_pt_bigrams %>% count(source, bigram) %>% bind_tf_idf(bigram, source, n) %>% group_by(source) %>% top_n(10)')
+  Hint: The function `top_n` just needs 10 as its argument.
+
+- Class: cmd_question
+  Output: Let's ungroup the tibble before plotting it. Add `ungroup()` with a pipe.
+  CorrectAnswer: europarl_pt_bigrams %>% count(source, bigram) %>% bind_tf_idf(bigram, source, n) %>% group_by(source) %>% top_n(10) %>% ungroup()
+  AnswerTests: omnitest(correctExpr='europarl_pt_bigrams %>% count(source, bigram) %>% bind_tf_idf(bigram, source, n) %>% group_by(source) %>% top_n(10) %>% ungroup()')
+  Hint: Simply `ungroup()`, with no arguments.
+
+- Class: cmd_question
+  Output: "Because the plot we're looking for is quite similar to the one we had before, simply copy the code you had before. You just need a simple change: within `aes()` you need to change the two times `n` appears by `tf_idf`, which is the score we're interested in now."
+  CorrectAnswer: europarl_pt_bigrams %>% count(source, bigram) %>% bind_tf_idf(bigram, source, n) %>% group_by(source) %>% top_n(10) %>% ungroup() %>% ggplot(aes(y = tf_idf , x = reorder(bigram, tf_idf))) + geom_col(fill = "darkgreen") + coord_flip()
+  AnswerTests: omnitest(correctExpr='europarl_pt_bigrams %>% count(source, bigram) %>% bind_tf_idf(bigram, source, n) %>% group_by(source) %>% top_n(10) %>% ungroup() %>% ggplot(aes(y = tf_idf , x = reorder(bigram, tf_idf))) + geom_col(fill = "darkgreen") + coord_flip()')
+  Hint: You need to copy the code you had from `ggplot()` onwards and add it with a pipe, with the minor adaptations.
+
+- Class: cmd_question
+  Output: "There's still one little thing we need: we would like to have five separate plots, one for each document. Maybe you remember that we can do that with `facet_wrap()`, which you have to add with the plus sign. Its first argument is `~source`, which indicates the columns by which we want to separate our plot. And we'll add `scales = 'free'` so that each plot has its own labels in the axes."
+  CorrectAnswer: europarl_pt_bigrams %>% count(source, bigram) %>% bind_tf_idf(bigram, source, n) %>% group_by(source) %>% top_n(10) %>% ungroup() %>% ggplot(aes(y = tf_idf , x = reorder(bigram, tf_idf))) + geom_col(fill = "darkgreen") + coord_flip() + facet_wrap(~source, scales = "free")
+  AnswerTests: omnitest(correctExpr='europarl_pt_bigrams %>% count(source, bigram) %>% bind_tf_idf(bigram, source, n) %>% group_by(source) %>% top_n(10) %>% ungroup() %>% ggplot(aes(y = tf_idf , x = reorder(bigram, tf_idf))) + geom_col(fill = "darkgreen") + coord_flip() + facet_wrap(~source, scales = "free")')
+  Hint: Did you remember to use `+` for adding `facet_wrap()`?
+
+- Class: cmd_question
+  Output: If you can't see the plot right, remember to click on Zoom. We could colour each subplot differently by adding `fill = source` as a third argument of `aes()` and removing the `fill` argument of `geom_col()`. Try it out.
+  CorrectAnswer: europarl_pt_bigrams %>% count(source, bigram) %>% bind_tf_idf(bigram, source, n) %>% group_by(source) %>% top_n(10) %>% ungroup() %>% ggplot(aes(y = tf_idf , x = reorder(bigram, tf_idf), fill = source)) + geom_col() + coord_flip() + facet_wrap(~source, scales = "free")
+  AnswerTests: omnitest(correctExpr='europarl_pt_bigrams %>% count(source, bigram) %>% bind_tf_idf(bigram, source, n) %>% group_by(source) %>% top_n(10) %>% ungroup() %>% ggplot(aes(y = tf_idf , x = reorder(bigram, tf_idf), fill = source)) + geom_col() + coord_flip() + facet_wrap(~source, scales = "free")')
+  Hint: "Be careful with the parentheses in ggplot now: the `fill` argument should have two behind it, one for `aes()` and one for `ggplot()`."
+
+- Class: text
+  Output: Even if you don't speak Portuguese you can see that the bigrams we have here are quite different to the ones we had before. That is because the TF-IDF score reduces the importance of bigrams that are very common across all documents. For instance, note that, although there are some stopwords in our collocations (we hadn't removed them from `europarl_pt_bigrams`), we didn't get the combinations of two stopwords we got when we checked their absolute frequency. That's because they're very common across the board.
+  
+- Class: text
+  Output: If you can speak Portuguese (or any Romance language, for that matter), you can probably make an educated guess on the topics they were discussing in these sessions of the European Parliament. Although we didn't go into topic modelling here, this already gives you some hints. There are still some nice visualizations we can use to investigate collocations, but we'll see them next week. You've earned a break now!
+
+- Class: mult_question
+  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
+  AnswerChoices: Yes;No
+  CorrectAnswer: NULL
+  AnswerTests: submit_log()
+  Hint: As you feel!
+ 

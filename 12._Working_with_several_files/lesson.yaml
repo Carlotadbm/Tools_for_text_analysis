@@ -1,9 +1,9 @@
 - Class: meta
   Course: Tools for text analysis
   Lesson: 12. Working with several files
-  Author: your name goes here
+  Author: Carlota de Benito Moreno
   Type: Standard
-  Organization: your organization's name goes here
+  Organization: University of Zurich
   Version: 2.4.5
 
 - Class: text
@@ -25,7 +25,7 @@
   Output: Second, we'll list all the files found in that folder, using the function `dir_ls()`, whose only argument should be `data_dir`.
   CorrectAnswer: dir_ls(data_dir)
   AnswerTests: omnitest(correctExpr='dir_ls(data_dir)')
-  Hint: The function you should use is `dir_ls()` and its only argument, `data_dir`.
+  Hint: The function you should use is `dir_ls()` and its only argument is `data_dir`.
 
 - Class: cmd_question
   Output: As you can see, that got the paths for all the files within the directory `WA`. Let's save this result to a vector called `txt_files`.
@@ -85,7 +85,7 @@
   Output: Again, we'll use the function `dir_ls` to read the content of `infolder`. Try it.
   CorrectAnswer: dir_ls(infolder)
   AnswerTests: omnitest(correctExpr='dir_ls(infolder)')
-  Hint: The function you should use is `dir_ls()` and its only argument, `infolder`.
+  Hint: The function you should use is `dir_ls()` and its only argument is `infolder`.
 
 - Class: cmd_question
   Output: "As you can see, because the files that `dir_ls()` read are directories, we see them in blue and in bold. We would like to have this information (the names of the folders) as the first column of our tibble, which should be called `century`. Use the function `tibble()`, which has a syntax similar to `mutate()`: name_of_the_column = value. But note that there's no pipe in here!"
@@ -121,7 +121,7 @@
   Output: "And, again, we got a column full of lists as a result. But you know what to do with this already: use `unnest()`."
   CorrectAnswer: tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines)) %>% unnest(text)
   AnswerTests: omnitest(correctExpr='tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines)) %>% unnest(text)')
-  Hint: With a pipe you should now add `unnest()`, that takes the argument `text`, which is the column with the lists.
+  Hint: You should now add `unnest()` with a pipe. It takes the argument `text`, which is the column with the lists.
 
 - Class: text
   Output: This is looking very good now! Let's clean columns `century` and `textID` a little bit. For instance, in `century` we only want to leave the information regarding the century (1500, 1600, 1700, 1800).
@@ -140,7 +140,8 @@
 
 - Class: cmd_question
   Output: We're almost there, now we want to clean `textID` too. We'll use `str_replace_all()`, as a new line in the same `mutate()`. Every line starts by something like 'PS/PT1500_ORIG_TXT/', so we can use the regex 'PS/PT1[5678]00_ORIG_TXT/' to include all possible centuries. And every line ends by ".txt". Remove all these characters that we don't need with a regex similar to the one you used above. Remember to escape the dot.
-  CorrectAnswer: tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines)) %>% unnest(text) %>% mutate(century = str_replace_all(century, "(PS/PT|_ORIG_TXT)", ""), language = "pt", textID = str_replace_all(textID, "(PS/PT1[5678]00_ORIG_TXT/|\\\\.txt)", ""))
+  CorrectAnswer: >
+    tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines)) %>% unnest(text) %>% mutate(century = str_replace_all(century, "(PS/PT|_ORIG_TXT)", ""), language = "pt", textID = str_replace_all(textID, "(PS/PT1[5678]00_ORIG_TXT/|\\.txt)", ""))
   AnswerTests: any_of_exprs('tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines)) %>% unnest(text) %>% mutate(century = str_replace_all(century, "(PS/PT|_ORIG_TXT)", ""), language = "pt", textID = str_replace_all(textID, "(PS/PT1[5678]00_ORIG_TXT/|\\\\.txt)", ""))', 'tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines)) %>% unnest(text) %>% mutate(century = str_replace_all(century, "PS/PT|_ORIG_TXT", ""), language = "pt", textID = str_replace_all(textID, "(PS/PT1[5678]00_ORIG_TXT/|\\\\.txt)", ""))', 'tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines)) %>% unnest(text) %>% mutate(century = str_replace_all(century, "(PS/PT|_ORIG_TXT)", ""), language = "pt", textID = str_replace_all(textID, "PS/PT1[5678]00_ORIG_TXT/|\\\\.txt", ""))', 'tibble(century = dir_ls(infolder)) %>% mutate(textID = map(century, dir_ls)) %>% unnest(textID) %>% mutate(text = map(textID, read_lines)) %>% unnest(text) %>% mutate(century = str_replace_all(century, "PS/PT|_ORIG_TXT", ""), language = "pt", textID = str_replace_all(textID, "PS/PT1[5678]00_ORIG_TXT/|\\\\.txt", ""))')
   Hint: The regex I used was "(PS/PT1[5678]00_ORIG_TXT/|\\.txt)" (again, parentheses are optional), so if you used something else, although it might have worked, swirl won't recognise it, sorry!
 

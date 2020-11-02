@@ -31,13 +31,13 @@
   Output: The function `str_detect()` takes the vector as first argument (you'll have to use the $ notation) and the regex as second argument. Detect all words in `quijote` that start by "a".
   CorrectAnswer: str_detect(quijote$word, "^a")
   AnswerTests: any_of_exprs('str_detect(quijote$word, "^a")', 'str_detect(quijote$word, "\\ba")', 'quijote$word %>% str_detect("^a")', 'quijote$word %>% str_detect("\\ba")')
-  Hint: You'll need yo use an anchor before "a". And don't forget the quotation marks!
+  Hint: You'll need to use an anchor before "a". And don't forget the quotation marks!
   
 - Class: cmd_question
   Output: "Logical vectors can be used in numeric contexts: TRUE becomes 1 and FALSE becomes 0. That means that you can apply a numeric operation, such as `sum()`. Add it to your code above with a pipe to see how many words start with 'a' in `quijote`."
   CorrectAnswer: str_detect(quijote$word, "^a") %>% sum()
   AnswerTests: any_of_exprs('str_detect(quijote$word, "^a") %>% sum()', 'str_detect(quijote$word, "\\ba") %>% sum()', 'quijote$word %>% str_detect("^a") %>% sum()', 'quijote$word %>% str_detect("\\ba") %>% sum()')
-  Hint: Add sum() after the pipe operator to your code above.
+  Hint: Add sum() to your code above with a pipe.
   
 - Class: cmd_question
   Output: So 98 words start by "a". You could also use `mean()` to get the proportion of words that start by "a" in `quijote`. Do it now. 
@@ -55,7 +55,7 @@
   Output: More frequently you will want to alter the number of rows of your tibble, keeping only words that start by "a". That is, normally you'll want to include `str_detect()` in `filter()`, which, as you might remember, takes a logical expression. Can you do thatn now?
   CorrectAnswer: quijote %>% filter(str_detect(word, "^a"))
   AnswerTests: any_of_exprs('quijote %>% filter(str_detect(word, "^a"))', 'quijote %>% filter(str_detect(word, "\\ba"))')
-  Hint: "You just need to adapt your code above a little bit: instead of using `mutate()` you have to use `filter()`, that simply takes thelogical vector, that is, you should not specify a new colum."
+  Hint: "You just need to adapt your code above a little bit: instead of using `mutate()` you have to use `filter()`, which simply takes the logical vector, that is, you should not specify a new colum."
 
 - Class: text
   Output: If your regex involves complex logical operations (such as excluding elements, which is equivalent to negation), it might be easier to apply R logical operators to `str_detect()` than to desing a very complex regex.
@@ -64,7 +64,7 @@
   Output: For instance, if you want to keep all words with no vowels in `quijote` you could find all words with vowels (defined as '[aeiouáéíóúü]') and then negate `str_detect()` by using the operator `!` right before it. Try it (embedded in `filter()`).
   CorrectAnswer: quijote %>% filter(!str_detect(word, "[aeiouáéíóúü]"))
   AnswerTests: omnitest(correctExpr='quijote %>% filter(!str_detect(word, "[aeiouáéíóúü]"))')
-  Hint: Adapt your code above by updating the new regex and wrting `!` before `str_detect()`.
+  Hint: Adapt your code above by updating the new regex and writing `!` before `str_detect()`.
 
 - Class: text
   Output: You would get the same result by using the much more complicated regex "^[^aeiouáéíóúü]+$", but simplicity is a virtue!
@@ -79,7 +79,7 @@
   Output: Because you got numeric data as a result, you can apply mathematical operations to it. Calculate the proportion of "a" per word in `quijote` by adding `mean()` to your code above with a pipe.
   CorrectAnswer: str_count(quijote$word, "a")  %>% mean()
   AnswerTests: any_of_exprs('str_count(quijote$word, "a") %>% mean()', 'quijote$word %>% str_count("a") %>% mean()')
-  Hint: Simply add `mean()` by means of the pipe operator.
+  Hint: Simply add `mean()` using the pipe operator.
 
 - Class: cmd_question
   Output: The result of `str_count()` is the kind of information you might want to store in a new column, using `mutate()`. Do it now by creating the column `number_a` (and using a pipe).
@@ -114,13 +114,15 @@
 
 - Class: cmd_question
   Output: "Store the definite feminine noun phrases in `sentences` in `verne` in a new column called `fem_noun`. We'll operationalise definite feminine noun phrases as those where the feminine article 'la' precedes a word using the following regex: '\\\\bla\\\\b\\\\s\\\\w+\\\\b', which matches 'la' as a single word ('\\\\bla\\\\bb') followed by a space ('\\\\s') and any alphanumeric character ('\\\\w') repeated an indefinite number of times ('+') until it finds a word limit ('\\\\b')."
-  CorrectAnswer: verne %>% mutate(fem_noun = str_extract(sentences, "\\\\bla\\\\b\\\\s\\\\w+\\\\b"))
+  CorrectAnswer: >
+    verne %>% mutate(fem_noun = str_extract(sentences, "\\bla\\b\\s\\w+\\b"))
   AnswerTests: omnitest(correctExpr='verne %>% mutate(fem_noun = str_extract(sentences, "\\\\bla\\\\b\\\\s\\\\w+\\\\b"))')
-  Hint: This is a mutate very similar to the ones you used above, but with a new tibble (`verne`) applied to a new column (`sentences`). The function used to create the new column is `str_extract` and the regex is the one I gave you above!
+  Hint: This mutate is very similar to the ones you used above, but with a new tibble (`verne`) and applied to a new column (`sentences`). The function used to create the new column is `str_extract()` and the regex is the one I gave you above!
 
 - Class: cmd_question
   Output: The function `str_extract()` returns the first match, while `str_extract_all()` returns every result in a string. Adding the argument `simplify` and setting it to `TRUE`, it will store them in new columns. Try it now.
-  CorrectAnswer: verne %>% mutate(fem_noun = str_extract_all(sentences, "\\\\bla\\\\b\\\\s\\\\w+\\\\b", simplify = TRUE))
+  CorrectAnswer: >
+    verne %>% mutate(fem_noun = str_extract_all(sentences, "\\bla\\b\\s\\w+\\b", simplify = TRUE))
   AnswerTests: omnitest(correctExpr='verne %>% mutate(fem_noun = str_extract_all(sentences, "\\\\bla\\\\b\\\\s\\\\w+\\\\b", simplify = TRUE))')
   Hint: Simply adapt your code above by using `str_extract_all()` and adding `simplify = TRUE`.
 
@@ -134,7 +136,7 @@
   Output: Again, this is a function that you'll normally want to use within a mutate. Create a new column called `word_i` where you replace vowels (defined as "[aeouáéíóú]") in the `word` in `quijote` by "i".
   CorrectAnswer: quijote %>% mutate(word_i = str_replace(word, "[aeouáéíóú]", "i"))
   AnswerTests: omnitest(correctExpr='quijote %>% mutate(word_i = str_replace(word, "[aeouáéíóú]", "i"))')
-  Hint: This is a mutate very similar to the ones you used above, again with `quijote`. But now you're using the function `str_replace()` and you need a third argument with the string used for the replacement.
+  Hint: This mutate is very similar to the ones you used above, again with `quijote`. But now you're using the function `str_replace()` and you need a third argument with the string used for the replacement.
 
 - Class: cmd_question
   Output: As you can see, `str_replace()` only replaced the first match. Replace every vowel by using `str_replace_all()`.
@@ -159,7 +161,8 @@
 
 - Class: cmd_question
   Output: Let's complicate it a bit more using back references. Create a new columnd `inverted_word` in `quijote` where every sequence of consonant + vowel (defined as "([bcdfghjklmñpqrstvwxzy])([aeiouáéíóúü])") is replaced by the same consonant and vowel, but in the inverted order vowel + consonant. This is not a multiple replacement, its a single one! But you'll need back references.
-  CorrectAnswer: quijote %>% mutate(inverted_word = str_replace_all(word, "([bcdfghjklmñpqrstvwxzy])([aeiouáéíóúü])", "\\\\2\\\\1"))
+  CorrectAnswer: >
+    quijote %>% mutate(inverted_word = str_replace_all(word, "([bcdfghjklmñpqrstvwxzy])([aeiouáéíóúü])", "\\2\\1"))
   AnswerTests: omnitest(correctExpr='quijote %>% mutate(inverted_word = str_replace_all(word, "([bcdfghjklmñpqrstvwxzy])([aeiouáéíóúü])", "\\\\2\\\\1"))')
   Hint: The third argument of `str_replace_all()` needs back references that invert the order of the expressions in parentheses in your regex, that is, it shoudl be "\\2\\1".
 
