@@ -1,0 +1,8 @@
+tidyverse
+tidytext
+stopwords
+widyr
+igraph
+ggraph
+base64enc
+

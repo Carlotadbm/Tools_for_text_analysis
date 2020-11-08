@@ -1,0 +1,283 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 17. Case study I. Verifying and comparing data
+  Author: Carlota de Benito Moreno
+  Type: Standard
+  Organization: University of Zurich
+  Version: 2.4.5
+
+- Class: text
+  Output: >
+    Hi there! In this lesson we will be working with a real case that illustrates an everyday problem in research:
+    comparing different states of an analysis. We have three datasets that you'll need to load, all concerned
+    with vowel analysis for the same data. Although all of them are .csv files, two of them were originally Excel files and one 
+    of them was a Praat TextGrid. You have more information about these files in this lesson's video/live class.
+    
+- Class: cmd_question
+  Output: >
+    I created the file "textgrid_clean.csv" by cleaning the TextGrid file (you will learn how next week). As always,
+    I used tabs as delimiters. Read it with `read_delim()` and don't give it a name yet, so that you can see how it looks like.
+  CorrectAnswer: read_delim("textgrid_clean.csv", delim = "\t")
+  AnswerTests: omnitest(correctExpr='read_delim("textgrid_clean.csv", delim = "\t")')
+  Hint: "The function `read_delim()` takes 2 arguments: the name of the file (with quotations) and `delim`."
+  
+- Class: cmd_question
+  Output: >
+    This tibble has all the information that was annotated in Praat for speaker F1. We went through all these columns 
+    in the video/in class. Save it to `textgrid`.
+  CorrectAnswer: textgrid <- read_delim("textgrid_clean.csv", delim = "\t")
+  AnswerTests: omnitest(correctExpr='textgrid <- read_delim("textgrid_clean.csv", delim = "\t")')
+  Hint: Use the assignment operator `<-`.
+  
+- Class: cmd_question
+  Output: >
+    The file "F1-formants.csv" has information about the formants of each vowel for informant F1. Read it before saving it.
+  CorrectAnswer: read_delim("F1-formants.csv", delim = "\t")
+  AnswerTests: omnitest(correctExpr='read_delim("F1-formants.csv", delim = "\t")')
+  Hint: Use `read_delim()` again.
+ 
+- Class: cmd_question
+  Output: >
+    Hum, this does not really look like a tibble. Why? Maybe you've noticed already: delimiters are not tabs in this file.
+    Originally this was an .xlsx file that I exported as .csv in Excel. Excel for Mac uses semicolons as separators 
+    in .csv files most of the time. I don't know why, but it is what it is :) In this file we've got commas instead.
+    Change the delimiters accordingly. (This is why I always use `read_delim()` 
+    instead of `read_csv()` or `read_tsv()`, which assume a specific delimiter.)
+  CorrectAnswer: read_delim("F1-formants.csv", delim = ",")
+  AnswerTests: omnitest(correctExpr='read_delim("F1-formants.csv", delim = ",")')
+  Hint: Now you should have `delim = ","`.
+
+- Class: cmd_question
+  Output: >
+    As you can see, there are two columns with the same name and with the same type of information as in `textgrid`:
+    `label` and `word`. Moreover, there is a `#` column which actually has the same information as `ID` in `textgrid`. 
+    Its name in Excel was simply #: it's better not to use special characters in your column names, so as to avoid this 
+    complicated notation. Save the tibble as `formants`.
+  CorrectAnswer: formants <- read_delim("F1-formants.csv", delim = ",")
+  AnswerTests: omnitest(correctExpr='formants <- read_delim("F1-formants.csv", delim = ",")')
+  Hint: Use the assignment operator `<-`.
+  
+- Class: cmd_question
+  Output: >
+    So let's rename `#` as ID. You'll need the function `rename()`, that has a structure similar to mutate: first the tibble;
+    second an equivalence like the following: new_name = old_name. Use a pipe.
+  CorrectAnswer: formants %>% rename(ID = `#`)
+  AnswerTests: omnitest(correctExpr='formants %>% rename(ID = `#`)')
+  Hint: "Note that # is not within quotation marks, but within grave accents."
+
+- Class: cmd_question
+  Output: >
+    We want to create a single tibble with all our information, so let's join these two tibbles. Add `full_join()` to your
+    pipe. As arguments it takes the tibbles you want to join, so simply add `textgrid` as its argument.
+  CorrectAnswer: formants %>% rename(ID = `#`) %>% full_join(textgrid)
+  AnswerTests: omnitest(correctExpr='formants %>% rename(ID = `#`) %>% full_join(textgrid)')
+  Hint: Simply add `full_join(textgrid)`.
+  
+- Class: cmd_question
+  Output: Save it as `full_praat`.
+  CorrectAnswer: full_praat <- formants %>% rename(ID = `#`) %>% full_join(textgrid)
+  AnswerTests: omnitest(correctExpr='full_praat <- formants %>% rename(ID = `#`) %>% full_join(textgrid)')
+  Hint: Use the assignment operator `<-`.
+
+- Class: text
+  Output: >
+    The console informs us that they were joined them by the columns `label`, `word` and `ID`. It recognised that they have the
+    same name and assumes both tibbles have them in common. Since both original tibbles have 231 rows and the new one too,
+    we can safely assume that they were identical in both tibbles.
+
+- Class: cmd_question
+  Output: >
+    We still have another .csv file: "voyelles-F1.csv". Read it with `read_delim()`. This file also comes from Excel, so 
+    you should set `delim` to ",".
+  CorrectAnswer: read_delim("voyelles-F1.csv", delim = ",")
+  AnswerTests: omnitest(correctExpr='read_delim("voyelles-F1.csv", delim = ",")')
+  Hint: Check the code you used above if you're unsure what to do.
+ 
+- Class: cmd_question
+  Output: >
+    As you can see, there are two columns that look the same as in `formants` (and thus in `full_praat`): context and 
+    number. Number seems to have unique identifiers, so maybe we can use it to join these tibble to full_praat. Let's save it first, call it
+    `vowels'.
+  CorrectAnswer: vowels <- read_delim("voyelles-F1.csv", delim = ",")
+  AnswerTests: omnitest(correctExpr='vowels <- read_delim("voyelles-F1.csv", delim = ",")')
+  Hint: Use the assignment operator `<-`.
+  
+- Class: cmd_question
+  Output: Let's join them now. Again, use `full_join()`. Use `vowels` as the first arguement and `full_praat` as the second one.
+  CorrectAnswer: vowels %>% full_join(full_praat)
+  AnswerTests: any_of_exprs('vowels %>% full_join(full_praat)', 'full_join(vowels, full_praat)')
+  Hint: Check the code you used above if you're unsure what to do.
+
+- Class: text
+  Output: >
+    Note that the new tibble has 260 rows. That means that the join didn't work properly: although `number` and `context`
+    were identified as the same columns, some of their values don't match. When that's the case, a new row is added with 
+    the rows whose values don't match. Why don't they match? Because the data in `vowels` were manually 
+    annotated: mistakes happen. This is way it is so crucial to have key_columns in your tables (and make sure that they are 
+    correct): in case you need to join them automatically to another table.
+
+- Class: cmd_question
+  Output: >
+    Fortunately, we know that the rows of `vowels` are in the exact same order as the rows in `full_praat`, so we can create
+    an ID column identical to the one in `full_praat`. You can use seq_along() for that. As its argument use the column 
+    `stimuli`. Use a pipe.
+  CorrectAnswer: vowels %>% mutate(ID = seq_along(stimuli))
+  AnswerTests: omnitest(correctExpr='vowels %>% mutate(ID = seq_along(stimuli))')
+  Hint: Did you remember that you need `mutate()` for creating a new column?
+  
+- Class: cmd_question
+  Output: >
+    Now we can try the `full_join()` again. We need to specify that we want the join to use only column `ID`, so add the
+    argument `by = "ID"`.
+  CorrectAnswer: vowels %>% mutate(ID = seq_along(stimuli)) %>% full_join(full_praat, by = "ID")
+  AnswerTests: omnitest(correctExpr='vowels %>% mutate(ID = seq_along(stimuli)) %>% full_join(full_praat, by = "ID")')
+  Hint: Add `full_join(full_praat, by = "ID")` after a pipe.
+
+- Class: text
+  Output: >
+    We're back to 231 rows, which is great! Now notice that we got two `context` and two `number` columns, since they
+    weren't merged. The suffixes `.x` and `.y` stand for 'first table' and 'second table'.  
+    
+- Class: cmd_question
+  Output: >
+    Now we want to check where the discordances between these columns are. Let's create a new column called `coincidence_context`
+    that indicates whether context.x and context.y have the same values. You will need the operator `==`.
+  CorrectAnswer: vowels %>% mutate(ID = seq_along(stimuli)) %>% full_join(full_praat, by = "ID") %>% mutate(coincidence_context = context.x == context.y)
+  AnswerTests: any_of_exprs('vowels %>% mutate(ID = seq_along(stimuli)) %>% full_join(full_praat, by = "ID") %>% mutate(coincidence_context = context.x == context.y)', 'vowels %>% mutate(ID = seq_along(stimuli)) %>% full_join(full_praat, by = "ID") %>% mutate(coincidence_context = context.y == context.x)')
+  Hint: Did you remember that you need mutate for creating a new column?
+
+- Class: cmd_question
+  Output: Create now `coincidence_number`, which should compare number.x and number.y.
+  CorrectAnswer: vowels %>% mutate(ID = seq_along(stimuli)) %>% full_join(full_praat, by = "ID") %>% mutate(coincidence_context = context.x == context.y, coincidence_number = number.x == number.y)
+  AnswerTests: any_of_exprs('vowels %>% mutate(ID = seq_along(stimuli)) %>% full_join(full_praat, by = "ID") %>% mutate(coincidence_context = context.x == context.y, coincidence_number = number.x == number.y)', 'vowels %>% mutate(ID = seq_along(stimuli)) %>% full_join(full_praat, by = "ID") %>% mutate(coincidence_context = context.y == context.x, coincidence_number = number.x == number.y)', 'vowels %>% mutate(ID = seq_along(stimuli)) %>% full_join(full_praat, by = "ID") %>% mutate(coincidence_context = context.x == context.y, coincidence_number = number.y == number.x)', 'vowels %>% mutate(ID = seq_along(stimuli)) %>% full_join(full_praat, by = "ID") %>% mutate(coincidence_context = context.y == context.x, coincidence_number = number.y == number.x)')
+  Hint: You need something very similar to the last mutate you wrote, adapting the names of the columns.
+
+- Class: cmd_question
+  Output: Let's save this new tibble to `full_praat`.
+  CorrectAnswer: full_praat <- vowels %>% mutate(ID = seq_along(stimuli)) %>% full_join(full_praat, by = "ID") %>% mutate(coincidence_context = context.x == context.y, coincidence_number = number.x == number.y)
+  AnswerTests: any_of_exprs('full_praat <- vowels %>% mutate(ID = seq_along(stimuli)) %>% full_join(full_praat, by = "ID") %>% mutate(coincidence_context = context.x == context.y, coincidence_number = number.x == number.y)', 'full_praat <- vowels %>% mutate(ID = seq_along(stimuli)) %>% full_join(full_praat, by = "ID") %>% mutate(coincidence_context = context.y == context.x, coincidence_number = number.x == number.y)', 'full_praat <- vowels %>% mutate(ID = seq_along(stimuli)) %>% full_join(full_praat, by = "ID") %>% mutate(coincidence_context = context.x == context.y, coincidence_number = number.y == number.x)', 'full_praat <- vowels %>% mutate(ID = seq_along(stimuli)) %>% full_join(full_praat, by = "ID") %>% mutate(coincidence_context = context.y == context.x, coincidence_number = number.y == number.x)')
+  Hint: Use ther assignment operator `<-`.
+
+- Class: cmd_question
+  Output: >
+    In order to check where the discordances are, we can filter the tibble do that we only keep rows with FALSE values in one 
+    of our `coincidence` columns. Let's do that for `coincidence_number`. Using a pipe.
+  CorrectAnswer: full_praat %>% filter(coincidence_number == FALSE)
+  AnswerTests: omnitest(correctExpr='full_praat %>% filter(coincidence_number == FALSE)')
+  Hint: Remember that the logical operator that you need to filter by an identical value os `==`, not `=`.
+
+- Class: cmd_question
+  Output: >
+    There are so many columns that you cannot really see what's going on, so let's select just the few we need. Use 
+    `select()` to only keep `ID`, `label`, `number.x` and `number.y` (please, write them in that order). `ID` and
+    `label` will help us to identify where the errors are, while comparing `number.x` and `number.y` we should see what 
+    the errors are.
+  CorrectAnswer: full_praat %>% filter(coincidence_number == FALSE) %>% select(ID, label, number.x, number.y)
+  AnswerTests: omnitest(correctExpr='full_praat %>% filter(coincidence_number == FALSE) %>% select(ID, label, number.x, number.y)')
+  Hint: Simply write the names of the four columns separated by commas. You don't need quotation marks.
+
+- Class: text
+  Output: > 
+    So the problem here laid in a single row, row 143, where `number.y` was missing the 'F1-' prefix. You probably 
+    don't remember, but actually the values in `label` typically start by 'v', but this is also not the case here. It 
+    seems that these specific row is affected by several inconsistencies. You could fix this with `str_replace()` or with 
+    `ifelse()` if you wanted to correct the tibble `vowel`. Or change it manually in the Excel file… It just depends on what you need, really.
+    
+- Class: cmd_question
+  Output: Let's do the same thing for `coincidence_context` now. Adapt the code above.
+  CorrectAnswer: full_praat %>% filter(coincidence_context == FALSE) %>% select(ID, label, context.x, context.y)
+  AnswerTests: omnitest(correctExpr='full_praat %>% filter(coincidence_context == FALSE) %>% select(ID, label, context.x, context.y)')
+  Hint: You need to adapt both the name of the column in `filter()` and the names in `select()`.
+
+- Class: cmd_question
+  Output: >
+    28 results! So there also were some inconsistencies in the annotation of the phonetic context in Praat and in Excel.
+    In order to see all 28 results in the console, add the function `print()` with a pipe to your code above and include 
+    the argument `n = 28`.
+  CorrectAnswer: full_praat %>% filter(coincidence_context == FALSE) %>% select(ID, label, context.x, context.y) %>% print(n = 28)
+  AnswerTests: omnitest(correctExpr='full_praat %>% filter(coincidence_context == FALSE) %>% select(ID, label, context.x, context.y) %>% print(n = 28)')
+  Hint: No quotations whatsoever.
+  
+- Class: text
+  Output: > 
+    Most of these discordances seem to be foiund in the use of capital letters and diacritics. Again, you could 
+    solve them in R or manually, depending on your needs. If you only want to have a tibble with the data from all 
+    three files, you could even discard one of these columns if you realise that one is consistently wrong while the other
+    one is consistently right.
+    
+- Class: text
+  Output: > 
+    The `context` column is a very important one, since this is an analysis of vowels. Let's take a closer look at it. 
+    We'll restrict ourselves to the table `vowels`, for convenience.
+    
+- Class: cmd_question
+  Output: First thing is to see how many different contexts we have. Use `distinct()`, applied to the tibble `vowels`.
+  CorrectAnswer: vowels %>% distinct(context)
+  AnswerTests: any_of_exprs('vowels %>% distinct(context)', 'distinct(vowels, context)')
+  Hint: The first argument of `distinct()` is the tibble, while the second one is the column (`context`).
+    
+- Class: text
+  Output: > 
+    There are 15 different contexts in the dataset (broadly, 'C' means 'consonant'; 'V', 'vowel' and 'N', 'nasal'). 
+    And there are several things worth noting. As you know, it makes sense to divide vocalic context between what 
+    appears before and what appears after the vowel. Before the vowel there's only one possible context: 'C'. So the
+    first element is superfluous. We could create two different columns out of `context`, one for
+    `vowel_pattern` and one for `context_after`. We can use regex for this.
+    
+    
+- Class: cmd_question
+  Output: >
+    Because of the diacritics, the easiest thing is to extract consonants with regex and leave vowels alone. Let's create
+    `context_after` by using str_extract(). We will identify all possible contexts (`C`, `_#`, `nC` and `N`) at the
+    end of the line (remember: indicated by `$`) and extract them. Since these are alternating values, you'll need parenthesis and the
+    horizontal bar |. (Please, write the contexts in that order.) Use a pipe to modify `vowels`.
+  CorrectAnswer: vowels %>% mutate(context_after = str_extract(context, "(C|_#|nC|N)$"))
+  AnswerTests: omnitest(correctExpr='vowels %>% mutate(context_after = str_extract(context, "(C|_#|nC|N)$"))')
+  Hint: Did you remember to use `mutate()`? `str_extract()` simply takes the column with the strings and the regex. The one I used was "(C|_#|nC|N)$". Maybe you used something that also worked, but that I didn't plan for.
+
+- Class: cmd_question
+  Output: >
+    In order to create `vowel_pattern`, we'll use `str_replace_all()` (in order to avoid the diacritics). 
+    So we'll desing a regex that removes both the initial C ("^C") and the regex you used above. Separate them by `|`. 
+    The last argument is a second regex, indicating the replacement, which is empty.
+  CorrectAnswer: vowels %>% mutate(context_after = str_extract(context, "(C|_#|nC|N)$")) %>% mutate(vowel_pattern = str_replace_all(context, "^C|(C|_#|nC|N)$", ""))
+  AnswerTests: any_of_exprs('vowels %>% mutate(context_after = str_extract(context, "(C|_#|nC|N)$")) %>% mutate(vowel_pattern = str_replace_all(context, "^C|(C|_#|nC|N)$", ""))', 'vowels %>% mutate(context_after = str_extract(context, "(C|_#|nC|N)$"), vowel_pattern = str_replace_all(context, "^C|(C|_#|nC|N)$", ""))')
+  Hint: >
+    You needed `mutate()` again. `str_replace_all()` takes the column with the strings, the regex you want to replace (I used "^C|(C|_#|nC|N)$") and the regex you want to replace it with (here it is empty, so: "").
+
+- Class: cmd_question
+  Output: >
+    What we did was actually tidying our data: the column `context` had different types of information and we transformed
+    them in different columns. It'd be interesting to know what kind of patterns can follow a given vowel pattern.
+    Group your tibble by `vowel_pattern` with `group_by`.
+  CorrectAnswer: vowels %>% mutate(context_after = str_extract(context, "(C|_#|nC|N)$")) %>% mutate(vowel_pattern = str_replace_all(context, "^C|(C|_#|nC|N)$", "")) %>% group_by(vowel_pattern)
+  AnswerTests: any_of_exprs('vowels %>% mutate(context_after = str_extract(context, "(C|_#|nC|N)$")) %>% mutate(vowel_pattern = str_replace_all(context, "^C|(C|_#|nC|N)$", ""))  %>% group_by(vowel_pattern)', 'vowels %>% mutate(context_after = str_extract(context, "(C|_#|nC|N)$"), vowel_pattern = str_replace_all(context, "^C|(C|_#|nC|N)$", "")) %>% group_by(vowel_pattern)')
+  Hint: Simply add `group_by(vowel_pattern)` after a pipe.
+
+- Class: cmd_question
+  Output: Now count the cases of each individual pattern that appears after the vowel (`context_after`) with `count()`. Do not sort the results.
+  CorrectAnswer: vowels %>% mutate(context_after = str_extract(context, "(C|_#|nC|N)$")) %>% mutate(vowel_pattern = str_replace_all(context, "^C|(C|_#|nC|N)$", "")) %>% group_by(vowel_pattern) %>% count(context_after)
+  AnswerTests: any_of_exprs('vowels %>% mutate(context_after = str_extract(context, "(C|_#|nC|N)$")) %>% mutate(vowel_pattern = str_replace_all(context, "^C|(C|_#|nC|N)$", ""))  %>% group_by(vowel_pattern) %>% count(context_after)', 'vowels %>% mutate(context_after = str_extract(context, "(C|_#|nC|N)$"), vowel_pattern = str_replace_all(context, "^C|(C|_#|nC|N)$", "")) %>% group_by(vowel_pattern) %>% count(context_after)')
+  Hint: Simply add `count(context_after)` after a pipe.
+  
+- Class: cmd_question
+  Output: As a last step, ungroup it.
+  CorrectAnswer: vowels %>% mutate(context_after = str_extract(context, "(C|_#|nC|N)$")) %>% mutate(vowel_pattern = str_replace_all(context, "^C|(C|_#|nC|N)$", "")) %>% group_by(vowel_pattern) %>% count(context_after) %>% ungroup()
+  AnswerTests: any_of_exprs('vowels %>% mutate(context_after = str_extract(context, "(C|_#|nC|N)$")) %>% mutate(vowel_pattern = str_replace_all(context, "^C|(C|_#|nC|N)$", ""))  %>% group_by(vowel_pattern) %>% count(context_after) %>% ungroup()', 'vowels %>% mutate(context_after = str_extract(context, "(C|_#|nC|N)$"), vowel_pattern = str_replace_all(context, "^C|(C|_#|nC|N)$", "")) %>% group_by(vowel_pattern) %>% count(context_after) %>% ungroup()')
+  Hint: Simply add ` %>% ungroup()` after a pipe.
+  
+- Class: text
+  Output: > 
+    As you can see, for all four types of vowels the same four types of following contexts appear, althougn not with the same frequency.
+    In this lesson you learnt how to compare different tables that should have the same information in order to detect possible
+    mistakes or inconsistencies, and also how to check the distribution of values (and pairs of values). These are all things that
+    researchers have to do very often, since manual annotations is rarely free of mistakes (recall that so it is automatic
+    annotation, although for different reasons). Lesson is over, you earned a break!
+
+- Class: mult_question
+  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
+  AnswerChoices: Yes;No
+  CorrectAnswer: NULL
+  AnswerTests: submit_log()
+  Hint: As you feel!
+

@@ -1,0 +1,299 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 16. Co-occurrences and graphs
+  Author: Carlota de Benito Moreno
+  Type: Standard
+  Organization: University of Zurich
+  Version: 2.4.5
+
+- Class: text
+  Output: Hi there! In our last lesson we worked with collocations, i.e., words that appear next to each other. Today we'll work with words that co-occur in the same text or piece of text.
+
+- Class: text
+  Output: >
+    We'll also explore graphs, which offer very interesting visualisations of both collocations and co-occurrences. 
+    We'll be working with the Portuguese documents of the European Parliament that we know already. 
+    You'll need a few libraries: tidyverse, tidytext, stopwords, widyr, igraph and ggraph. The last three are new for you.
+
+- Class: cmd_question
+  Output: The tibble with the five documents is already loaded in your working directory. Refresh your memory by printing it to the console, it's called `europarl_pt`.
+  CorrectAnswer: europarl_pt
+  AnswerTests: omnitest(correctExpr='europarl_pt')
+  Hint: Simply print its name, `europarl_pt`.
+
+- Class: cmd_question
+  Output: Note that I creted a `fragment` column, that groups every ten consecutive rows, which we'll use as subgrouping of our documents. I have also loaded the snowball list of Portuguese stop word in a tibble called `pt_sw`. Check it out.
+  CorrectAnswer: pt_sw
+  AnswerTests: omnitest(correctExpr='pt_sw')
+  Hint: Simply print its name, `pt_sw`.
+
+- Class: cmd_question
+  Output: Because we don't care anymore whether words are next to each other, but only that they are in the same document, we'll unnest `europarl_pt` into words. Use a pipe to create the column `word` out of the words in `content`.
+  CorrectAnswer: europarl_pt %>% unnest_tokens(word, content)
+  AnswerTests: omnitest(correctExpr='europarl_pt %>% unnest_tokens(word, content)')
+  Hint: The function you're looking for is `unnest_tokens()`.
+
+- Class: cmd_question
+  Output: Now let's use `anti_join()` to remove stopwords (`pt_sw`) from our text.
+  CorrectAnswer: europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw)
+  AnswerTests: omnitest(correctExpr='europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw)')
+  Hint: Did you use a pipe?
+  
+- Class: cmd_question
+  Output: >
+    We have a rather large tibble, and, since we want to investigate combinations of these words, we want to remove 
+    words that don't come that often. The size of the tibble is so large that R won't be able to handle some of the tasks 
+    otherwise. Let's group our tibble by `word` first.
+  CorrectAnswer: europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word)
+  AnswerTests: omnitest(correctExpr='europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word)')
+  Hint: The function you're looking for is `group_by()`.
+
+- Class: cmd_question
+  Output: >
+    Now we'll filter the resulting tibble in order to keep gropus with 10 or more words. The function `n()` identifies the
+    sizes of these groups, so with the `>=` operator you can create the logical expression to inclide in `filter()`.
+  CorrectAnswer: europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 10)
+  AnswerTests: omnitest(correctExpr='europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 10)')
+  Hint: You don't have to specify an argument in `n()`, so your logical expression is `n() >= 10`.
+  
+- Class: cmd_question
+  Output: Let's ungroup the tibble now.
+  CorrectAnswer: europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 10) %>% ungroup()
+  AnswerTests: omnitest(correctExpr='europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 10) %>% ungroup()')
+  Hint: The function you're looking for is `ungroup()` and it doesn't need any extra arguments.
+  
+- Class: cmd_question
+  Output: Our tibble is ready, so save it to `europarl_pt_words`.
+  CorrectAnswer: europarl_pt_words <- europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 10) %>% ungroup()
+  AnswerTests: omnitest(correctExpr='europarl_pt_words <- europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 10) %>% ungroup()')
+  Hint: Use the assignment operator `<-`.
+  
+- Class: cmd_question
+  Output: >
+    Now we'd like to count how often pairs of words appear in our fragments. 
+    The function `pairwise_count()` from the library `widyr` can do that. 
+    Its first argument is the tibble, the second the column with words to search for (`word`) and the third one, 
+    the column with the pieces of text (`fragment`). Add a last argument `sort = TRUE` to see the most frequent 
+    co-occurrences first. Use a pipe.
+  CorrectAnswer: europarl_pt_words %>% pairwise_count(word, fragment, sort = TRUE)
+  AnswerTests: omnitest(correctExpr='europarl_pt_words %>% pairwise_count(word, fragment, sort = TRUE)')
+  Hint: "Write the arguments in the order I describe them: remember that the first argument appears before the pipe."
+  
+- Class: text
+  Output: >
+    (You got a warning saying that `tbl_df()` is deprecated. Now that you know how functions work you can understand this
+    warning better: inside `pairwise_count()` there is a line with `tbl_df()`, which is deprecated. But that's OK, it works anyway.
+    
+- Class: text
+  Output: >
+    We got a table with one row per pair of words that appear in the same piece of text (`fragment`) and the number of fragments they appear in.
+    As you can see, this takes a while. You can also notice that our list of stopwords is not great for this task.
+    For instance, keeping 'é', which means 'is', might not very sensible. But you already know how to solve that problem, 
+    so we'll ignore it now.
+
+- Class: cmd_question
+  Output: >
+    To gain a better understanding of what `pairwise_count()` did, filter the tibble to get all co-occurrences where `item1` is "febre" ('fever').
+    Remember that `filter()` needs a logical expression.
+  CorrectAnswer: europarl_pt_words %>% pairwise_count(word, fragment, sort = TRUE) %>% filter(item1 == "febre")
+  AnswerTests: omnitest(correctExpr='europarl_pt_words %>% pairwise_count(word, fragment, sort = TRUE) %>% filter(item1 == "febre")')
+  Hint: Remember that the logical operator for equivalence is `==`, not `=`.
+  
+- Class: text
+  Output: >
+    Contrary to ngrams, these are not pairs of consecutive words, but simply words that co-appear in a given text or piece of text.
+    "febre aftosa" ('food and mouth disease') is a collocation, while "febre comissão" ('fever commission', which with the Portuguese 
+    word order cannot mean 'commission in charge of the fever thing' or something of the like) is an unlikely combination of words in Portuguese.
+    However, in the minutes of the European Parliament where the food and mouth disease was discussed, 
+    these co-occurrences show the same raw frequency.
+    
+- Class: text
+  Output: >
+    That's why calculating a correlation coefficient, which takes into account not only how often they appear together, 
+    but also how often they appear separately, can be useful. It can help discriminating what frequent co-occurrences 
+    are just a by-product of some words being extremely frequent in our texts.
+    
+- Class: cmd_question
+  Output: >
+    For calculating correlations instead of counts we have the function `pairwise_cor()`. Again, its first argument is the 
+    tibble, the second the column with words to search for (`word`) and the third one, the column with the pieces of 
+    text (`fragment`). Again, add a last argument `sort = TRUE` to see the most frequent co-occurrences first. Use a pipe.
+  CorrectAnswer: europarl_pt_words %>% pairwise_cor(word, fragment, sort = TRUE)
+  AnswerTests: omnitest(correctExpr='europarl_pt_words %>% pairwise_cor(word, fragment, sort = TRUE)')
+  Hint: The code is quite similar to the one you had for `pairwise_count()`, check it out if it's not working.
+
+- Class: text
+  Output: >
+    Two things to note: because these are not collocations, but co-occurrences, the order of appearance is not important, so we
+    basically get every result twice. Second, we found perfect correlations between collocations (Jiménez Redondo is a last
+    name, Grã Bretanha means 'Great Britain') but also of words that are very close semantically (Cuba-cubanos: 'Cuba - cubans') 
+
+- Class: text
+  Output: >
+    Correlation coefficients range from -1 to +1. While 0 means 'no correlation', +1 and -1 indicate a perfect positive 
+    or negative correlation respectively. Determining correlation strength is hard and depends on the topic under study.
+    Correlations above 0.7 or below -0.7 are typically considered strong, but for noisy data it might be impossible to get 
+    such high values and it might make sense to establish a threshold of, for instance, +/-0.4 for strong correlations.
+   
+- Class: cmd_question
+  Output: >
+    Let's filter the results to get only rows where `item1` is "febre", to compare it with the results of `pairwise_count()`.
+  CorrectAnswer: europarl_pt_words %>% pairwise_cor(word, fragment, sort = TRUE) %>% filter(item1 == "febre")
+  AnswerTests: omnitest(correctExpr='europarl_pt_words %>% pairwise_cor(word, fragment, sort = TRUE) %>% filter(item1 == "febre")')
+  Hint: Remember that the logical operator for equivalence is `==`, not `=`.
+    
+- Class: figure
+  Output: >
+    All words that relate to the general characteristics of the European Parliament ("comissão", "europeia", "presidente")
+    are now gone from the top co-occurrences of "febre". Now we got words that have to do with the specific topic, such as 
+    "vacinação" ('vaccination'), "doença" ('sickness')… Note that there's a perfect correlation with "aftosa". "Febre aftosa"
+    is the name of the disease in Portuguese: it is a collocation, so both words appeared always together and only together 
+    in our fragments. We could plot the data in a bar plot like the one that appeared in your Plots tab, but you know how to 
+    do that already! Let's learn something new.
+  Figure: Barplot.R
+  FigureType: new
+  
+- Class: figure
+  Output: >
+    We'll learn how to create this other visualisation (look at you Plots tab again), which is called a graph (zoom on it 
+    if you are seeing a chaotic word salad). It representes correlations between words of 0.7 or higher. The shade of the 
+    lines connecting the words represents the strength of the correlation.
+  Figure: Graph.R
+  FigureType: new
+  
+- Class: cmd_question
+  Output: >
+    First let's save the tibble with the correlations. We'll plot the most frequent correlations 
+    for all words, so don't save the filtered tibble, but the full one. Call it `words_correlation`.
+  CorrectAnswer: words_correlation <- europarl_pt_words %>% pairwise_cor(word, fragment, sort = TRUE)
+  AnswerTests: omnitest(correctExpr='words_correlation <- europarl_pt_words %>% pairwise_cor(word, fragment, sort = TRUE)')
+  Hint: Did you remove the last pipe from your code above, with `filter()`?
+
+- Class: cmd_question
+  Output: >
+    Now we'll filter it again, but by correlation size (column `correlation`). Keep every row with correlations of 0.7 
+    or higher. Use a pipe.
+  CorrectAnswer: words_correlation %>% filter(correlation >= 0.7)
+  AnswerTests: omnitest(correctExpr='words_correlation %>% filter(correlation >= 0.7)')
+  Hint: Remember that `filter()` needs a logical expression. The logical operator you need is `>=`.
+
+- Class: cmd_question
+  Output: >
+     The structure that underlies a graph is a bit more complex than a simple dataframe or tibble. The library `igraph` 
+     has the function `graph_from_data_frame()` in order to produce such a structure. Its only argument is the tibble or
+     dataframe, so add it empty to your pipe.
+  CorrectAnswer: words_correlation %>% filter(correlation >= 0.7) %>% graph_from_data_frame()
+  AnswerTests: omnitest(correctExpr='words_correlation %>% filter(correlation >= 0.7) %>% graph_from_data_frame()')
+  Hint: "Add the function, with no arguments inside it, with a new pipe."
+  
+- Class: cmd_question
+  Output: >
+     As you can see, the result looks nothing like other R objects you know: it has pairs of words connected by directed arrows.
+     Note that it has two attributes: name and correlation. This object represents a network of names based on their correlations. 
+     This is the object that `ggraph()` needs to plot a graph. Note that `ggraph()` is not a ggplot2 function: 
+     it belongs to the ggraph library, that, conveniently, follows the same syntax as ggplot2. Add it to your pipe.
+  CorrectAnswer: words_correlation %>% filter(correlation >= 0.7) %>% graph_from_data_frame() %>% ggraph()
+  AnswerTests: omnitest(correctExpr='words_correlation %>% filter(correlation >= 0.7) %>% graph_from_data_frame() %>% ggraph()')
+  Hint: After a new pipe operator add `ggraph()`.
+
+- Class: cmd_question
+  Output: >
+     As with `ggplot()`, the graph is empty, because we still need to add some `geom_` layers (all from the library ggraph).
+     And, as with `ggplot()`, we must use `+` instead of pipes to add them to our code. We'll first add `geom_node_text()`, with two 
+     arguments. The first one is one you already know from ggplot2: `aes()`. We want to specify the aesthetics `label`, which
+     shouls equal to the attribute whose values we want to plot as text in the graph: `name`. As a second argument (of 
+     `ggraph()`, not of `aes()`) add `repel = TRUE`, which tells `ggraph()` to avoid overlapping between labels.
+  CorrectAnswer: words_correlation %>% filter(correlation >= 0.7) %>% graph_from_data_frame() %>% ggraph() + geom_node_text(aes(label = name), repel = TRUE)
+  AnswerTests: omnitest(correctExpr='words_correlation %>% filter(correlation >= 0.7) %>% graph_from_data_frame() %>% ggraph() + geom_node_text(aes(label = name), repel = TRUE)')
+  Hint: You don't need quotations to specify the value of the argument of `aes()`.
+
+- Class: cmd_question
+  Output: >
+     This still doesn't look as the graph I showed you before. That is because there are many different ways a network 
+     can be displayed. We didn't specify a layout and R let you know that it used "stress" by default. A layout is an 
+     algorithm that specifies how to organise nodes of a network. There's one called "nicely" which tries to show a 
+     friendly visualization. Include an argument `layout` in `ggraph()` and set it to "nicely".
+  CorrectAnswer: words_correlation %>% filter(correlation >= 0.7) %>% graph_from_data_frame() %>% ggraph(layout = "nicely") + geom_node_text(aes(label = name), repel = TRUE)
+  AnswerTests: omnitest(correctExpr='words_correlation %>% filter(correlation >= 0.7) %>% graph_from_data_frame() %>% ggraph(layout = "nicely") + geom_node_text(aes(label = name), repel = TRUE)')
+  Hint: You do need quotations for "nicely" now. Make sure that you inclided `layout = "nicely"` inside `ggraph()`.
+
+- Class: cmd_question
+  Output: >
+     In order to tell `ggraph()` that we want the shades of the edges to represent the degree of the correlation we need 
+     to add a new `geom_` function, again after `+`. The function is `geom_edge_link()` and you'll again need to specify
+     an `aes()` argument. Inside add `edge_alpha = correlation`.  
+  CorrectAnswer: words_correlation %>% filter(correlation >= 0.7) %>% graph_from_data_frame() %>% ggraph(layout = "nicely") + geom_node_text(aes(label = name), repel = TRUE) + geom_edge_link(aes(edge_alpha = correlation))
+  AnswerTests: omnitest(correctExpr='words_correlation %>% filter(correlation >= 0.7) %>% graph_from_data_frame() %>% ggraph(layout = "nicely") + geom_node_text(aes(label = name), repel = TRUE) + geom_edge_link(aes(edge_alpha = correlation))')
+  Hint: Did you use a pipe or `+`? You need the latter.
+  
+- Class: cmd_question
+  Output: >
+     In order to add the dots at the end of the edges we need yet another `geom_` function: `geom_node_point()`. Let's
+     specify two arguments inside it: `color` as "lightgray" and `size` as 1.
+  CorrectAnswer: words_correlation %>% filter(correlation >= 0.7) %>% graph_from_data_frame() %>% ggraph(layout = "nicely") + geom_node_text(aes(label = name), repel = TRUE) + geom_edge_link(aes(edge_alpha = correlation)) + geom_node_point(color = "lightgray", size = 1)
+  AnswerTests: omnitest(correctExpr='words_correlation %>% filter(correlation >= 0.7) %>% graph_from_data_frame() %>% ggraph(layout = "nicely") + geom_node_text(aes(label = name), repel = TRUE) + geom_edge_link(aes(edge_alpha = correlation)) + geom_node_point(color = "lightgray", size = 1)')
+  Hint: You only need quotations for "lightgray", not for 1. Remember that you must add `geom_node_point()` with `+`!
+
+- Class: cmd_question
+  Output: We're almost there! Let's simply add `theme_void()` to remove the grey background. No arguments needed.
+  CorrectAnswer: words_correlation %>% filter(correlation >= 0.7) %>% graph_from_data_frame() %>% ggraph(layout = "nicely") + geom_node_text(aes(label = name), repel = TRUE) + geom_edge_link(aes(edge_alpha = correlation)) + geom_node_point(color = "lightgray", size = 1) + theme_void()
+  AnswerTests: omnitest(correctExpr='words_correlation %>% filter(correlation >= 0.7) %>% graph_from_data_frame() %>% ggraph(layout = "nicely") + geom_node_text(aes(label = name), repel = TRUE) + geom_edge_link(aes(edge_alpha = correlation)) + geom_node_point(color = "lightgray", size = 1) + theme_void()')
+  Hint: Remember that you must add it with `+`!
+
+- Class: text
+  Output: >
+    Congratulations! You just learnt how to represent a network of values! Let's compare this network based on 
+    co-occurrences to a similar one based on collocations.
+    
+- Class: cmd_question
+  Output: I have loaded the tibble `europarl_pt_bigram_sep` in your environment, which we created during our last lesson. Check it out to refresh your memory.
+  CorrectAnswer: europarl_pt_bigram_sep
+  AnswerTests: omnitest(correctExpr='europarl_pt_bigram_sep')
+  Hint: Simply print its name.
+  
+- Class: cmd_question
+  Output: >
+    Remember that columns `word1` and `word2` form a single bigram. Let's count how many instances of each bigram there are.
+    Add `count()` with a pipe. You want to count both columns, so you need to specify them both. Add also `sort = TRUE`.
+  CorrectAnswer: europarl_pt_bigram_sep %>% count(word1, word2, sort = TRUE)
+  AnswerTests: omnitest(correctExpr='europarl_pt_bigram_sep %>% count(word1, word2, sort = TRUE)')
+  Hint: Simply add `word1` and `word2` separated by commas, not in a vector or anything like that.
+    
+- Class: cmd_question
+  Output: >
+    Again, let's filter the most frequen ones. Keep only rows where `n` is 50 or higher.
+  CorrectAnswer: europarl_pt_bigram_sep %>% count(word1, word2, sort = TRUE) %>% filter(n >= 50)
+  AnswerTests: omnitest(correctExpr='europarl_pt_bigram_sep %>% count(word1, word2, sort = TRUE) %>% filter(n >= 50)')
+  Hint: "Recall that `filter()` needs a logical expression: use on of the operators you used above."
+
+- Class: cmd_question
+  Output: >
+    Now you can copy the code from the graph above, since we'll only need some minor adaptations. Obviously, there's no
+    `correlation` column here, and we're interested in `n` instead. Adapt `geom_edge_link()`. Also, remove the line with
+    `geom_node_point()`, you'll se why later.
+  CorrectAnswer: europarl_pt_bigram_sep %>% count(word1, word2, sort = TRUE) %>% filter(n >= 50) %>% graph_from_data_frame() %>% ggraph(layout = "nicely") + geom_node_text(aes(label = name), repel = TRUE) + geom_edge_link(aes(edge_alpha = n)) + theme_void()
+  AnswerTests: omnitest(correctExpr='europarl_pt_bigram_sep %>% count(word1, word2, sort = TRUE) %>% filter(n >= 50) %>% graph_from_data_frame() %>% ggraph(layout = "nicely") + geom_node_text(aes(label = name), repel = TRUE) + geom_edge_link(aes(edge_alpha = n)) + theme_void()')
+  Hint: Did you copy the code above from the line with `graph_from_data_frame()`?
+
+- Class: cmd_question
+  Output: >
+    I asked you to remove `geom_node_point()` because I want to use arrows instead. In collocations, knowing which word comes
+    first and which one second makes an important difference. In `geom_edge_link()` add a new argument called `arrow`. 
+    After the equal sign you'll need the function `arrow()`. A bit redundant, I know. Inside of `arrow()` add two
+    arguments: `type = "closed"` and `length = unit(3, "mm")`. This specifies what the arrow should look like.
+  CorrectAnswer: europarl_pt_bigram_sep %>% count(word1, word2, sort = TRUE) %>% filter(n >= 50) %>% graph_from_data_frame() %>% ggraph(layout = "nicely") + geom_node_text(aes(label = name), repel = TRUE) + geom_edge_link(aes(edge_alpha = n), arrow = arrow(type = "closed", length = unit(3, "mm"))) + theme_void()
+  AnswerTests: omnitest(correctExpr='europarl_pt_bigram_sep %>% count(word1, word2, sort = TRUE) %>% filter(n >= 50) %>% graph_from_data_frame() %>% ggraph(layout = "nicely") + geom_node_text(aes(label = name), repel = TRUE) + geom_edge_link(aes(edge_alpha = n), arrow = arrow(type = "closed", length = unit(3, "mm"))) + theme_void()')
+  Hint: Did you write the `arrow` argument inside `geom_edge_link()` or inside `aes()`?
+
+- Class: text
+  Output: >
+    There's a lot to learn about Portuguese form this graph, since we get lexical collocations (direitos humanos 'human rights',
+    estados membros 'member states'), prepositional collocations (luta contra 'fight against') and grammatical collocations
+    (além disso 'moreover'). Plus, it's a quite cool visualisation :) But it was a lot, let's take a break now!
+    
+- Class: mult_question
+  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
+  AnswerChoices: Yes;No
+  CorrectAnswer: NULL
+  AnswerTests: submit_log()
+  Hint: As you feel!
