@@ -50,22 +50,23 @@
 
 - Class: cmd_question
   Output: >
-    Now we'll filter the resulting tibble in order to keep gropus with 10 or more words. The function `n()` identifies the
-    sizes of these groups, so with the `>=` operator you can create the logical expression to inclide in `filter()`.
-  CorrectAnswer: europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 10)
-  AnswerTests: omnitest(correctExpr='europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 10)')
-  Hint: You don't have to specify an argument in `n()`, so your logical expression is `n() >= 10`.
+    Now we'll filter the resulting tibble in order to keep groups with 10 or more words. The function `n()` identifies the
+    sizes of these groups, so with the `>=` operator you can create the logical expression to inclide in `filter()`. 
+    If you're afraid that your computer will go too slowly, keep groups of 30 or more words.
+  CorrectAnswer: europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 30)
+  AnswerTests: any_of_exprs('europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 10)', 'europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 30)')
+  Hint: You don't have to specify an argument in `n()`, so your logical expression is `n() >= 10` or `n() >= 30`.
   
 - Class: cmd_question
   Output: Let's ungroup the tibble now.
-  CorrectAnswer: europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 10) %>% ungroup()
-  AnswerTests: omnitest(correctExpr='europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 10) %>% ungroup()')
+  CorrectAnswer: europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 30) %>% ungroup()
+  AnswerTests: any_of_exprs('europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 10) %>% ungroup()', 'europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 30) %>% ungroup()')
   Hint: The function you're looking for is `ungroup()` and it doesn't need any extra arguments.
   
 - Class: cmd_question
   Output: Our tibble is ready, so save it to `europarl_pt_words`.
-  CorrectAnswer: europarl_pt_words <- europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 10) %>% ungroup()
-  AnswerTests: omnitest(correctExpr='europarl_pt_words <- europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 10) %>% ungroup()')
+  CorrectAnswer: europarl_pt_words <- europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 30) %>% ungroup()
+  AnswerTests: any_of_exprs('europarl_pt_words <- europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 10) %>% ungroup()', 'europarl_pt_words <- europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 30) %>% ungroup()')
   Hint: Use the assignment operator `<-`.
   
 - Class: cmd_question
@@ -125,8 +126,9 @@
 - Class: text
   Output: >
     Two things to note: because these are not collocations, but co-occurrences, the order of appearance is not important, so we
-    basically get every result twice. Second, we found perfect correlations between collocations (Jiménez Redondo is a last
-    name, Grã Bretanha means 'Great Britain') but also of words that are very close semantically (Cuba-cubanos: 'Cuba - cubans') 
+    basically get every result twice. Second, we found perfect correlations between collocations (Jiménez Redondo and Kreissl-Dörfler are last
+    name, Grã Bretanha and Reino Unido mean 'Great Britain' and 'United Kingdom') but also of words that are very close semantically 
+    (Cuba-cubanos: 'Cuba - cubans'; vinhos-enológicas: 'wine - oenological') 
 
 - Class: text
   Output: >
@@ -148,8 +150,8 @@
     are now gone from the top co-occurrences of "febre". Now we got words that have to do with the specific topic, such as 
     "vacinação" ('vaccination'), "doença" ('sickness')… Note that there's a perfect correlation with "aftosa". "Febre aftosa"
     is the name of the disease in Portuguese: it is a collocation, so both words appeared always together and only together 
-    in our fragments. We could plot the data in a bar plot like the one that appeared in your Plots tab, but you know how to 
-    do that already! Let's learn something new.
+    in our fragments. We could plot the data in a bar plot like the one that appeared in your Plots tab (or similar to it, 
+    depending on whether you selected groups of 10 or 30 words), but you know how to do that already! Let's learn something new.
   Figure: Barplot.R
   FigureType: new
   

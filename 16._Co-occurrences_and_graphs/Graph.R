@@ -3,7 +3,7 @@ graph <- europarl_pt %>%
   unnest_tokens(word, content) %>% 
   anti_join(pt_sw) %>% 
   group_by(word) %>%
-  filter(n() >= 10) %>% 
+  filter(n() >= 30) %>% 
   ungroup() %>% 
   pairwise_cor(word, fragment, sort = TRUE) %>%
   filter(correlation >= .7) %>% 
