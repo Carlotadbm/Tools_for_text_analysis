@@ -1,0 +1,319 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 18. Case study II. Transforming Praat data
+  Author: Carlota de Benito Moreno
+  Type: Standard
+  Organization: University of Zurich
+  Version: 2.4.5
+
+- Class: text
+  Output: Hi there! In this session we'll transform a Praat file into a tibble. The Praat file is a semistructured txt file which we can transform with a little imagination. It will take a few steps, though… I absolutely recommend you write your code in a script, because our chunks of code are gonna get large this time.
+
+- Class: cmd_question
+  Output: Let's first read the file, which should be in you working directory already. I'ts called "F1_all.TextGrid". Although it is a txt file, we'll read it with `read_delim()`. Set `delim` to "\t" and `col_names` to "text", which will be the name of our single column.
+  CorrectAnswer: read_delim("F1_all.TextGrid", delim = "\t", col_names = "text")
+  AnswerTests: omnitest(correctExpr='read_delim("F1_all.TextGrid", delim = "\t", col_names = "text")')
+  Hint: The function `read_delim()` takes the name of the file as its first argument.
+
+- Class: cmd_question
+  Output: As you can see, each row has one piece of information, which consist of a tag and its content. Tags and contents are separated by an equal sign. Some rows, however, have only tags and end in ":", since their content are the following rows. That complicates things a little bit. Save the tibble as `textgrid`.
+  CorrectAnswer: textgrid <- read_delim("F1_all.TextGrid", delim = "\t", col_names = "text")
+  AnswerTests: omnitest(correctExpr='textgrid <- read_delim("F1_all.TextGrid", delim = "\t", col_names = "text")')
+  Hint: Use the assignment operator `<-` to assign the name.
+
+- Class: cmd_question
+  Output: This TextGrid file had 3 tiers, all of which start by a row with the information `item [n]`. That is, the first tier starts in row 8 of our tibble. Which means that we don't need the 7 first rows. Remove them with `slice()`. Use a pipe.
+  CorrectAnswer: textgrid %>% slice(-(1:7))
+  AnswerTests: any_of_exprs('textgrid %>% slice(-(1:7))', 'textgrid %>% slice(-c(1:7))')
+  Hint: You'll need to use the `-` sign to indicat the you want to remove lines 1:7 and a parenthesis in order to apply `-` to the whole vector.
+
+- Class: cmd_question
+  Output: Now, because the structure of TextGrid largely relies in the order of its lines, let's create a column `line_number` with the line numbers. Use `seq_along()`.
+  CorrectAnswer: textgrid %>% slice(-(1:7)) %>% mutate(line_number = seq_along(text))
+  AnswerTests: any_of_exprs('textgrid %>% slice(-(1:7)) %>% mutate(line_number = seq_along(text))', 'textgrid %>% slice(-c(1:7)) %>% mutate(line_number = seq_along(text))')
+  Hint: Did you use `mutate()`? You need it in order to create a new column. The single argument of seq_along should be `text`, since it's the only column we have.
+
+- Class: cmd_question
+  Output: Let's save it now as `textgrid_cleaner`.
+  CorrectAnswer: textgrid_cleaner <- textgrid %>% slice(-(1:7)) %>% mutate(line_number = seq_along(text))
+  AnswerTests: any_of_exprs('textgrid_cleaner <- textgrid %>% slice(-(1:7)) %>% mutate(line_number = seq_along(text))', 'textgrid_cleaner <- textgrid %>% slice(-c(1:7)) %>% mutate(line_number = seq_along(text))')
+  Hint: Use the assignment operator `<-` to assign the name.
+
+- Class: text
+  Output: In order to transform this tibble into a structured table, we first need to create a column that identifies to which tier each rows belongs. We'll also have to clean column `text` a little bit so that we can separate it in two colums (`tag` and `content`). Let's go!
+  
+- Class: cmd_question
+  Output: Because not all tiers have the same length (tiers 2 and 3 have the same number of subdivisions, called `intervals` in the TextGrid, but tier 1 has less), we need to find out where each `item` starts. Let's filter `textgrid_cleaner` using `str_detect()` to keep all columns with the word "item" in column `text`. Use a pipe.
+  CorrectAnswer: textgrid_cleaner %>% filter(str_detect(text, "item"))
+  AnswerTests: omnitest(correctExpr='textgrid_cleaner %>%  filter(str_detect(text, "item"))')
+  Hint: The function `filter()` takes a logical vector, which in this case must be defined using `str_detect()`, which should take the column `text` as its first argument and the regular expression ("item" is enough) as its second argument.
+  
+- Class: cmd_question
+  Output: >
+    We got a tibble with three rows: now we know at which line each tier begins. 
+    Now we must calculate the number of rows each one contains by substracting the first line of each 
+    tier from the first line of the previous tier. We can use `lead()` for that. 
+    Create a new column called `repetitions` where you substract `line_number` from the lead of `line_number`.
+    You'll have to add a `default` argument to `lead()` that equal the number of rows of textgrid_cleaner + 1
+    (`nrow(textgrid_cleaner) + 1`).
+  CorrectAnswer: textgrid_cleaner %>% filter(str_detect(text, "item")) %>% mutate(repetitions = lead(line_number, default = nrow(textgrid_cleaner) + 1) - line_number) 
+  AnswerTests: omnitest(correctExpr='textgrid_cleaner %>%  filter(str_detect(text, "item"))  %>% mutate(repetitions = lead(line_number, default = nrow(textgrid_cleaner) + 1) - line_number)')
+  Hint: Did you use `mutate()` to create your new column? 
+
+- Class: cmd_question
+  Output: Save it now to `textgrid_items`.
+  CorrectAnswer: textgrid_items <- textgrid_cleaner %>% filter(str_detect(text, "item")) %>% mutate(repetitions = lead(line_number, default = nrow(textgrid_cleaner) + 1) - line_number) 
+  AnswerTests: omnitest(correctExpr='textgrid_items <- textgrid_cleaner %>%  filter(str_detect(text, "item")) %>% mutate(repetitions = lead(line_number, default = nrow(textgrid_cleaner) + 1) - line_number)')
+  Hint: Use the assignment operator `<-` to assign the name.
+
+- Class: cmd_question
+  Output: >
+    Now we'll use that new tibble to create a new column of `textgrid_cleaner` that has the tier number.
+    Call it `tiers`. We simply need to repeat the values 1, 2 and 3 as many times as `textgrid_items$repetitions`
+    says, so use rep() to create this colum: its first argument should be 1:3, while `textgrid_items$repetitions` 
+    is its second argument.
+  CorrectAnswer: textgrid_cleaner %>% mutate(tiers = rep(1:3, textgrid_items$repetitions))
+  AnswerTests: omnitest(correctExpr='textgrid_cleaner %>% mutate(tiers = rep(1:3, textgrid_items$repetitions))')
+  Hint: Did you remember to use `mutate()` to create `tiers`?
+  
+- Class: cmd_question
+  Output: >
+    There are a few rows with information that we don't really need right now. We could use regex to filter them out.
+    But since we know that they are the first six rows in each tier we can take a different approach. We'll group 
+    the tibble by `tiers` using `group_by()`, we'll slice the first 6 rows out and we'll ungroup the tibble again.
+    Do that now: you'll need three new pipes!
+  CorrectAnswer: textgrid_cleaner %>% mutate(tiers = rep(1:3, textgrid_items$repetitions)) %>% group_by(tiers) %>% slice(-(1:6)) %>% ungroup()
+  AnswerTests: omnitest(correctExpr='textgrid_cleaner %>% mutate(tiers = rep(1:3, textgrid_items$repetitions)) %>% group_by(tiers) %>% slice(-(1:6)) %>% ungroup()')
+  Hint: As the argument of `slice()` please use -(1:6). There are other options that also work, of course. Remember that `ungroup()` does not require any argument.
+
+- Class: cmd_question
+  Output: >
+    Let's clean `text` up a bit now. Let's remove all the spaces first. Use `str_replace_all()`, which 
+    needs 3 arguments: the column (`text`), the regex that you want to replace (simply " ") and the
+    string you want to replace it with (simply "").
+  CorrectAnswer: textgrid_cleaner %>% mutate(tiers = rep(1:3, textgrid_items$repetitions)) %>% group_by(tiers) %>% slice(-(1:6)) %>% ungroup() %>% mutate(text = str_replace_all(text, " ", ""))
+  AnswerTests: omnitest(correctExpr='textgrid_cleaner %>% mutate(tiers = rep(1:3, textgrid_items$repetitions)) %>% group_by(tiers) %>% slice(-(1:6)) %>% ungroup()  %>% mutate(text = str_replace_all(text, " ", ""))')
+  Hint: Did you use `mutate()` to modify `text`?
+
+- Class: cmd_question
+  Output: >
+    All rows except the ones that specify the number of the interval have a `=` that separates the
+    tag from its content. Let's add `=` to those rows now with `str_replace()`. You want to replace
+    all "[" by "=[". But because "[" is a special character in regex you need to escape it (only in the
+    second argument, since the third one is a string). Do this with a NEW mutate, please.
+  CorrectAnswer: >
+    textgrid_cleaner %>% mutate(tiers = rep(1:3, textgrid_items$repetitions)) %>% group_by(tiers) %>% slice(-(1:6)) %>% ungroup() %>% mutate(text = str_replace_all(text, " ", "")) %>% mutate(text = str_replace(text, "\\[", "=["))
+  AnswerTests: omnitest(correctExpr='textgrid_cleaner %>% mutate(tiers = rep(1:3, textgrid_items$repetitions)) %>% group_by(tiers) %>% slice(-(1:6)) %>% ungroup()  %>% mutate(text = str_replace_all(text, " ", "")) %>% mutate(text = str_replace(text, "\\\\[", "=["))')
+  Hint: Your regex is "\\[" and you string is "=[".
+  
+- Class: cmd_question
+  Output: >
+    We're almost ready for separating and then spreading, but for that last step you might remember that we need an index column that indicates
+    which rows go together by assigning the same number. Because each interval consists of 4 rows (`intervals`,
+    `xmin`, `xmax` and `text`), we need to create a new column where each number is repeated four times. We'll
+    do that as we did a few weeks above, by combining `ceiling()` and `seq_along()`. Create `index` by 
+    dividing `seq_along(text)` by 4 and calculating its ceiling. Add it as a NEW mutate again, please.
+  CorrectAnswer: >
+    textgrid_cleaner %>% mutate(tiers = rep(1:3, textgrid_items$repetitions)) %>% group_by(tiers) %>% slice(-(1:6)) %>% ungroup() %>% mutate(text = str_replace_all(text, " ", "")) %>% mutate(text = str_replace(text, "\\[", "=[")) %>% mutate(index = ceiling(seq_along(text)/4))
+  AnswerTests: omnitest(correctExpr='textgrid_cleaner %>% mutate(tiers = rep(1:3, textgrid_items$repetitions)) %>% group_by(tiers) %>% slice(-(1:6)) %>% ungroup()  %>% mutate(text = str_replace_all(text, " ", "")) %>% mutate(text = str_replace(text, "\\\\[", "=[")) %>% mutate(index = ceiling(seq_along(text)/4))')
+  Hint: The column `index` should equal `ceiling(seq_along(text)/4)`.
+  
+- Class: cmd_question
+  Output: Let's separate `text` now into two new columns, `tag` and `content`, using `sep = "="`.
+  CorrectAnswer: >
+    textgrid_cleaner %>% mutate(tiers = rep(1:3, textgrid_items$repetitions)) %>% group_by(tiers) %>% slice(-(1:6)) %>% ungroup() %>% mutate(text = str_replace_all(text, " ", "")) %>% mutate(text = str_replace(text, "\\[", "=[")) %>% mutate(index = ceiling(seq_along(text)/4)) %>% separate(text, into = c("tag", "content"), sep = "=") 
+  AnswerTests: omnitest(correctExpr='textgrid_cleaner %>% mutate(tiers = rep(1:3, textgrid_items$repetitions)) %>% group_by(tiers) %>% slice(-(1:6)) %>% ungroup()  %>% mutate(text = str_replace_all(text, " ", "")) %>% mutate(text = str_replace(text, "\\\\[", "=[")) %>% mutate(index = ceiling(seq_along(text)/4)) %>% separate(text, into = c("tag", "content"), sep = "=")')
+  Hint: The second argument of separate() is called `into` and takes a vector with the names of the new columns (which need quotation marks).
+
+- Class: cmd_question
+  Output: Column `line_number` is quite unnecessary now, so let's remove it using `select()`.
+  CorrectAnswer: >
+    textgrid_cleaner %>% mutate(tiers = rep(1:3, textgrid_items$repetitions)) %>% group_by(tiers) %>% slice(-(1:6)) %>% ungroup() %>% mutate(text = str_replace_all(text, " ", "")) %>% mutate(text = str_replace(text, "\\[", "=[")) %>% mutate(index = ceiling(seq_along(text)/4)) %>% separate(text, into = c("tag", "content"), sep = "=") %>% select(-line_number)
+  AnswerTests: omnitest(correctExpr='textgrid_cleaner %>% mutate(tiers = rep(1:3, textgrid_items$repetitions)) %>% group_by(tiers) %>% slice(-(1:6)) %>% ungroup()  %>% mutate(text = str_replace_all(text, " ", "")) %>% mutate(text = str_replace(text, "\\\\[", "=[")) %>% mutate(index = ceiling(seq_along(text)/4)) %>% separate(text, into = c("tag", "content"), sep = "=") %>% select(-line_number)')
+  Hint: Did you remember to use `-` before `line_number` to indicate that you want to remove it instead of keeping it?
+
+- Class: cmd_question
+  Output: We're ready for `spread()`! We want `intervals`, `xmin`, `xmax` and `text` to be columns. The first argument of spread is the column with the names of the columns (`tag`), while the second is the one with their content (`content`).
+  CorrectAnswer: >
+    textgrid_cleaner %>% mutate(tiers = rep(1:3, textgrid_items$repetitions)) %>% group_by(tiers) %>% slice(-(1:6)) %>% ungroup() %>% mutate(text = str_replace_all(text, " ", "")) %>% mutate(text = str_replace(text, "\\[", "=[")) %>% mutate(index = ceiling(seq_along(text)/4)) %>% separate(text, into = c("tag", "content"), sep = "=") %>% select(-line_number) %>% spread(tag, content) 
+  AnswerTests: omnitest(correctExpr='textgrid_cleaner %>% mutate(tiers = rep(1:3, textgrid_items$repetitions)) %>% group_by(tiers) %>% slice(-(1:6)) %>% ungroup()  %>% mutate(text = str_replace_all(text, " ", "")) %>% mutate(text = str_replace(text, "\\\\[", "=[")) %>% mutate(index = ceiling(seq_along(text)/4)) %>% separate(text, into = c("tag", "content"), sep = "=") %>% select(-line_number) %>% spread(tag, content)')
+  Hint: Add `spread(tag, content)` with a pipe.
+
+- Class: cmd_question
+  Output: > 
+    One last thing: all columns are classifed as "chr", but we'd like `xmax` and `xmin` to be coded as numbers. 
+    Transform them using `mutate()` and as.double(). Use a single mutate with two lines.
+  CorrectAnswer: >
+    textgrid_cleaner %>% mutate(tiers = rep(1:3, textgrid_items$repetitions)) %>% group_by(tiers) %>% slice(-(1:6)) %>% ungroup() %>% mutate(text = str_replace_all(text, " ", "")) %>% mutate(text = str_replace(text, "\\[", "=[")) %>% mutate(index = ceiling(seq_along(text)/4)) %>% separate(text, into = c("tag", "content"), sep = "=") %>% select(-line_number) %>% spread(tag, content) %>% mutate(xmax = as.double(xmax), xmin = as.double(xmin))
+  AnswerTests: any_of_exprs('textgrid_cleaner %>% mutate(tiers = rep(1:3, textgrid_items$repetitions)) %>% group_by(tiers) %>% slice(-(1:6)) %>% ungroup()  %>% mutate(text = str_replace_all(text, " ", "")) %>% mutate(text = str_replace(text, "\\\\[", "=[")) %>% mutate(index = ceiling(seq_along(text)/4)) %>% separate(text, into = c("tag", "content"), sep = "=") %>% select(-line_number) %>% spread(tag, content) %>% mutate(xmax = as.double(xmax), xmin = as.double(xmin))', 'textgrid_cleaner %>% mutate(tiers = rep(1:3, textgrid_items$repetitions)) %>% group_by(tiers) %>% slice(-(1:6)) %>% ungroup()  %>% mutate(text = str_replace_all(text, " ", "")) %>% mutate(text = str_replace(text, "\\\\[", "=[")) %>% mutate(index = ceiling(seq_along(text)/4)) %>% separate(text, into = c("tag", "content"), sep = "=") %>% select(-line_number) %>% spread(tag, content) %>% mutate(xmin = as.double(xmin), xmax = as.double(xmax))')
+  Hint: You simply need `as.double(xmax)` and `as.double(xmin)` to get what you want, properly included in `mutate()` of course.
+
+- Class: cmd_question
+  Output: Let's save this extremely large pipe as a tibble called `textgrid_cleaner_all`.
+  CorrectAnswer: >
+    textgrid_cleaner_all <- textgrid_cleaner %>% mutate(tiers = rep(1:3, textgrid_items$repetitions)) %>% group_by(tiers) %>% slice(-(1:6)) %>% ungroup() %>% mutate(text = str_replace_all(text, " ", "")) %>% mutate(text = str_replace(text, "\\[", "=[")) %>% mutate(index = ceiling(seq_along(text)/4)) %>% separate(text, into = c("tag", "content"), sep = "=") %>% select(-line_number) %>% spread(tag, content) %>% mutate(xmax = as.double(xmax), xmin = as.double(xmin))
+  AnswerTests: any_of_exprs('textgrid_cleaner_all <- textgrid_cleaner %>% mutate(tiers = rep(1:3, textgrid_items$repetitions)) %>% group_by(tiers) %>% slice(-(1:6)) %>% ungroup()  %>% mutate(text = str_replace_all(text, " ", "")) %>% mutate(text = str_replace(text, "\\\\[", "=[")) %>% mutate(index = ceiling(seq_along(text)/4)) %>% separate(text, into = c("tag", "content"), sep = "=") %>% select(-line_number) %>% spread(tag, content) %>% mutate(xmax = as.double(xmax), xmin = as.double(xmin))', 'textgrid_cleaner_all <- textgrid_cleaner %>% mutate(tiers = rep(1:3, textgrid_items$repetitions)) %>% group_by(tiers) %>% slice(-(1:6)) %>% ungroup()  %>% mutate(text = str_replace_all(text, " ", "")) %>% mutate(text = str_replace(text, "\\\\[", "=[")) %>% mutate(index = ceiling(seq_along(text)/4)) %>% separate(text, into = c("tag", "content"), sep = "=") %>% select(-line_number) %>% spread(tag, content) %>% mutate(xmin = as.double(xmin), xmax = as.double(xmax))')
+  Hint: Use the assignment operator `<-` to assign the name.
+
+- Class: text
+  Output: We're quite close now. The only problem is that our tiers are still one below each other, but we'd like to have this information in different columns. `spread` can't help us now, because the tiers have different number of rows and because all their columns are called the same. So we'll create three different tibbles, one per tier, and join them afterwards.
+
+- Class: cmd_question
+  Output: We'll start by tier 1. Filter `textgrid_cleaner_all` in order to keep only the rows in tier 1, which have value 1 in the column `tiers`.
+  CorrectAnswer: textgrid_cleaner_all %>% filter(tiers == 1)
+  AnswerTests: omnitest(correctExpr='textgrid_cleaner_all %>% filter(tiers == 1)')
+  Hint: Remember that the equivalence operator is `==`, so the logical expression you need in `filter()` is `tiers == 1`.
+
+- Class: cmd_question
+  Output: Column `text` actuallly has the same information as `word` in the Excel table `formants`, so let's rename it. And, since we're at it, rename `index` as `word_intervals`, since it has the same information as `intervals`, but cleaner. Use a pipe, but a single `rename()`.
+  CorrectAnswer: textgrid_cleaner_all %>% filter(tiers == 1) %>% rename(word = text, word_intervals = index)
+  AnswerTests: any_of_exprs('textgrid_cleaner_all %>% filter(tiers == 1) %>% rename(word = text, word_intervals = index)', 'textgrid_cleaner_all %>% filter(tiers == 1) %>% rename(word_intervals = index, word = text)')
+  Hint: Remember that the structure of the argument of `rename()` is new_name = old_name.
+
+- Class: cmd_question
+  Output: >
+    In order for `word` to be exactly the same as in the Excel table we need to remove the quotation marks. 
+    You might be thinking there are also some extra backslahses, but they're simply escaping the quotation 
+    mark, they're not really there (I know that's weird…). Use `str_replace_all()` to remove quotation
+    marks from `word`. Instead of escaping them, use simple quotation marks to identify the double quotation mark: '"'.
+  CorrectAnswer: textgrid_cleaner_all %>% filter(tiers == 1) %>% rename(word = text, word_intervals = index) %>% mutate(word = str_replace_all(word, '"', ""))
+  AnswerTests: any_of_exprs("textgrid_cleaner_all %>% filter(tiers == 1) %>% rename(word = text, word_intervals = index) %>% mutate(word = str_replace_all(word, '\"', \"\"))", "textgrid_cleaner_all %>% filter(tiers == 1) %>% rename(word_intervals = index, word = text) %>% mutate(word = str_replace_all(word, '\"', \"\"))")
+  Hint: >
+    Did you remember to use `mutate()`? This is what `word` should be equal to: `str_replace_all(word, '"', "")`.
+
+- Class: cmd_question
+  Output: Last, we don't need columns `tiers` and `intervals` anymore, so let's get rid of them with `select()`.
+  CorrectAnswer: textgrid_cleaner_all %>% filter(tiers == 1) %>% rename(word = text, word_intervals = index) %>% mutate(word = str_replace_all(word, '"', "")) %>% select(-c(tiers, intervals))
+  AnswerTests: any_of_exprs("textgrid_cleaner_all %>% filter(tiers == 1) %>% rename(word = text, word_intervals = index) %>% mutate(word = str_replace_all(word, '\"', \"\")) %>% select(-c(tiers, intervals))", "textgrid_cleaner_all %>% filter(tiers == 1) %>% rename(word_intervals = index, word = text) %>% mutate(word = str_replace_all(word, '\"', \"\")) %>% select(-c(tiers, intervals))")
+  Hint: As an argument of `select()` you need a vector (use `c()`) with the names of the columns, which don't need quotation marks. Don't forget that you need `-` before that vector!
+
+- Class: cmd_question
+  Output: We're ready! Let's save it as `textgrid_1`.
+  CorrectAnswer: textgrid_1 <- textgrid_cleaner_all %>% filter(tiers == 1) %>% rename(word = text, word_intervals = index) %>% mutate(word = str_replace_all(word, '"', "")) %>% select(-c(tiers, intervals))
+  AnswerTests: any_of_exprs("textgrid_1 <- textgrid_cleaner_all %>% filter(tiers == 1) %>% rename(word = text, word_intervals = index) %>% mutate(word = str_replace_all(word, '\"', \"\")) %>% select(-c(tiers, intervals))", "textgrid_1 <- textgrid_cleaner_all %>% filter(tiers == 1) %>% rename(word_intervals = index, word = text) %>% mutate(word = str_replace_all(word, '\"', \"\")) %>% select(-c(tiers, intervals))")
+  Hint: Use the assignment operator `<-` to assign the name.
+
+- Class: text
+  Output: The code we need for creating `textgrid_2` is quite similar, so we can recycle the one we just used. Copy it and paste it again in your script.
+
+  
+- Class: cmd_question
+  Output: >
+    We' need some adaptations, of course. First, we want to filter `tiers` with the value 2, not 1.
+    We want to rename `text` as `label`, which is the name it has in the `formants` Excel table. 
+    And we also want to rename `xmax` as `xmax2` and `xmin` as `xmin` as `xmin2`, because they don't have 
+    the same values as those in `textgrid1`. Again, use only one `rename()` (and rename them in the order I told you, please).
+    In our `mutate()` the only thing that changes is that we're dealing with `label` now, not with `word`.
+    And the columns we want to remove are `tiers`, `intervals` and, this time, also `index`. (In this order, please!)
+    Don't save it yet, let's look at the result first.
+  CorrectAnswer: textgrid_cleaner_all %>% filter(tiers == 2) %>% rename(label = text, xmax2 = xmax, xmin2 = xmin) %>% mutate(label = str_replace_all(label, '"', "")) %>% select(-c(tiers, intervals, index))
+  AnswerTests: omnitest(correctExpr="textgrid_cleaner_all %>% filter(tiers == 2) %>% rename(label = text, xmax2 = xmax, xmin2 = xmin) %>% mutate(label = str_replace_all(label, '\"', \"\")) %>% select(-c(tiers, intervals, index))")
+  Hint: Did you adapt everything in your code?
+
+- Class: cmd_question
+  Output: Now it's time to save it, as `textgrid_2`.
+  CorrectAnswer: textgrid_2 <- textgrid_cleaner_all %>% filter(tiers == 2) %>% rename(label = text, xmax2 = xmax, xmin2 = xmin) %>% mutate(label = str_replace_all(label, '"', "")) %>% select(-c(tiers, intervals, index))
+  AnswerTests: omnitest(correctExpr="textgrid_2 <- textgrid_cleaner_all %>% filter(tiers == 2) %>% rename(label = text, xmax2 = xmax, xmin2 = xmin) %>% mutate(label = str_replace_all(label, '\"', \"\")) %>% select(-c(tiers, intervals, index))")
+  Hint: Use the assignment operator `<-` to assign the name.
+  
+- Class: cmd_question
+  Output: >
+    For `textgrid_3` we can again copy our last chunk of code and adapt it a little bit.
+    First, we want to filter `tiers` with value 3, not 2 or 1.
+    We want to rename `text` as `context`, which is the name it has in the `voyelles` Excel table. 
+    We don't need to rename anything else, because `xmax` and `xmin` are the same as in `textgrid_2`, so they're superfluous.
+    In our `mutate()` the only thing that changes is that we're dealing with `context` now, not with `label` or  `word`.
+    And now we want to remove are `tiers`, `intervals`, `index` plus `xmax` and `xmin`. (In this order, please!)
+    Don't save it yet, let's look at the result first.
+  CorrectAnswer: textgrid_cleaner_all %>% filter(tiers == 3) %>% rename(context = text) %>% mutate(context = str_replace_all(context, '"', "")) %>% select(-c(tiers, index, intervals, xmax, xmin))
+  AnswerTests: omnitest(correctExpr="textgrid_cleaner_all %>% filter(tiers == 3) %>% rename(context = text) %>% mutate(context = str_replace_all(context, '\"', \"\")) %>% select(-c(tiers, index, intervals, xmax, xmin))")
+  Hint: Did you adapt everything in your code? Check the order of the arguments in `rename()`.
+
+- Class: cmd_question
+  Output: >
+    Because `textgrid_2` and the tibble we just created (but didn't save) have the same rows, we could 
+    simply paste them. For that we have the function `add_column()`. Add it to the code above with 
+    a pipe. Its only argument should be `textgrid_2`.
+  CorrectAnswer: textgrid_cleaner_all %>% filter(tiers == 3) %>% rename(context = text) %>% mutate(context = str_replace_all(context, '"', "")) %>% select(-c(tiers, index, intervals, xmax, xmin)) %>% add_column(textgrid_2)
+  AnswerTests: omnitest(correctExpr="textgrid_cleaner_all %>% filter(tiers == 3) %>% rename(context = text) %>% mutate(context = str_replace_all(context, '\"', \"\")) %>% select(-c(tiers, index, intervals, xmax, xmin)) %>% add_column(textgrid_2)")
+  Hint: No quotations in `textgrid_2`.
+  
+- Class: cmd_question
+  Output: >
+    Now we can save it. But because it has the info of tiers 2 and 3, let's call it textgrid_2_3.
+  CorrectAnswer: textgrid_2_3 <- textgrid_cleaner_all %>% filter(tiers == 3) %>% rename(context = text) %>% mutate(context = str_replace_all(context, '"', "")) %>% select(-c(tiers, index, intervals, xmax, xmin)) %>% add_column(textgrid_2)
+  AnswerTests: omnitest(correctExpr="textgrid_2_3 <- textgrid_cleaner_all %>% filter(tiers == 3) %>% rename(context = text) %>% mutate(context = str_replace_all(context, '\"', \"\")) %>% select(-c(tiers, index, intervals, xmax, xmin)) %>% add_column(textgrid_2)")
+  Hint: Use the assignment operator `<-` to assign the name.
+  
+- Class: text
+  Output: Now we need to join `textgrid_2_3` and `textgrid_1`. This is a lot harder than usual, because not only they don't have the same number of rows (so we can't use `add_column()` as before), but they also don't have a common key column that would allow us performing a simple join. 
+  
+- Class: text
+  Output: What we know, however, is that the intervals in `textgrid_1` contain the intervals in `textgrid_2_3`, since the latter are segmentations of the former. Columns `xmax`, `xmax2`, `xmin` and `xmin2` are the crucial ones here, since they have the information about when each interval starts and ends. If this is a bit confusing, take another look at the Praat screenshot in the powerpoint.
+
+- Class: cmd_question
+  Output: >
+    The function `fuzzy_left_join()`, from the library `fuzzyjoin`, allow us to perform a join based in somthing other than identity.
+    This is the single new function of today's lesson, but it's a bit complicated. Let's see. Its first argument
+    is the table that will join at the left, which in this case will be `textgrid_2_3`. Because I want you to use a pipe, this argument 
+    is outside the function and before the pipe operator. Its second argument is the table that will join at the right, which in this case 
+    is `textgrid_1`. That is, this is the first argument within the parenthesis.
+    After that we need a `by` argument, that takes a vector that identifies the columns that we'll use for joining the tibbles.
+    Ours should look like this: `c("xmin2" = "xmin", "xmax2" = "xmax")`. It indicates that `xmin2` and `xmin` are to be compared one to another
+    and that `xmax2` and `xmax` are the second pair of columns that will be compared. The last argument is called `match_fun`.
+    It takes a list of the functions that we want to use for the comparison of our columns. Since we have two columns to compare,
+    we need two functions. We want to join rows where `xmin2` is either greater or equal to `xmin` and, at the same time, where `xmax2` 
+    is lower or equal to `xmax`. So the value of `match_fun` should be `list(`>=`, `<=`)`. Let's try it out. 
+  CorrectAnswer: textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`))
+  AnswerTests: omnitest(correctExpr='textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`))')
+  Hint: Remember that the names of the arguments are separated by their values by `=`.
+
+- Class: cmd_question
+  Output: >
+    Amazing, right? Now we can filter out the rows where `label` is empty, that is, where `label == ""`. In order to remove them instead of 
+    keeping them, use `!` before the logical expression to negate it. Use a pipe.
+  CorrectAnswer: textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") 
+  AnswerTests: omnitest(correctExpr='textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "")')
+  Hint: Inside `filter()` you should have `!label == ""`.
+
+- Class: cmd_question
+  Output: >
+    We now have 231 rows, exactly as in the Excel files! That's a very good sign. Let's create our `ID` column, that we'll use 
+    as a key column when we want to compare this table to the Excel files. Use `seq_along()`, its argument should be `context`.
+  CorrectAnswer: textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context))
+  AnswerTests: omnitest(correctExpr='textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context))')
+  Hint: Did you remember to use `mutate()`?
+  
+- Class: cmd_question
+  Output: >
+    Let's also create `number`, that has the same information as `label`, but instead of starting by "v", it starts by "F1-". We have this `number`
+    column in the `voyelles` Excel table, so that's why we need it. Use `str_replace()`.
+  CorrectAnswer: textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context), number = str_replace(label, "v", "F1-"))
+  AnswerTests: any_of_exprs('textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context), number = str_replace(label, "v", "F1-"))', 'textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context)) %>% mutate(number = str_replace(label, "v", "F1-"))', 'textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context), number = str_replace(label, "^v", "^F1-"))', 'textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context)) %>% mutate(number = str_replace(label, "^v", "^F1-"))')
+  Hint: The first argument of `str_replace()` is the column (`label`); its second argument is the regex to replace ("v") and its third argument is the string to replace it with ("F1-"). Did you rememeber to insert it in `mutate()`?
+
+- Class: cmd_question
+  Output: > 
+    I know it's hard to believe, but we're ready. This is the tibble we were looking for, with all the information in the TextGrid file, 
+    properly structured and with all relevant columns found in the Excel files. Let's save it now to `textgrid_clean`.
+  CorrectAnswer: textgrid_clean <- textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context), number = str_replace(label, "v", "F1-"))
+  AnswerTests: any_of_exprs('textgrid_clean <- textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context), number = str_replace(label, "v", "F1-"))', 'textgrid_clean <- textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context)) %>% mutate(number = str_replace(label, "v", "F1-"))', 'textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context), number = str_replace(label, "^v", "^F1-"))', 'textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context)) %>% mutate(number = str_replace(label, "^v", "^F1-"))')
+  Hint: Use the assignment operator `<-` to assign the name.
+
+- Class: cmd_question
+  Output: And now let's save `textgrid_clean` as a .csv file using `write_delim()`. Call it "textgrid_clean.csv" and use "\t" as delimiters.
+  CorrectAnswer: write_delim(textgrid_clean, "textgrid_clean.csv", delim = "\t")
+  AnswerTests: omnitest(correctExpr='write_delim(textgrid_clean, "textgrid_clean.csv", delim = "\t")')
+  Hint: The function `write_delim()` needs the name of the tibble as its first argument, followed by the name of the file (with quotation marks and the file extension) and by the argument `delim`.
+  
+- Class: text
+  Output: Congratulations, this was a lot! It's time to take a break. In lesson 17 (I know, it's the previous one, confusing… Sorry about that!) we'll play around with this table and the ones in the Excel files in order to check for erros in the manual annotation. 
+  
+- Class: mult_question
+  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
+  AnswerChoices: Yes;No
+  CorrectAnswer: NULL
+  AnswerTests: submit_log()
+  Hint: As you feel!
+  
+
