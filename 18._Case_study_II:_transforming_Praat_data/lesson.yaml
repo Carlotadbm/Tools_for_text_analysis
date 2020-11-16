@@ -225,24 +225,24 @@
     In our `mutate()` the only thing that changes is that we're dealing with `context` now, not with `label` or  `word`.
     And now we want to remove are `tiers`, `intervals`, `index` plus `xmax` and `xmin`. (In this order, please!)
     Don't save it yet, let's look at the result first.
-  CorrectAnswer: textgrid_cleaner_all %>% filter(tiers == 3) %>% rename(context = text) %>% mutate(context = str_replace_all(context, '"', "")) %>% select(-c(tiers, index, intervals, xmax, xmin))
-  AnswerTests: omnitest(correctExpr="textgrid_cleaner_all %>% filter(tiers == 3) %>% rename(context = text) %>% mutate(context = str_replace_all(context, '\"', \"\")) %>% select(-c(tiers, index, intervals, xmax, xmin))")
-  Hint: Did you adapt everything in your code? Check the order of the arguments in `rename()`.
+  CorrectAnswer: textgrid_cleaner_all %>% filter(tiers == 3) %>% rename(context = text) %>% mutate(context = str_replace_all(context, '"', "")) %>% select(-c(tiers, intervals, index, xmax, xmin))
+  AnswerTests: omnitest(correctExpr="textgrid_cleaner_all %>% filter(tiers == 3) %>% rename(context = text) %>% mutate(context = str_replace_all(context, '\"', \"\")) %>% select(-c(tiers, intervals, index, xmax, xmin))")
+  Hint: Did you adapt everything in your code? Check the order of the arguments in `select()`.
 
 - Class: cmd_question
   Output: >
     Because `textgrid_2` and the tibble we just created (but didn't save) have the same rows, we could 
     simply paste them. For that we have the function `add_column()`. Add it to the code above with 
     a pipe. Its only argument should be `textgrid_2`.
-  CorrectAnswer: textgrid_cleaner_all %>% filter(tiers == 3) %>% rename(context = text) %>% mutate(context = str_replace_all(context, '"', "")) %>% select(-c(tiers, index, intervals, xmax, xmin)) %>% add_column(textgrid_2)
-  AnswerTests: omnitest(correctExpr="textgrid_cleaner_all %>% filter(tiers == 3) %>% rename(context = text) %>% mutate(context = str_replace_all(context, '\"', \"\")) %>% select(-c(tiers, index, intervals, xmax, xmin)) %>% add_column(textgrid_2)")
+  CorrectAnswer: textgrid_cleaner_all %>% filter(tiers == 3) %>% rename(context = text) %>% mutate(context = str_replace_all(context, '"', "")) %>% select(-c(tiers, intervals, index, xmax, xmin)) %>% add_column(textgrid_2)
+  AnswerTests: omnitest(correctExpr="textgrid_cleaner_all %>% filter(tiers == 3) %>% rename(context = text) %>% mutate(context = str_replace_all(context, '\"', \"\")) %>% select(-c(tiers, intervals, index, xmax, xmin)) %>% add_column(textgrid_2)")
   Hint: No quotations in `textgrid_2`.
   
 - Class: cmd_question
   Output: >
     Now we can save it. But because it has the info of tiers 2 and 3, let's call it textgrid_2_3.
-  CorrectAnswer: textgrid_2_3 <- textgrid_cleaner_all %>% filter(tiers == 3) %>% rename(context = text) %>% mutate(context = str_replace_all(context, '"', "")) %>% select(-c(tiers, index, intervals, xmax, xmin)) %>% add_column(textgrid_2)
-  AnswerTests: omnitest(correctExpr="textgrid_2_3 <- textgrid_cleaner_all %>% filter(tiers == 3) %>% rename(context = text) %>% mutate(context = str_replace_all(context, '\"', \"\")) %>% select(-c(tiers, index, intervals, xmax, xmin)) %>% add_column(textgrid_2)")
+  CorrectAnswer: textgrid_2_3 <- textgrid_cleaner_all %>% filter(tiers == 3) %>% rename(context = text) %>% mutate(context = str_replace_all(context, '"', "")) %>% select(-c(tiers, intervals, index, xmax, xmin)) %>% add_column(textgrid_2)
+  AnswerTests: omnitest(correctExpr="textgrid_2_3 <- textgrid_cleaner_all %>% filter(tiers == 3) %>% rename(context = text) %>% mutate(context = str_replace_all(context, '\"', \"\")) %>% select(-c(tiers, intervals, index, xmax, xmin)) %>% add_column(textgrid_2)")
   Hint: Use the assignment operator `<-` to assign the name.
   
 - Class: text
