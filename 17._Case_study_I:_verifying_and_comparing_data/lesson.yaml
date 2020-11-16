@@ -184,7 +184,7 @@
     `ifelse()` if you wanted to correct the tibble `vowel`. Or change it manually in the Excel file… It just depends on what you need, really.
     
 - Class: cmd_question
-  Output: Let's do the same thing for `coincidence_context` now. Adapt the code above.
+  Output: Let's do the same thing for `coincidence_context` now. Copy and paste the code above and adapt it accordingly.
   CorrectAnswer: full_praat %>% filter(coincidence_context == FALSE) %>% select(ID, label, context.x, context.y)
   AnswerTests: omnitest(correctExpr='full_praat %>% filter(coincidence_context == FALSE) %>% select(ID, label, context.x, context.y)')
   Hint: You need to adapt both the name of the column in `filter()` and the names in `select()`.
