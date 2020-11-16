@@ -253,10 +253,10 @@
 
 - Class: cmd_question
   Output: >
-    The function `fuzzy_left_join()`, from the library `fuzzyjoin`, allow us to perform a join based in somthing other than identity.
+    The function `fuzzy_full_join()`, from the library `fuzzyjoin`, allow us to perform a join based in something other than identity.
     This is the single new function of today's lesson, but it's a bit complicated. Let's see. Its first argument
-    is the table that will join at the left, which in this case will be `textgrid_2_3`. Because I want you to use a pipe, this argument 
-    is outside the function and before the pipe operator. Its second argument is the table that will join at the right, which in this case 
+    is the x table, that will be joined at the left, which in this case will be `textgrid_2_3`. Because I want you to use a pipe, this argument 
+    is outside the function and before the pipe operator. Its second argument is table y, that will be joined at the right, which in this case 
     is `textgrid_1`. That is, this is the first argument within the parenthesis.
     After that we need a `by` argument, that takes a vector that identifies the columns that we'll use for joining the tibbles.
     Ours should look like this: `c("xmin2" = "xmin", "xmax2" = "xmax")`. It indicates that `xmin2` and `xmin` are to be compared one to another
@@ -264,40 +264,40 @@
     It takes a list of the functions that we want to use for the comparison of our columns. Since we have two columns to compare,
     we need two functions. We want to join rows where `xmin2` is either greater or equal to `xmin` and, at the same time, where `xmax2` 
     is lower or equal to `xmax`. So the value of `match_fun` should be `list(`>=`, `<=`)`. Let's try it out. 
-  CorrectAnswer: textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`))
-  AnswerTests: omnitest(correctExpr='textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`))')
+  CorrectAnswer: textgrid_2_3 %>% fuzzy_full_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`))
+  AnswerTests: omnitest(correctExpr='textgrid_2_3 %>% fuzzy_full_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`))')
   Hint: Remember that the names of the arguments are separated by their values by `=`.
 
 - Class: cmd_question
   Output: >
     Amazing, right? Now we can filter out the rows where `label` is empty, that is, where `label == ""`. In order to remove them instead of 
     keeping them, use `!` before the logical expression to negate it. Use a pipe.
-  CorrectAnswer: textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") 
-  AnswerTests: omnitest(correctExpr='textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "")')
+  CorrectAnswer: textgrid_2_3 %>% fuzzy_full_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") 
+  AnswerTests: omnitest(correctExpr='textgrid_2_3 %>% fuzzy_full_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "")')
   Hint: Inside `filter()` you should have `!label == ""`.
 
 - Class: cmd_question
   Output: >
     We now have 231 rows, exactly as in the Excel files! That's a very good sign. Let's create our `ID` column, that we'll use 
     as a key column when we want to compare this table to the Excel files. Use `seq_along()`, its argument should be `context`.
-  CorrectAnswer: textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context))
-  AnswerTests: omnitest(correctExpr='textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context))')
+  CorrectAnswer: textgrid_2_3 %>% fuzzy_full_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context))
+  AnswerTests: omnitest(correctExpr='textgrid_2_3 %>% fuzzy_full_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context))')
   Hint: Did you remember to use `mutate()`?
   
 - Class: cmd_question
   Output: >
     Let's also create `number`, that has the same information as `label`, but instead of starting by "v", it starts by "F1-". We have this `number`
     column in the `voyelles` Excel table, so that's why we need it. Use `str_replace()`.
-  CorrectAnswer: textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context), number = str_replace(label, "v", "F1-"))
-  AnswerTests: any_of_exprs('textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context), number = str_replace(label, "v", "F1-"))', 'textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context)) %>% mutate(number = str_replace(label, "v", "F1-"))', 'textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context), number = str_replace(label, "^v", "^F1-"))', 'textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context)) %>% mutate(number = str_replace(label, "^v", "^F1-"))')
+  CorrectAnswer: textgrid_2_3 %>% fuzzy_full_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context), number = str_replace(label, "v", "F1-"))
+  AnswerTests: any_of_exprs('textgrid_2_3 %>% fuzzy_full_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context), number = str_replace(label, "v", "F1-"))', 'textgrid_2_3 %>% fuzzy_full_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context)) %>% mutate(number = str_replace(label, "v", "F1-"))', 'textgrid_2_3 %>% fuzzy_full_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context), number = str_replace(label, "^v", "^F1-"))', 'textgrid_2_3 %>% fuzzy_full_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context)) %>% mutate(number = str_replace(label, "^v", "^F1-"))')
   Hint: The first argument of `str_replace()` is the column (`label`); its second argument is the regex to replace ("v") and its third argument is the string to replace it with ("F1-"). Did you rememeber to insert it in `mutate()`?
 
 - Class: cmd_question
   Output: > 
     I know it's hard to believe, but we're ready. This is the tibble we were looking for, with all the information in the TextGrid file, 
     properly structured and with all relevant columns found in the Excel files. Let's save it now to `textgrid_clean`.
-  CorrectAnswer: textgrid_clean <- textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context), number = str_replace(label, "v", "F1-"))
-  AnswerTests: any_of_exprs('textgrid_clean <- textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context), number = str_replace(label, "v", "F1-"))', 'textgrid_clean <- textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context)) %>% mutate(number = str_replace(label, "v", "F1-"))', 'textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context), number = str_replace(label, "^v", "^F1-"))', 'textgrid_2_3 %>% fuzzy_left_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context)) %>% mutate(number = str_replace(label, "^v", "^F1-"))')
+  CorrectAnswer: textgrid_clean <- textgrid_2_3 %>% fuzzy_full_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context), number = str_replace(label, "v", "F1-"))
+  AnswerTests: any_of_exprs('textgrid_clean <- textgrid_2_3 %>% fuzzy_full_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context), number = str_replace(label, "v", "F1-"))', 'textgrid_clean <- textgrid_2_3 %>% fuzzy_full_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context)) %>% mutate(number = str_replace(label, "v", "F1-"))', 'textgrid_2_3 %>% fuzzy_full_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context), number = str_replace(label, "^v", "^F1-"))', 'textgrid_2_3 %>% fuzzy_full_join(textgrid_1, by = c("xmin2" = "xmin", "xmax2" = "xmax"), match_fun = list(`>=`, `<=`)) %>% filter(!label == "") %>% mutate(ID = seq_along(context)) %>% mutate(number = str_replace(label, "^v", "^F1-"))')
   Hint: Use the assignment operator `<-` to assign the name.
 
 - Class: cmd_question
