@@ -1,0 +1,180 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 20. Maps in ggplot2 II. Scatterpies
+  Author: Carlota de Benito Moreno
+  Type: Standard
+  Organization: University of Zurich
+  Version: 2.4.5
+
+- Class: text
+  Output: Hi there! Welcome to this second session about maps in ggplot2. We'll plot some frequency data this time, using pie charts. We'll be adding a new package to our toolbox, called `scatterpie`, that I have loaded for you.
+
+- Class: text
+  Output: "We'll be looking at the same topic again: the frequency of plural verbs with (some) singular subjects in Spanish, this time in a corpus of interviews."
+
+- Class: cmd_question
+  Output: I have again loaded two tibbles for you. The linguistic data is stored in a tibble called `subjects2`. Check it out.
+  CorrectAnswer: subjects2
+  AnswerTests: omnitest(correctExpr='subjects2')
+  Hint: Simply print the tibble's name.
+  
+- Class: text
+  Output: In the `id` column we have a unique identifier of every example (i.e. it's a key column), in the `number` column we have the number of the verb and in the `COSERID` column we have the locations for each example, coded with identifiers.
+
+- Class: cmd_question
+  Output: The location data is stored in a tibble called `coords2`. Check it out.
+  CorrectAnswer: coords2
+  AnswerTests: omnitest(correctExpr='coords2')
+  Hint: Simply print the tibble's name.
+
+- Class: text
+  Output: This tibble also has the `COSERID` column, which here is a key column (i.e., with unique identifiers). It also has the name of the place, province and country in the `location` column, and the longitude and latitude of each location, in decimal coordinates.
+  
+- Class: text
+  Output: Before joining both tibbles we need to transform `subjects2` a little bit, because we would like to have a pie chart in every location with the proportion of singular and plural cases. In addition, we'll want the size of the pie charts to change depending on the total number of examples in each location. 
+
+- Class: cmd_question
+  Output: >
+    In order to do that, we first need to count how many singular cases and how many plural cases we have in each location. 
+    Apply `count()` to `subjects2` and add as arguments the columns `COSERID` and `number`, in this order.
+  CorrectAnswer: subjects2 %>% count(COSERID, number)
+  AnswerTests: omnitest(correctExpr='subjects2 %>% count(COSERID, number)')
+  Hint: Remember to use a pipe!
+  
+- Class: cmd_question
+  Output: >
+    Now we would like to spread the data from the column `number`, so that we have one column with the number of singular cases
+    and another one with the plural cases. Add `spread()` with a pipe, with the arguments `number` and `n`. Add another 
+    argument called `fill` set to `0` (no quotations needed). That will fill every cell with no data with 0 instead of NA.
+  CorrectAnswer: subjects2 %>% count(COSERID, number) %>% spread(number, n, fill = 0)
+  AnswerTests: omnitest(correctExpr='subjects2 %>% count(COSERID, number) %>% spread(number, n, fill = 0)')
+  Hint: "This is what the last argument of `spread()` should look like: `fill = 0`."
+  
+- Class: cmd_question
+  Output: >
+    The reason why we wanted to have 0 instead of NA is that we now want to create a column `total` with the sum of `sg` and `pl`.
+    Do that now.
+  CorrectAnswer: subjects2 %>% count(COSERID, number) %>% spread(number, n, fill = 0) %>% mutate(total = pl + sg)
+  AnswerTests: any_of_exprs('subjects2 %>% count(COSERID, number) %>% spread(number, n, fill = 0) %>% mutate(total = pl + sg)', 'subjects2 %>% count(COSERID, number) %>% spread(number, n, fill = 0) %>% mutate(total = sg + pl)')
+  Hint: Did you remember to use `mutate()`?
+  
+- Class: cmd_question
+  Output: Now it's time to join `coords2` to our transformed tibble. Add `left_join()` with a pipe.
+  CorrectAnswer: subjects2 %>% count(COSERID, number) %>% spread(number, n, fill = 0) %>% mutate(total = pl + sg) %>% left_join(coords2)
+  AnswerTests: any_of_exprs('subjects2 %>% count(COSERID, number) %>% spread(number, n, fill = 0) %>% mutate(total = pl + sg) %>% left_join(coords2)', 'subjects2 %>% count(COSERID, number) %>% spread(number, n, fill = 0) %>% mutate(total = sg + pl) %>% left_join(coords2)')
+  Hint: All you have to add is `left_join(coords2)`. 
+  
+- Class: cmd_question
+  Output: Now save the result to `subjects2_map`.
+  CorrectAnswer: subjects2_map <- subjects2 %>% count(COSERID, number) %>% spread(number, n, fill = 0) %>% mutate(total = pl + sg) %>% left_join(coords2)
+  AnswerTests: any_of_exprs('subjects2_map <- subjects2 %>% count(COSERID, number) %>% spread(number, n, fill = 0) %>% mutate(total = pl + sg) %>% left_join(coords2)', 'subjects2_map <- subjects2 %>% count(COSERID, number) %>% spread(number, n, fill = 0) %>% mutate(total = sg + pl) %>% left_join(coords2)')
+  Hint: Use the operator `<-` to save the tibble.
+  
+- Class: cmd_question
+  Output: >
+    We only have data from Spain in this dataset. Let's obtain the dataframe with the polygons of this country with `map_data()`.
+    Its first argument is "world" (with quotations) and its second argument is a vector with two values: "Spain" and "Canary", since
+    the islands are considered as a separate region in this dataset. Save the result to `spain`.
+  CorrectAnswer: spain <- map_data("world", c("Spain", "Canary"))
+  AnswerTests: omnitest(correctExpr='spain <- map_data("world", c("Spain", "Canary"))')
+  Hint: Use the operator `<-` to save the dataframe. Remeber that you need `c()` to create a vector and that its elements need quotation marks.
+
+- Class: cmd_question
+  Output: >
+    We know have all the elements that we need for our plot. First we need the function `ggplot()`, with two arguments.
+    The first one is `spain`, that is, the data frame with the polygons of the regions we need. The second one is, as always,
+    the function `aes()`. It takes two arguments, `x` and `y`. `x` should equal to `long` and `y`, to `lat`, which are the 
+    relevant columns in `spain`. Do not use a pipe this time.
+  CorrectAnswer: ggplot(spain, aes(x = long, y = lat))
+  AnswerTests: omnitest(correctExpr='ggplot(spain, aes(x = long, y = lat))')
+  Hint: You don't need quotations whatsoever in this line of code. Remember that `aes()` is a function and `x` and `y`, their arguments.
+
+- Class: cmd_question
+  Output: >
+    As you're used to already, the result of `ggplot()` is quite disappointing. That's because we're missing a `geom_` function.
+    Add `geom_map()` with `+` to your code (not with a pipe!). It'll need four arguments. The first one is called `map` and should equal to `spain`.
+    The second one is `aes()` again: within it you need the argument map_id, that should equal to `region` (no quotations), which again is a column of `spain`.
+    The third argument (you're outside `aes()` again!) is `fill`, which equals to "white" (with quotations now) and sets the colour of the polygons as white.
+    The last argument is `colour`, which equals to "black" (with quotatios again) and sets the colour of the borders to black.
+  CorrectAnswer: ggplot(spain, aes(x = long, y = lat)) + geom_map(map=spain, aes(map_id=region), fill="white", colour="black")
+  AnswerTests: omnitest(correctExpr='ggplot(spain, aes(x = long, y = lat)) + geom_map(map=spain, aes(map_id=region), fill="white", colour="black")')
+  Hint: Double check the instructions to make sure that you only have quoations where you should and that you correctly identified which ones are arguments of `geom_map()` and which ones are arguments of `aes()`.
+
+- Class: cmd_question
+  Output: >
+    Now we can plot the pie charts with all the examples in each location.
+    Add the function geom_scatterpie() with the `+` operator. This function comes from the package `scatterpie`, not from `ggplot`.
+    Its first argument is called `data` and should equal to the tibble with the linguistic information (`subjects2_map`). 
+    As its second argument we again have `aes()`, with three arguments: `x` equals to `longitude` (the name of the column in `subjects_map`); 
+    and `y` is equal to `latitude`. The third argument is called `r` and determines the radius of the pie chart. 
+    Because we want the size of the pie chart to depend on the total number of occurrences, set it to `sqrt(total)/15`.
+    That is, the radius of the pie chart will be the square root of the value in column `total`, all divided by 15. 
+    Depending on the absolute numbers you have in your data, you' can'll have to play around with the divisor to adjust the size.
+    We still need a third argument of `geom_scatterpie()` (not of `aes()`): `cols`. That defines which columns should be represented
+    in the pie chart, so set it to a vector with the values "sg" and "pl".
+  CorrectAnswer: ggplot(spain, aes(x = long, y = lat)) + geom_map(map=spain, aes(map_id=region), fill="white", colour="black") + geom_scatterpie(data = subjects2_map, aes(x = longitude, y = latitude, r = sqrt(total)/15), cols = c("sg", "pl"))
+  AnswerTests: omnitest(correctExpr='ggplot(spain, aes(x = long, y = lat)) + geom_map(map=spain, aes(map_id=region), fill="white", colour="black") + geom_scatterpie(data = subjects2_map, aes(x = longitude, y = latitude, r = sqrt(total)/15), cols = c("sg", "pl"))')
+  Hint: Double check the instructions to make sure that you correctly identified which ones are arguments of `geom_scatterpie()` and which ones are arguments of `aes()`. The last argument of `geom_scatterpie()` should be `cols = c("sg", "pl")`.
+
+- Class: cmd_question
+  Output: As with the point map, there is some overlapping, so maybe it's a good idea to make our pies a bit translucent. Add an argument `alpha` to `geom_scatterpie()` and set it to `0.5`.
+  CorrectAnswer: ggplot(spain, aes(x = long, y = lat)) + geom_map(map=spain, aes(map_id=region), fill="white", colour="black") + geom_scatterpie(data = subjects2_map, aes(x = longitude, y = latitude, r = sqrt(total)/15), cols = c("sg", "pl"), alpha = 0.5)
+  AnswerTests: omnitest(correctExpr='ggplot(spain, aes(x = long, y = lat)) + geom_map(map=spain, aes(map_id=region), fill="white", colour="black") + geom_scatterpie(data = subjects2_map, aes(x = longitude, y = latitude, r = sqrt(total)/15), cols = c("sg", "pl"), alpha = 0.5)')
+  Hint: No need for quotations.
+
+- Class: cmd_question
+  Output: >
+    In order to modify the labels and colours of our pie charts, we'll use the function `scale_fill_manual()`, that you must add
+    with `+` to your code above. Its first argument is called `breaks` and it takes a vector with the same values as `cols` above.
+    With the argument `labels` we can change the labels of these breaks. It takes a vector as well: because the verb is always in 
+    the third person, we'll use the labels "3sg" and "3pl". And with the argument `values` we can set the colours. This argument
+    takes a vector with paired values, that are identified by the operator `=`. Our first value will assign the colour "white" to the
+    break "sg": `"sg" = "white"`, while the second one will assign "red" to "pl": `"pl" = "red"`.
+  CorrectAnswer: ggplot(spain, aes(x = long, y = lat)) + geom_map(map=spain, aes(map_id=region), fill="white", colour="black") + geom_scatterpie(data = subjects2_map, aes(x = longitude, y = latitude, r = sqrt(total)/15), cols = c("sg", "pl"), alpha = 0.5) + scale_fill_manual(breaks = c("sg", "pl"), labels = c("3sg", "3pl"), values = c("sg" = "white", "pl" = "red")) 
+  AnswerTests: omnitest(correctExpr='ggplot(spain, aes(x = long, y = lat)) + geom_map(map=spain, aes(map_id=region), fill="white", colour="black") + geom_scatterpie(data = subjects2_map, aes(x = longitude, y = latitude, r = sqrt(total)/15), cols = c("sg", "pl"), alpha = 0.5) + scale_fill_manual(breaks = c("sg", "pl"), labels = c("3sg", "3pl"), values = c("sg" = "white", "pl" = "red"))')
+  Hint: You need quotations for all elements within the three vectors you have (and you need `c()` for every vector as well).
+
+- Class: cmd_question
+  Output: The plot is almost ready. Let's set use the Mercator projection by adding `coord_map()` with `+`.
+  CorrectAnswer: ggplot(spain, aes(x = long, y = lat)) + geom_map(map=spain, aes(map_id=region), fill="white", colour="black") + geom_scatterpie(data = subjects2_map, aes(x = longitude, y = latitude, r = sqrt(total)/15), cols = c("sg", "pl"), alpha = 0.5) + scale_fill_manual(breaks = c("sg", "pl"), labels = c("3sg", "3pl"), values = c("sg" = "white", "pl" = "red")) + coord_map()
+  AnswerTests: omnitest(correctExpr='ggplot(spain, aes(x = long, y = lat)) + geom_map(map=spain, aes(map_id=region), fill="white", colour="black") + geom_scatterpie(data = subjects2_map, aes(x = longitude, y = latitude, r = sqrt(total)/15), cols = c("sg", "pl"), alpha = 0.5) + scale_fill_manual(breaks = c("sg", "pl"), labels = c("3sg", "3pl"), values = c("sg" = "white", "pl" = "red")) + coord_map()')
+  Hint: Simply add `coord_map()`, but not with a pipe! Use `+`.
+
+- Class: cmd_question
+  Output: Let's add a title. Add the function `labs()` with `+` and inside it, set the argument `title` to "Verbal agreement with singular subjects" (with quotations).
+  CorrectAnswer: ggplot(spain, aes(x = long, y = lat)) + geom_map(map=spain, aes(map_id=region), fill="white", colour="black") + geom_scatterpie(data = subjects2_map, aes(x = longitude, y = latitude, r = sqrt(total)/15), cols = c("sg", "pl"), alpha = 0.5) + scale_fill_manual(breaks = c("sg", "pl"), labels = c("3sg", "3pl"), values = c("sg" = "white", "pl" = "red")) + coord_map() + labs(title = "Verbal agreement with singular subjects")
+  AnswerTests: omnitest(correctExpr='ggplot(spain, aes(x = long, y = lat)) + geom_map(map=spain, aes(map_id=region), fill="white", colour="black") + geom_scatterpie(data = subjects2_map, aes(x = longitude, y = latitude, r = sqrt(total)/15), cols = c("sg", "pl"), alpha = 0.5) + scale_fill_manual(breaks = c("sg", "pl"), labels = c("3sg", "3pl"), values = c("sg" = "white", "pl" = "red")) + coord_map() + labs(title = "Verbal agreement with singular subjects")')
+  Hint: The content of `labs()` should be `title = "Verbal agreement with singular subjects"`.
+
+- Class: cmd_question
+  Output: Let's now set the background colour to white by adding the function `theme_bw()` to our code, again with `+`.
+  CorrectAnswer: ggplot(spain, aes(x = long, y = lat)) + geom_map(map=spain, aes(map_id=region), fill="white", colour="black") + geom_scatterpie(data = subjects2_map, aes(x = longitude, y = latitude, r = sqrt(total)/15), cols = c("sg", "pl"), alpha = 0.5) + scale_fill_manual(breaks = c("sg", "pl"), labels = c("3sg", "3pl"), values = c("sg" = "white", "pl" = "red")) + coord_map() + labs(title = "Verbal agreement with singular subjects") + theme_bw()
+  AnswerTests: omnitest(correctExpr='ggplot(spain, aes(x = long, y = lat)) + geom_map(map=spain, aes(map_id=region), fill="white", colour="black") + geom_scatterpie(data = subjects2_map, aes(x = longitude, y = latitude, r = sqrt(total)/15), cols = c("sg", "pl"), alpha = 0.5) + scale_fill_manual(breaks = c("sg", "pl"), labels = c("3sg", "3pl"), values = c("sg" = "white", "pl" = "red")) + coord_map() + labs(title = "Verbal agreement with singular subjects") + theme_bw()')
+  Hint: Simply add `theme_bw()`, but not with a pipe, with `+`!
+  
+- Class: cmd_question
+  Output: > 
+    Finally, let's clean the background, remove all signs of the axes and move the legend with `theme()` (add it with `+` to your code).
+    You can copy the code you used in lesson 19, but in case you can't find it right now, let me remind you what it looked like. 
+    It had the arguments `panel.grid`, `panel.border`, `axis.title`, `axis.text`, `axis.ticks` and `legend.title`, all set to 
+    `element_blank()`. Last, it also had the arguments `legend.position` and `legend.justification`, both set to `c(1, 0)`.
+  CorrectAnswer: ggplot(spain, aes(x = long, y = lat)) + geom_map(map=spain, aes(map_id=region), fill="white", colour="black") + geom_scatterpie(data = subjects2_map, aes(x = longitude, y = latitude, r = sqrt(total)/15), cols = c("sg", "pl"), alpha = 0.5) + scale_fill_manual(breaks = c("sg", "pl"), labels = c("3sg", "3pl"), values = c("sg" = "white", "pl" = "red")) + coord_map() + labs(title = "Verbal agreement with singular subjects") + theme_bw() + theme(panel.grid = element_blank(), panel.border = element_blank(), axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), legend.title = element_blank(), legend.position = c(1, 0), legend.justification = c(1, 0))
+  AnswerTests: omnitest(correctExpr='ggplot(spain, aes(x = long, y = lat)) + geom_map(map=spain, aes(map_id=region), fill="white", colour="black") + geom_scatterpie(data = subjects2_map, aes(x = longitude, y = latitude, r = sqrt(total)/15), cols = c("sg", "pl"), alpha = 0.5) + scale_fill_manual(breaks = c("sg", "pl"), labels = c("3sg", "3pl"), values = c("sg" = "white", "pl" = "red")) + coord_map() + labs(title = "Verbal agreement with singular subjects") + theme_bw() + theme(panel.grid = element_blank(), panel.border = element_blank(), axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), legend.title = element_blank(), legend.position = c(1, 0), legend.justification = c(1, 0))')
+  Hint: Check your code from lesson 19 if you ran into trouble.
+
+- Class: text
+  Output: >
+    Nicely done! It has to be said that pie charts are not the most recommendable chart for plotting frequency data, since it is
+    well-known that humans have trouble interpreting areas (as opposed to length). However, pie charts allow for a very synthetic
+    way of representing this kind of information in maps. This map is a bit overcrowded with pie charts, though… Next week we'll learn
+    some alternatives to this representation.
+    
+- Class: text
+  Output: But you've earned a well-deserved break now! So maybe stand up and get away from the computer for a while?
+
+- Class: mult_question
+  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
+  AnswerChoices: Yes;No
+  CorrectAnswer: NULL
+  AnswerTests: submit_log()
+  Hint: As you feel!

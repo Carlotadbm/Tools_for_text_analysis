@@ -1,0 +1,251 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 19. Maps in ggplot2 I
+  Author: Carlota de Benito Moreno
+  Type: Standard
+  Organization: University of Zurich
+  Version: 2.4.5
+
+- Class: text
+  Output: Hi there! Welcome to this first session about maps in ggplot2, where we'll start with the very basics. Almost everything we'll use in this session is available in the `tidyverse`, which I've loaded for you. We'll also briefly rely on the package `mapproj` for one of our functions. It's loaded already. The shapes of the countries come from the package `maps`, but you don't need to load it, `ggplot2` does that already. As always, I strongly recommend that you write your code in a script.
+
+- Class: text
+  Output: We'll create a map with points for every time that (some) singular subjects where used with a plural verb in a corpus of tweets in Spanish.
+
+- Class: cmd_question
+  Output: We need two kinds of data for that. First, the linguistic data, which I have loaded for you in a tibble called `subjects`. Check it out.
+  CorrectAnswer: subjects
+  AnswerTests: omnitest(correctExpr='subjects')
+  Hint: Simply print the tibble's name.
+  
+- Class: text
+  Output: In the `id` column we have a unique identifier of every tweet (i.e. it's a key column), in the `person` column we have the person of the verb and in the `position` column we have the position of the verb with regards to the subject (pos = postposed; ant = anteceding). There is a column called `idplaces`, which encodes the location where each tweet was produced by means of an identifier.
+
+- Class: cmd_question
+  Output: That's the information we're missing - the location data. I have loaded it for you in a tibble called `coords`. Check it out.
+  CorrectAnswer: coords
+  AnswerTests: omnitest(correctExpr='coords')
+  Hint: Simply print the tibble's name.
+
+- Class: text
+  Output: This tibble also has the `idplaces` column, which here is a key column (i.e., with unique identifiers). It also has the name of the place, the country it belongs to, a two-letter country code and the longitude and latitude of each location, in decimal coordinates.
+  
+- Class: cmd_question
+  Output: That is, the first thing we want to do is to join these two tibbles together. We want to add the relevant information of `coords` to `subjects`, so we'll use a `left_join()` with a pipe. Go ahead.
+  CorrectAnswer: subjects %>% left_join(coords)
+  AnswerTests: omnitest(correctExpr='subjects %>% left_join(coords)')
+  Hint: "Because we're using `left_join()`, our x table (that is, the first argument) should be the one we want to keep in full: `subjects`."
+
+- Class: cmd_question
+  Output: We also want to get rid of the tweets produced in the US, because they're quite few. So we'll filter our joined table to remove rows with "US" in `country_code`. Add `filter()` with a pipe.
+  CorrectAnswer: subjects %>% left_join(coords) %>% filter(country_code != "US")
+  AnswerTests: any_of_exprs('subjects %>% left_join(coords) %>% filter(country_code != "US")', 'subjects %>% left_join(coords) %>% filter(!country_code %in% c("US"))')
+  Hint: Recall that `filter()` takes a logical expression as its argument. In order to discard a single value you'll need the operator `!=`, which means `not equal to`.
+
+- Class: cmd_question
+  Output: Let's save it now as `subjects_map`.
+  CorrectAnswer: subjects_map <- subjects %>% left_join(coords) %>% filter(country_code != "US")
+  AnswerTests: any_of_exprs('subjects_map <- subjects %>% left_join(coords) %>% filter(country_code != "US")', 'subjects_map <- subjects %>% left_join(coords) %>% filter(!country_code %in% c("US"))')
+  Hint: Use the operator `<-` to assign this name to the new tibble.
+
+- Class: cmd_question
+  Output: > 
+    The package `ggplot2` has already some data with the geographical representation of countries and regions of the world.
+    The function that access it is called `map_data()` and its first argument should be "world", because we want regions from the whole world.
+    Its second argument is a vector with all the countries and regions we want. I've loaded them in a vector called `spanish_countries`, check it out first.
+  CorrectAnswer: spanish_countries
+  AnswerTests: omnitest(correctExpr='spanish_countries')
+  Hint: Simply print the vector's name.
+
+- Class: cmd_question
+  Output: Now run `map_data()` with "world" as the first argument and `spanish_countries` as its second one.
+  CorrectAnswer: map_data("world", spanish_countries)
+  AnswerTests: any_of_exprs('map_data("world", spanish_countries)', '"world" %>% map_data(spanish_countries)')
+  Hint: You don't need quotations in `spanish_countries`
+
+- Class: cmd_question
+  Output: The result is a quite large data frame with information of the polygons that are used to represent each country. Note that longitude is saved in the column `long` and latitude is called `lat`. Save the data frame as `spanish_world`.
+  CorrectAnswer: spanish_world <- map_data("world", spanish_countries)
+  AnswerTests: any_of_exprs('spanish_world <- map_data("world", spanish_countries)', 'spanish_world <- "world" %>% map_data(spanish_countries)')
+  Hint: Use the operator `<-` to assign save it with that name.
+  
+- Class: cmd_question
+  Output: >
+    We now have all the elements that we need for our plot. First we need the function `ggplot()`, with two arguments.
+    The first one is `spanish_world`, that is, the data frame with the polygons of each country. The second one is, as always,
+    the function `aes()`. It takes two arguments, `x` and `y`. `x` should equal to `long` and `y`, to `lat`, which are the relevant columns in `spanish_world`.
+    Do not use a pipe this time. Although it would work, I think it could confuse you later.
+  CorrectAnswer: ggplot(spanish_world, aes(x = long, y = lat))
+  AnswerTests: omnitest(correctExpr='ggplot(spanish_world, aes(x = long, y = lat))')
+  Hint: You don't need quotations whatsoever in this line of code. Remember that `aes()` is a function and `x` and `y`, its arguments.
+
+- Class: cmd_question
+  Output: >
+    As you're used to already, the result of `ggplot()` is quite disappointing. That's because we're missing a `geom_` function.
+    Add `geom_map()` with `+` to your code (not with a pipe!). It'll need four arguments. The first one is called `map` and should equal to `spanish_world`.
+    The second one is `aes()` again: within it you need the argument map_id, that should equal to `region` (no quotations), which again is a column of `spanish_world`.
+    The third argument (you're outside `aes()` again!) is `fill`, which equals to "white" (with quotations now) and sets the colour of the countries as white.
+    The last argument is `colour`, which equals to "black" (with quotations again) and sets the colour of the borders to black.
+  CorrectAnswer: ggplot(spanish_world, aes(x = long, y = lat)) + geom_map(map=spanish_world, aes(map_id=region), fill="white", colour="black")
+  AnswerTests: omnitest(correctExpr='ggplot(spanish_world, aes(x = long, y = lat)) + geom_map(map=spanish_world, aes(map_id=region), fill="white", colour="black")')
+  Hint: Double check the instructions to make sure that you only have quotations where you should and that you correctly identified which ones are arguments of `geom_map()` and which ones are arguments of `aes()`.
+
+- Class: cmd_question
+  Output: >
+    Now that we have the shapes of the regions we're interested in, we need to plot the location of each tweet found in our tibble `subjects_map`.
+    Add the function geom_point() with the `+` operator. Its first argument is called `data` and should equal to our tibble. 
+    Until now, you were used to the fact that everytime you added a `geom_` function to your plot, it inherited the data in the 
+    tibble you had fed to `ggplot()`. But here we're plotting different datasets, that's why you need to specify it in `geom_point()`.
+    As its second argument we again have `aes()`, this time with three arguments: `x` equals to `longitude` (the name of the column in `subjects_map`); 
+    `y` is equal to `latitude` and `colour` is equal to `person`. That is, the colour of each point will depend on the grammatical person of the verb.
+  CorrectAnswer: ggplot(spanish_world, aes(x = long, y = lat)) + geom_map(map=spanish_world, aes(map_id=region), fill="white", colour="black") + geom_point(data = subjects_map, aes(x = longitude, y = latitude, colour = person))
+  AnswerTests: omnitest(correctExpr='ggplot(spanish_world, aes(x = long, y = lat)) + geom_map(map=spanish_world, aes(map_id=region), fill="white", colour="black") + geom_point(data = subjects_map, aes(x = longitude, y = latitude, colour = person))')
+  Hint: The last three arguments should be inside `aes()`. You don't need quotations anywhere in this line of code.
+
+- Class: cmd_question
+  Output: >
+    One problem of this map is that many of the dots actually overlap. We can solve that by making the 
+    dots translucent and making them move a little bit from their exact location in random directions. Add two arguments to
+    `geom_point()` (not to `aes()`!): `alpha`, set to `0.5` (no quotations), which indicates the degree of transparency, and
+    `position`, that should equal to the function `position_jitter()`, which will make the points move around a bit. In order
+    to set how much they should move, add two arguments to `position_jitter()`: `h` (for `height`) and `w` (for `width`), both set to `0.1`.
+  CorrectAnswer: ggplot(spanish_world, aes(x = long, y = lat)) + geom_map(map=spanish_world, aes(map_id=region), fill="white", colour="black") + geom_point(data = subjects_map, aes(x = longitude, y = latitude, colour = person), alpha = 0.5, position=position_jitter(h=0.1, w=0.1))
+  AnswerTests: omnitest(correctExpr='ggplot(spanish_world, aes(x = long, y = lat)) + geom_map(map=spanish_world, aes(map_id=region), fill="white", colour="black") + geom_point(data = subjects_map, aes(x = longitude, y = latitude, colour = person), alpha = 0.5, position=position_jitter(h=0.1, w=0.1))')
+  Hint: The argument of `position` should be `position_jitter(h=0.1, w=0.1)`.
+
+- Class: cmd_question
+  Output: >
+    Something else is bothering me… The projection of this map is a bit weird. The function `coord_map()`, from the package `mapproj`, 
+    allows us to choose among many possible projections. By default it transforms the data into the Mercator projection, which is 
+    the one most commonly used, so add it empty to your code with `+` to use the Mercator projection.
+  CorrectAnswer: ggplot(spanish_world, aes(x = long, y = lat)) + geom_map(map=spanish_world, aes(map_id=region), fill="white", colour="black") + geom_point(data = subjects_map, aes(x = longitude, y = latitude, colour = person), alpha = 0.5, position=position_jitter(h=0.1, w=0.1)) + coord_map()
+  AnswerTests: omnitest(correctExpr='ggplot(spanish_world, aes(x = long, y = lat)) + geom_map(map=spanish_world, aes(map_id=region), fill="white", colour="black") + geom_point(data = subjects_map, aes(x = longitude, y = latitude, colour = person), alpha = 0.5, position=position_jitter(h=0.1, w=0.1)) + coord_map()')
+  Hint: Simply add `coord_map()`, but not with a pipe! Use `+`.
+
+- Class: cmd_question
+  Output: >
+    I think we can be happy with our map now. Of course, the plot still needs a lot of work. First, let's add a title. Add the 
+    function `labs()` with `+` and inside it, set the argument `title` to "Plural agreement in the verb" (with quotations).
+  CorrectAnswer: ggplot(spanish_world, aes(x = long, y = lat)) + geom_map(map=spanish_world, aes(map_id=region), fill="white", colour="black") + geom_point(data = subjects_map, aes(x = longitude, y = latitude, colour = person), alpha = 0.5, position=position_jitter(h=0.1, w=0.1)) + coord_map() + labs(title = "Plural agreement in the verb")
+  AnswerTests: omnitest(correctExpr='ggplot(spanish_world, aes(x = long, y = lat)) + geom_map(map=spanish_world, aes(map_id=region), fill="white", colour="black") + geom_point(data = subjects_map, aes(x = longitude, y = latitude, colour = person), alpha = 0.5, position=position_jitter(h=0.1, w=0.1)) + coord_map() + labs(title = "Plural agreement in the verb")')
+  Hint: The content of `labs()` should be `title = "Plural agreement in the verb"`.
+
+- Class: cmd_question
+  Output: Let's now set the background colour to white by adding the function `theme_bw()` to our code, again with `+`.
+  CorrectAnswer: ggplot(spanish_world, aes(x = long, y = lat)) + geom_map(map=spanish_world, aes(map_id=region), fill="white", colour="black") + geom_point(data = subjects_map, aes(x = longitude, y = latitude, colour = person), alpha = 0.5, position=position_jitter(h=0.1, w=0.1)) + coord_map() + labs(title = "Plural agreement in the verb") + theme_bw()
+  AnswerTests: omnitest(correctExpr='ggplot(spanish_world, aes(x = long, y = lat)) + geom_map(map=spanish_world, aes(map_id=region), fill="white", colour="black") + geom_point(data = subjects_map, aes(x = longitude, y = latitude, colour = person), alpha = 0.5, position=position_jitter(h=0.1, w=0.1)) + coord_map() + labs(title = "Plural agreement in the verb") + theme_bw()')
+  Hint: Simply add `theme_bw()`, but not with a pipe, with `+`!
+  
+- Class: cmd_question
+  Output: > 
+    We still need to clean the background a little bit. For starters, we don't need the grid or the border. Add the function 
+    `theme()` to your code with `+` and include two arguments: `panel.grid` und `panel.border`. They both should equal to 
+    the empty function `element_blank()`.
+  CorrectAnswer: ggplot(spanish_world, aes(x = long, y = lat)) + geom_map(map=spanish_world, aes(map_id=region), fill="white", colour="black") + geom_point(data = subjects_map, aes(x = longitude, y = latitude, colour = person), alpha = 0.5, position=position_jitter(h=0.1, w=0.1)) + coord_map() + labs(title = "Plural agreement in the verb") + theme_bw() + theme(panel.grid = element_blank(), panel.border = element_blank())
+  AnswerTests: omnitest(correctExpr='ggplot(spanish_world, aes(x = long, y = lat)) + geom_map(map=spanish_world, aes(map_id=region), fill="white", colour="black") + geom_point(data = subjects_map, aes(x = longitude, y = latitude, colour = person), alpha = 0.5, position=position_jitter(h=0.1, w=0.1)) + coord_map() + labs(title = "Plural agreement in the verb") + theme_bw() + theme(panel.grid = element_blank(), panel.border = element_blank())')
+  Hint: "The two arguments of `theme()` look like this: `panel.grid = element_blank(), panel.border = element_blank()`."
+
+- Class: cmd_question
+  Output: > 
+    Hum, we still have the names, ticks and text of the axes floating around. In order to get rid of them, add three new arguments
+    to `theme()`: `axis.title`, `axis.text`, `axis.ticks`. As with those above, set them to `element_blank()`. 
+  CorrectAnswer: ggplot(spanish_world, aes(x = long, y = lat)) + geom_map(map=spanish_world, aes(map_id=region), fill="white", colour="black") + geom_point(data = subjects_map, aes(x = longitude, y = latitude, colour = person), alpha = 0.5, position=position_jitter(h=0.1, w=0.1)) + coord_map() + labs(title = "Plural agreement in the verb") + theme_bw() + theme(panel.grid = element_blank(), panel.border = element_blank(), axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank())
+  AnswerTests: omnitest(correctExpr='ggplot(spanish_world, aes(x = long, y = lat)) + geom_map(map=spanish_world, aes(map_id=region), fill="white", colour="black") + geom_point(data = subjects_map, aes(x = longitude, y = latitude, colour = person), alpha = 0.5, position=position_jitter(h=0.1, w=0.1)) + coord_map() + labs(title = "Plural agreement in the verb") + theme_bw() + theme(panel.grid = element_blank(), panel.border = element_blank(), axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank())')
+  Hint: "This is quite similar to what you just did above: simply add these new arguments after the ones you already had in `theme()`."
+
+- Class: cmd_question
+  Output: > 
+    This is much better. But we could also play around with the legend. Let's first remove the name of the
+    legend, since it's quite obvious that its content is the person of the verb. Add the argument `legend.title`, which
+    again should equal to the empty function `element_blank()`. Now let's move the legend to the bottom right corner by adding the 
+    argument `legend.position` to `theme()`. Set it to the vector `c(1, 0)`. But we need to justify the legend text to the same position, so 
+    add also the argument `legend.justification`, equally set to the vector `c(1, 0)`. 
+  CorrectAnswer: ggplot(spanish_world, aes(x = long, y = lat)) + geom_map(map=spanish_world, aes(map_id=region), fill="white", colour="black") + geom_point(data = subjects_map, aes(x = longitude, y = latitude, colour = person), alpha = 0.5, position=position_jitter(h=0.1, w=0.1)) + coord_map() + labs(title = "Plural agreement in the verb") + theme_bw() + theme(panel.grid = element_blank(), panel.border = element_blank(), axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), legend.title = element_blank(), legend.position = c(1, 0), legend.justification = c(1, 0))
+  AnswerTests: omnitest(correctExpr='ggplot(spanish_world, aes(x = long, y = lat)) + geom_map(map=spanish_world, aes(map_id=region), fill="white", colour="black") + geom_point(data = subjects_map, aes(x = longitude, y = latitude, colour = person), alpha = 0.5, position=position_jitter(h=0.1, w=0.1)) + coord_map() + labs(title = "Plural agreement in the verb") + theme_bw() + theme(panel.grid = element_blank(), panel.border = element_blank(), axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), legend.title = element_blank(), legend.position = c(1, 0), legend.justification = c(1, 0))')
+  Hint: "Again, these are all new arguments of `theme()`. Add them in the same order I told you about them, please."
+
+- Class: cmd_question
+  Output: > 
+    Very cool, right? We can play around a bit more, of course. Do you remember that we also had a `position` column in our `subjects` tibble?
+    It had the position of the verb with regards to the subject. It'd be interesting to see if there's any effect of that in the geographical
+    distribution of our data, and we can do that very easily. Add the argument `facet_wrap()` with a `+` to your code above and
+    as its single argument add `position` preceded by the operator `~`.
+  CorrectAnswer: ggplot(spanish_world, aes(x = long, y = lat)) + geom_map(map=spanish_world, aes(map_id=region), fill="white", colour="black") + geom_point(data = subjects_map, aes(x = longitude, y = latitude, colour = person), alpha = 0.5, position=position_jitter(h=0.1, w=0.1)) + coord_map() + labs(title = "Plural agreement in the verb") + theme_bw() + theme(panel.grid = element_blank(), panel.border = element_blank(), axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), legend.title = element_blank(), legend.position = c(1, 0), legend.justification = c(1, 0)) + facet_wrap(~ position)
+  AnswerTests: omnitest(correctExpr='ggplot(spanish_world, aes(x = long, y = lat)) + geom_map(map=spanish_world, aes(map_id=region), fill="white", colour="black") + geom_point(data = subjects_map, aes(x = longitude, y = latitude, colour = person), alpha = 0.5, position=position_jitter(h=0.1, w=0.1)) + coord_map() + labs(title = "Plural agreement in the verb") + theme_bw() + theme(panel.grid = element_blank(), panel.border = element_blank(), axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), legend.title = element_blank(), legend.position = c(1, 0), legend.justification = c(1, 0)) + facet_wrap(~ position)')
+  Hint: Simply add `facet_wrap(~ position)` with a `+` to your code above.
+  
+- Class: cmd_question
+  Output: > 
+    Ok, so not a lot of differences… Which means that it's great that we can check that out so easily. Imagine if we had to create 
+    every map from scratch! Anyway, just as a reminder of how you can save a plot, let's save this one too. Use the function 
+    `ggsave`. As its first argument use the name of the file you'll generate: "Plural_agreement_TW_map.png". As a second argument
+    add `scale` and set it to `1.5` (no quotations), to increase it's size a little bit. Remember that this saves the last plot
+    you ran, but that, if you give a name to your plots, you can also add the name as an argument of `ggsave()` to identify which
+    one you want to save. 
+  CorrectAnswer: ggsave("Plural_agreement_TW_map.png", scale = 1.5)
+  AnswerTests: omnitest(correctExpr='ggsave("Plural_agreement_TW_map.png", scale = 1.5)')
+  Hint: "This is how the second argument of `ggsave()` looks like: `scale = 1.5`."
+
+- Class: text
+  Output: >
+    Very well done! This map is quite interesting, since it shows that examples of plural agreement with singular subjects 
+    were found almost everywhere. But it's hard to know whether the apparent differences in the frequency of the plural 
+    agreement are due to actual differences of use or to the fact that tweets are not evenly distributed across all countries.
+  
+- Class: cmd_question
+  Output: But we can easily compare the frequency of tweets per country with the frequency of the plural agreement per country. I have loaded the necessary data in `comparison`, check it out.
+  CorrectAnswer: comparison
+  AnswerTests: omnitest(correctExpr='comparison')
+  Hint: Simply print the name of the tibble.
+
+- Class: text
+  Output: As you can see, we have a column with the country codes, plus two columns with the total number of plural agreement cases and tweets (the columns that end un `_n`) and two columns with the respective percentages (the columns that end in `_perc`).
+
+- Class: cmd_question
+  Output: >
+    We'll generate a bar plot in order to compare each percentage. For that, we first need to collapse the two columns that 
+    end in `_perc` so that we have one column with the type of data and another one with the percentages.
+    The function `gather()` will do that: it's the reverse of `spread()`.
+    Use a pipe to apply it to `comparison`. Within the parentheses, add the names of the functions we want to collapse 
+    (`pl_agreement_perc` and `tweets_perc`), an argument called `key` with the name of the column with the type of data, 
+    called `type_percentage` (no quotations needed), and an argument called `value` with the name of the column with the 
+    percentages: call it `percentage` (no quotations needed).
+  CorrectAnswer: comparison %>% gather(pl_agreement_perc, tweets_perc, key = type_percentage, value = percentage)
+  AnswerTests: omnitest(correctExpr='comparison %>% gather(pl_agreement_perc, tweets_perc, key = type_percentage, value = percentage)')
+  Hint: "The two last arguments of `gather()` look like this: `key = type_percentage, value = percentage`."
+  
+- Class: cmd_question
+  Output: >
+    Can you see what happened? Now all the percentages are in the same column.
+    This is all we need to generate our plot. Add `ggplot()` with a pipe. Within `aes()` we'll have three arguments.
+    In `x` we'll have the countries, but because we want them to be ordered by percentage, write `reorder(country_code, percentage)`.
+    `y` should equal to `percentage`. Add `fill` and set it to `type_percentage`.
+  CorrectAnswer: comparison %>% gather(pl_agreement_perc, tweets_perc, key = type_percentage, value = percentage) %>% ggplot(aes(x =  reorder(country_code, percentage), y = percentage, fill = type_percentage))
+  AnswerTests: omnitest(correctExpr='comparison %>% gather(pl_agreement_perc, tweets_perc, key = type_percentage, value = percentage) %>% ggplot(aes(x =  reorder(country_code, percentage), y = percentage, fill = type_percentage))')
+  Hint: You don't need quotations for the values of the arguments.
+  
+- Class: cmd_question
+  Output: >
+    Again, you can't see much in the plot. Add `geom_bar()` with `+`. We'll need two arguments. 
+    `stat` should be set to "identity" (with quotations), because we want to keep the exact values in our columns: by 
+    default `geom_bar()` applies `count()` to your data. The second one is `position`, and should be set to "dodge", again 
+    with quotations. Because we used `fill` as an aesthetic, we'll get two columns per country code, one with the % of tweets
+    and another one with the % of plural agreement cases. With `position = "dodge"` we specify that we want them one beside the other.
+  CorrectAnswer: comparison %>% gather(pl_agreement_perc, tweets_perc, key = type_percentage, value = percentage) %>% ggplot(aes(x =  reorder(country_code, percentage), y = percentage, fill = type_percentage)) + geom_bar(stat = "identity", position = "dodge")
+  AnswerTests: omnitest(correctExpr='comparison %>% gather(pl_agreement_perc, tweets_perc, key = type_percentage, value = percentage) %>% ggplot(aes(x =  reorder(country_code, percentage), y = percentage, fill = type_percentage)) + geom_bar(stat = "identity", position = "dodge")')
+  Hint: Did you use `+` or `%>%` to add `geom_bar()` to your code?
+
+- Class: text
+  Output: Very well done! Since you already know how to make a barplot prettier, we'll stop here. 
+  
+- Class: text
+  Output: Point maps are not appropriate for all kinds of data. In the next lesson you'll see how to represent frequency data using pie charts.
+
+- Class: mult_question
+  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
+  AnswerChoices: Yes;No
+  CorrectAnswer: NULL
+  AnswerTests: submit_log()
+  Hint: As you feel!
+
+
