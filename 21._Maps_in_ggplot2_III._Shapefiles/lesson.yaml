@@ -1,0 +1,147 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 21. Maps in ggplot2 III. Shapefiles
+  Author: Carlota de Benito Moreno
+  Type: Standard
+  Organization: University of Zurich
+  Version: 2.4.5
+
+- Class: text
+  Output: Hi there! Welcome to another session of plotting maps using ggplot2(). The maps included in the package "maps" are rather limited, so today we'll learn how to load shapefiles into R and plot them using ggplot2. I have explained what a shapefile is in class, so watch the video if you haven't yet.
+  
+- Class: text
+  Output: Besides the tidyverse, we'll also rely on the library `sf`, which offers support for simple features (a standardized way to encode spatial vector data) and will allow us to load the shapefiles.
+
+- Class: text
+  Output: Just for fun, we'll also use the library `wesanderson`, which has predefined colour palettes based on the movies of this film director. They're much nicer than the default palettes offered by R.
+
+- Class: cmd_question
+  Output: We'll plot some data from the Sprachatlas der deutschen Schweiz (the Linguistic Atlas of the German-speaking Switzerland, SDS for short), regarding the gender of the word "Kafi" ('coffee'). The SDS has a summary of the gender of this word per canton, so we'll colour the cantons accordingly. I have loaded the data for you in `kafi`. Check it out.
+  CorrectAnswer: kafi
+  AnswerTests: omnitest(correctExpr='kafi')
+  Hint: Simply print the name of the tible
+  
+- Class: cmd_question
+  Output: >
+    That's the tibble with the data, but we also need to load a shapefile with the shape of Switzerland and its cantons.
+    That's what the function `st_read()` from the library `sf` is for. Its only argument is the name of the shapefile, which in 
+    this case is "CHE_adm1.shp": you should have downloaded it to you working directory. Save it to `switzerland`.
+  CorrectAnswer: switzerland <- st_read("CHE_adm1.shp")
+  AnswerTests: omnitest(correctExpr='switzerland <- st_read("CHE_adm1.shp")')
+  Hint: You need quotations for the name of the file. For saving it, simply assign it the name with `<-`.
+
+- Class: cmd_question
+  Output: Print `switzerland` out.
+  CorrectAnswer: switzerland
+  AnswerTests: omnitest(correctExpr='switzerland')
+  Hint: Simply print its name.
+ 
+- Class: text
+  Output: >
+    The shapefile we loaded looks like a table although it's actually a "simple feature collection". You get some information 
+    about it before actually seeing its content: its got 26 features: these are the cantons. You can see that each
+    of them is represented in a row. There are 9 fields (=columns): the shape of each canton is saved in the last one (`geometry`).
+    The names of the cantons are found in `NAME_1`, but it's worth noting that other variants of the names are found in `VARNAME_1`.
+
+- Class: cmd_question
+  Output: >
+    But the names in `NAME_1` coincide with the ones in the column `Canton` of tibble `kafi`. That's good, because we're going 
+    to join them. Why? Because the geographical information that `kafi` needs is in `switzerland`. But actually `switzerland`
+    has a number of cantons we don't need (because they don't speak German), so let's remove them first. Using `filter()`, 
+    remove all features (rows) of `switzerland` that have one of the values in this vector `c("Genève", "Jura", "Neuchâtel", "Ticino", "Vaud")` 
+    in field (column) `NAME_1`. Use a pipe.
+  CorrectAnswer: switzerland %>% filter(!NAME_1 %in% c("Genève", "Jura", "Neuchâtel", "Ticino", "Vaud"))
+  AnswerTests: omnitest(correctExpr='switzerland %>% filter(!NAME_1 %in% c("Genève", "Jura", "Neuchâtel", "Ticino", "Vaud"))')
+  Hint: Remember that `filter()` takes a logical expression. You'll need the operator `%in%` to indicate that the values of the row should be in that vector. But because you want to remove them, you should negate the whole logical expression by writing `!` at the beginning.
+
+- Class: cmd_question
+  Output: >
+    Now we can join them. Use `left_join()` for that, add it with a pipe. Because the names of the columns are not the same, add the 
+    argument `by = c("NAME_1" = "Canton")`, that the column they have in common is called `NAME_1` in the first tibble 
+    (`switzerland`) and `Canton` in the second one (`kafi`).
+  CorrectAnswer: switzerland %>% filter(!NAME_1 %in% c("Genève", "Jura", "Neuchâtel", "Ticino", "Vaud")) %>% left_join(kafi, by = c("NAME_1" = "Canton"))
+  AnswerTests: omnitest(correctExpr='switzerland %>% filter(!NAME_1 %in% c("Genève", "Jura", "Neuchâtel", "Ticino", "Vaud")) %>% left_join(kafi, by = c("NAME_1" = "Canton"))')
+  Hint: Did you remember to use `kafi` as the first argument (actually second, but it looks like the first one because of the pipe) in `left_join()`?
+
+- Class: cmd_question
+  Output: Save it to `deutschweiz`.
+  CorrectAnswer: deutschweiz <- switzerland %>% filter(!NAME_1 %in% c("Genève", "Jura", "Neuchâtel", "Ticino", "Vaud")) %>% left_join(kafi, by = c("NAME_1" = "Canton"))
+  AnswerTests: omnitest(correctExpr='deutschweiz <- switzerland %>% filter(!NAME_1 %in% c("Genève", "Jura", "Neuchâtel", "Ticino", "Vaud")) %>% left_join(kafi, by = c("NAME_1" = "Canton"))')
+  Hint: Simply assign the name with `<-`.
+  
+- Class: cmd_question
+  Output: Now check it out.
+  CorrectAnswer: deutschweiz
+  AnswerTests: omnitest(correctExpr='deutschweiz')
+  Hint: Simply print its name.
+  
+- Class: text
+  Output: "Not only has `deutschweiz` 5 features less (the cantons we removed), but also a new field: `Kafi_gender`, with the information of the gender of 'Kafi' that we had in the tibble `kafi`. Perfect."
+
+- Class: cmd_question
+  Output: >
+    Ok, let's make a map! We'll first write an empty `ggplot()` function and, with the `+`, we'll add the function `geom_sf()`.
+    It plots simple features as the ones we have. Set the argument `data` to `deutschweiz`.
+    Add the argument `aes()`, and within it, set the argument `fill` to `Kafi_gender`. We're simply asking to plot the
+    polygons in deutschweiz (the shape of the cantons) and to fill them by different colours, depending on the value they have in `Kafi_gender`.
+  CorrectAnswer: ggplot() + geom_sf(data = deutschweiz, aes(fill = Kafi_gender))
+  AnswerTests: omnitest(correctExpr='ggplot() + geom_sf(data = deutschweiz, aes(fill = Kafi_gender))')
+  Hint: "Remember that you have to add `geom_sf()` to `ggplot()` after `+`, no pipes! Also, no need for quotations."
+
+- Class: cmd_question
+  Output: >
+    How ridiculously easy was this? Crazy. I think it'd be nice to add the cantons we left out, so that we have Switzerland in full.
+    A very easy way of doing this is plotting `switzerland` before plotting `deutschweiz`:
+    they are two different layers in our plot and `deutschweiz` will overrun `switzerland` in the places they have in common. So 
+    add a new `geom_sf()` BEFORE the one you have (with `+`), where the argument `data` is set to `switzerland`. That`s all you need.
+  CorrectAnswer: ggplot() + geom_sf(data = switzerland) + geom_sf(data = deutschweiz, aes(fill = Kafi_gender))
+  AnswerTests: omnitest(correctExpr='ggplot() + geom_sf(data = switzerland) + geom_sf(data = deutschweiz, aes(fill = Kafi_gender))')
+  Hint: "Did you use `+`? You should have two: one before each `geom_sf()`."
+  
+- Class: cmd_question
+  Output: >
+    Next thing: the default colours chosen by R are kind of terrible. We could set them manually, but there are some 
+    palettes out there that you can explore. One example is the library `wesanderson`, which we'll use now. Add the 
+    function `scale_fill_manual()` after a new `+` at the end of your previous code. We've used it before: it allows us
+    to manually decide the colours of a `fill` aesthetic. Inside, write the argument `values` and set it to the function
+    `wes_palette()`. This function needs two arguments: `n`, which should be set to the number of colours we need (3), and 
+    `name`, which should be set to the name of the palette. Set it to "Royal1".
+  CorrectAnswer: ggplot() + geom_sf(data = switzerland) + geom_sf(data = deutschweiz, aes(fill = Kafi_gender)) + scale_fill_manual(values=wes_palette(n=3, name="Royal1"))
+  AnswerTests: omnitest(correctExpr='ggplot() + geom_sf(data = switzerland) + geom_sf(data = deutschweiz, aes(fill = Kafi_gender)) + scale_fill_manual(values=wes_palette(n=3, name="Royal1"))')
+  Hint: The only place where you need quotations is in "Royal1". Make sure you know which arguments belong to `scale_fill_manual()` and which ones belong to `wes_palette()`.
+
+- Class: cmd_question
+  Output: >
+    I accept this is a subjective matter, but this looks much better :) You can explore these palettes by googling the 
+    package, there are plenty (although they tend to have between 4 and 5 colours only). Now let's add a title:
+    add the function `labs()` after a new `+` and set the argument `title` to "Gender of 'Kafi' in Swiss German (SDS)".
+  CorrectAnswer: ggplot() + geom_sf(data = switzerland) + geom_sf(data = deutschweiz, aes(fill = Kafi_gender)) + scale_fill_manual(values=wes_palette(n=3, name="Royal1")) + labs(title = "Gender of 'Kafi' in Swiss German (SDS)")
+  AnswerTests: omnitest(correctExpr='ggplot() + geom_sf(data = switzerland) + geom_sf(data = deutschweiz, aes(fill = Kafi_gender)) + scale_fill_manual(values=wes_palette(n=3, name="Royal1")) + labs(title = "Gender of \'Kafi\' in Swiss German (SDS)")')
+  Hint: You know how to do this already, so check your spelling in case there's a typo somewhere.
+  
+- Class: cmd_question
+  Output: Let's set now a white background by adding `theme_bw()` after a new `+`.
+  CorrectAnswer: ggplot() + geom_sf(data = switzerland) + geom_sf(data = deutschweiz, aes(fill = Kafi_gender)) + scale_fill_manual(values=wes_palette(n=3, name="Royal1")) + labs(title = "Gender of 'Kafi' in Swiss German (SDS)") + theme_bw()
+  AnswerTests: omnitest(correctExpr='ggplot() + geom_sf(data = switzerland) + geom_sf(data = deutschweiz, aes(fill = Kafi_gender)) + scale_fill_manual(values=wes_palette(n=3, name="Royal1")) + labs(title = "Gender of \'Kafi\' in Swiss German (SDS)") + theme_bw()')
+  Hint: You definitely know how to do this. Simply add it as a new function, but not with a pipe, but with `+`.
+
+- Class: cmd_question
+  Output: > 
+    Last thing is making the removing the grid, the axes and the legend title. We did this last time: you'll have to add
+    `theme()` (again after `+`) and include a number of arguments. Set the arguments `panel.grid`, `panel.border`, `axis.title`, 
+    `axis.text`, `axis.ticks` and `legend.title` to `element_blank()`. Set both arguments `legend.position` and `legend.justification`
+    to `c(1, 0)`.
+  CorrectAnswer: ggplot() + geom_sf(data = switzerland) + geom_sf(data = deutschweiz, aes(fill = Kafi_gender)) + scale_fill_manual(values=wes_palette(n=3, name="Royal1")) + labs(title = "Gender of 'Kafi' in Swiss German (SDS)") + theme_bw() + theme(panel.grid = element_blank(), panel.border = element_blank(), axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), legend.title = element_blank(), legend.position = c(1, 0), legend.justification = c(1, 0))
+  AnswerTests: omnitest(correctExpr='ggplot() + geom_sf(data = switzerland) + geom_sf(data = deutschweiz, aes(fill = Kafi_gender)) + scale_fill_manual(values=wes_palette(n=3, name="Royal1")) + labs(title = "Gender of \'Kafi\' in Swiss German (SDS)") + theme_bw() + theme(panel.grid = element_blank(), panel.border = element_blank(), axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), legend.title = element_blank(), legend.position = c(1, 0), legend.justification = c(1, 0))')
+  Hint: Check the code of lessons 19 and 20 if you're unsure.
+  
+- Class: text
+  Output: Well done! You just learnt how to colour administrative parts of a country (or, for that matter, any polygons of a shapefile) with your own data. If you feel super powerful right now, you're right to do so. In the next lesson we'll complicate the things a little bit.
+
+- Class: mult_question
+  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
+  AnswerChoices: Yes;No
+  CorrectAnswer: NULL
+  AnswerTests: submit_log()
+  Hint: As you feel!
+

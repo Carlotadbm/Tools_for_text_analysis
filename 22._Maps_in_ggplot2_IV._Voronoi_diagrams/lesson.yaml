@@ -1,0 +1,166 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 22. Maps in ggplot2 IV. Voronoi diagrams
+  Author: Carlota de Benito Moreno
+  Type: Standard
+  Organization: University of Zurich
+  Version: 2.4.5
+
+- Class: text
+  Output: >
+    Welcome back to this fourth and last lesson on creating maps in ggplot2. In this session we'll use the same data on 
+    verb-subject agreement in Spanish that we used in lesson 20. But this time we'll use Voronoi diagramas to cover all 
+    the space in the map. Besides the tidyverse and the library `sf` that you know already we'll also use the library `ggvoronoi`.
+
+- Class: cmd_question
+  Output: I have loaded the data we used last time for you. It's in a tibble called `subjects`. Check it out.
+  CorrectAnswer: subjects
+  AnswerTests: omnitest(correctExpr='subjects')
+  Hint: Simply print its name.
+  
+- Class: cmd_question
+  Output: >
+    We'll be plotting the frequency of plural subjects in percentages. That information is not in the tibble, so we'll have 
+    to add it. Create a new column called `percentage_pl` with the result of dividing column `pl` by column `total` and
+    multiplying it by 100. 
+  CorrectAnswer: subjects %>% mutate(percentage_pl = pl/total*100)
+  AnswerTests: any_of_exprs('subjects %>% mutate(percentage_pl = pl/total*100)', 'mutate(subjects, percentage_pl = pl/total*100)')
+  Hint: Did you use mutate()? Division is performed with the operator `/`, while multiplication needs `*`. You don't need parentheses in your calculation.
+  
+- Class: cmd_question
+  Output: >
+    Let's round the result to one single decimal number. Modify the mutate() so that the calculation you wrote is passed as the 
+    first argument of `round()`. The second argument of `round()` is the number of decimal numbers we want: 1.
+  CorrectAnswer: subjects %>% mutate(percentage_pl = round(pl/total*100, 1))
+  AnswerTests: any_of_exprs('subjects %>% mutate(percentage_pl = round(pl/total*100, 1))', 'mutate(subjects, percentage_pl = round(pl/total*100, 1))')
+  Hint: Did you separate both arguments with a comma?
+
+- Class: cmd_question
+  Output: Let's save these changes to `subjects`.
+  CorrectAnswer: subjects <- subjects %>% mutate(percentage_pl = round(pl/total*100, 1))
+  AnswerTests: any_of_exprs('subjects <- subjects %>% mutate(percentage_pl = round(pl/total*100, 1))', 'subjects <- mutate(subjects, percentage_pl = round(pl/total*100, 1))')
+  Hint: Simply use `<-` to assign the name.
+
+- Class: cmd_question
+  Output: We'll now load the shapefile of Spain. We're only interested in the national border, so we'll load "ESP_adm1.shp". This file should be in your working directory already. Read it by using `st_read()` and save the result to `spain`.
+  CorrectAnswer: spain <- st_read("ESP_adm1.shp")
+  AnswerTests: omnitest(correctExpr='spain <- st_read("ESP_adm1.shp")')
+  Hint: You did this already with the map of Switzerland, so look at your code if you're confused.
+
+- Class: cmd_question
+  Output: >
+    Because `subjects` already has the coordinates of each location, we'll only use `spain` to set the limits of the polygons
+    (you'll see what I mean in a few minutes). But for that we need to transform it into another type of object, called a 
+    `Spatial*DataFrame` (right now it's a "simple feature collection", as you may remember). In order to do that, pass `spain$geometry`
+    into the function `as_Spatial()` (from library `sf`) and save it as `spain_sdf`. 
+  CorrectAnswer: spain_sdf <- as_Spatial(spain$geometry)
+  AnswerTests: omnitest(correctExpr='spain_sdf <- as_Spatial(spain$geometry)')
+  Hint: This is what you have to save as `spain_sdf`.
+  
+- Class: cmd_question
+  Output: Let's compare both. Print `spain`.
+  CorrectAnswer: spain
+  AnswerTests: omnitest(correctExpr='spain')
+  Hint: Simply print its name.
+  
+- Class: cmd_question
+  Output: This looks basically the same as the simple feature we used before for Switzerland. Print `spain_sdf` now.
+  CorrectAnswer: spain_sdf
+  AnswerTests: omnitest(correctExpr='spain_sdf')
+  Hint: Simply print its name.
+  
+- Class: text
+  Output: >
+    As you can see, they are completely different objects. We actually can't see most of what `spain_sdf` has, but if you 
+    click in the blue play button/arrow before `spain_sdf` in your Global Environment you'll see that it actually is full of information. 
+    I can't really explain what it all means, but luckily it's not necessary.
+
+- Class: cmd_question
+  Output: >
+    Let's create our map. Again, we'll first have an empty `ggplot()` function. After a `+` sign, add the function `geom_voronoi()`.
+    Its first argument is `data`, which should be set to `subjects`. Its second argument is `aes()`, which itself needs three 
+    arguments: `x` (set to `longitude`), `y` (set to `latitude`) and `fill`, set to the column whose values we want to plot:
+    `percentage_pl`.
+  CorrectAnswer: ggplot() + geom_voronoi(data = subjects, aes(x = longitude, y = latitude, fill=percentage_pl))
+  AnswerTests: omnitest(correctExpr='ggplot() + geom_voronoi(data = subjects, aes(x = longitude, y = latitude, fill=percentage_pl))')
+  Hint: "No quotations needed. Simply make sure that all arguments belong to the functions they should."
+
+- Class: text
+  Output: >
+    If you look at the result, you're probably quite disappointed. We didn't specify any limits within `geom_voronoi()`, which is
+    why this doesn't look like Spain at all. The diagrams were created from the coordinates in `subjects`, which are all in Spain, 
+    but we didn't specify where they should end. Normally, we would do that now, but because it takes quite long, we'll do it last.
+    So just trust me when I tell you that you're looking at Spain.
+  
+- Class: cmd_question
+  Output: > 
+    The colours (we'll change them later) represent the frequency of the plural. But you might remember that this frequency is
+    calculated out of different numbers of total examples in each place: it'd be nice to add that information to our map, so that we can evaluate
+    the frequency data. So we'll add a text
+    layer to our map, with the values of column `total`. Add `geom_text()` to your code above with a new `+`. Its arguments are quite similar
+    to those in `geom_voronoi()`: simply replace `fill` by `label` and set it to `total`. Also, add an argument to `geom_text()`
+    (not to `aes()`) that sets `size` to 2 (that's the size of the label).
+  CorrectAnswer: ggplot() + geom_voronoi(data = subjects, aes(x = longitude, y = latitude, fill=percentage_pl)) + geom_text(data = subjects, aes(x=longitude, y=latitude, label = total), size = 2)
+  AnswerTests: omnitest(correctExpr='ggplot() + geom_voronoi(data = subjects, aes(x = longitude, y = latitude, fill=percentage_pl)) + geom_text(data = subjects, aes(x=longitude, y=latitude, label = total), size = 2)')
+  Hint: Make sure that `size = 2` is not within `aes()`, but within `geom_text()`.
+
+- Class: cmd_question
+  Output: > 
+    Because of the default colours you can't see much yet, but maybe the shape of Spain is clearer now thanks to the labels.
+    Now add `coord_map()` after a new `+` to use the Mercator projection.
+  CorrectAnswer: ggplot() + geom_voronoi(data = subjects, aes(x = longitude, y = latitude, fill=percentage_pl)) + geom_text(data = subjects, aes(x=longitude, y=latitude, label = total), size = 2) + coord_map()
+  AnswerTests: omnitest(correctExpr='ggplot() + geom_voronoi(data = subjects, aes(x = longitude, y = latitude, fill=percentage_pl)) + geom_text(data = subjects, aes(x=longitude, y=latitude, label = total), size = 2) + coord_map()')
+  Hint: Simply add `+ coord_map()` to your code above.
+
+- Class: cmd_question
+  Output: > 
+    I hope that you're now convinced that this will look like Spain at some point! Let's change the colours to something less
+    dark. Add the function `scale_fill_gradient()` to your code above after a new `+`. In the previous lesson we had to use `scale_fill_manual()`,
+    because we had categorical values (three nominal categories), but because we now have a continuous variable (percentages), we
+    need `scale_fill_gradient()`. It needs two arguments: `low` (set it to "lightgrey") and `high` (set it to my favourite R colour, "tomato").
+  CorrectAnswer: ggplot() + geom_voronoi(data = subjects, aes(x = longitude, y = latitude, fill=percentage_pl)) + geom_text(data = subjects, aes(x=longitude, y=latitude, label = total), size = 2) + coord_map() + scale_fill_gradient(low = "lightgrey", high = "tomato")
+  AnswerTests: omnitest(correctExpr='ggplot() + geom_voronoi(data = subjects, aes(x = longitude, y = latitude, fill=percentage_pl)) + geom_text(data = subjects, aes(x=longitude, y=latitude, label = total), size = 2) + coord_map()' + scale_fill_gradient(low = "lightgrey", high = "tomato"))
+  Hint: You need quotation marks for the names of the colours.
+
+- Class: cmd_question
+  Output: > 
+    With this colour scale the labels are more visible. Let's add a title to our map. Add the function `labs()` after a new `+`.
+    Add a `title` argument and set it to "Plural agreement with singular subjects (COSER)" and a `fill` argument, set to 
+    "% pl". This will be the name of the legend.
+  CorrectAnswer: ggplot() + geom_voronoi(data = subjects, aes(x = longitude, y = latitude, fill=percentage_pl)) + geom_text(data = subjects, aes(x=longitude, y=latitude, label = total), size = 2) + coord_map() + scale_fill_gradient(low = "lightgrey", high = "tomato") + labs(title = "Plural agreement with singular subjects (COSER)", fill = "% pl")
+  AnswerTests: omnitest(correctExpr='ggplot() + geom_voronoi(data = subjects, aes(x = longitude, y = latitude, fill=percentage_pl)) + geom_text(data = subjects, aes(x=longitude, y=latitude, label = total), size = 2) + coord_map() + scale_fill_gradient(low = "lightgrey", high = "tomato") + labs(title = "Plural agreement with singular subjects (COSER)", fill = "% pl")')
+  Hint: You need quotation marks for both titles.
+  
+- Class: cmd_question
+  Output: "Now it's time for our beauty routine: add `theme_bw()` after a new `+`."
+  CorrectAnswer: ggplot() + geom_voronoi(data = subjects, aes(x = longitude, y = latitude, fill=percentage_pl)) + geom_text(data = subjects, aes(x=longitude, y=latitude, label = total), size = 2) + coord_map() + scale_fill_gradient(low = "lightgrey", high = "tomato") + labs(title = "Plural agreement with singular subjects (COSER)", fill = "% pl") + theme_bw()
+  AnswerTests: omnitest(correctExpr='ggplot() + geom_voronoi(data = subjects, aes(x = longitude, y = latitude, fill=percentage_pl)) + geom_text(data = subjects, aes(x=longitude, y=latitude, label = total), size = 2) + coord_map() + scale_fill_gradient(low = "lightgrey", high = "tomato") + labs(title = "Plural agreement with singular subjects (COSER)", fill = "% pl") + theme_bw()')
+  Hint: You've done this many times already!
+
+- Class: cmd_question
+  Output: >
+    And now let's add `theme()`, with almost all arguments you're already used to. Set `panel.grid`, `panel.border`, `axis.title`,
+    `axis.text` and `axis.ticks` to `element_blank()` and `legend.position` and `legend.justification` to `c(1, 0)`. You 
+    might have noticed that we didn't add `legend.title` - that's because we want to keep it this time.
+  CorrectAnswer: ggplot() + geom_voronoi(data = subjects, aes(x = longitude, y = latitude, fill=percentage_pl)) + geom_text(data = subjects, aes(x=longitude, y=latitude, label = total), size = 2) + coord_map() + scale_fill_gradient(low = "lightgrey", high = "tomato") + labs(title = "Plural agreement with singular subjects (COSER)", fill = "% pl") + theme_bw() + theme(panel.grid = element_blank(), panel.border = element_blank(), axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), legend.position = c(1, 0), legend.justification = c(1, 0))
+  AnswerTests: omnitest(correctExpr='ggplot() + geom_voronoi(data = subjects, aes(x = longitude, y = latitude, fill=percentage_pl)) + geom_text(data = subjects, aes(x=longitude, y=latitude, label = total), size = 2) + coord_map() + scale_fill_gradient(low = "lightgrey", high = "tomato") + labs(title = "Plural agreement with singular subjects (COSER)", fill = "% pl") + theme_bw() + theme(panel.grid = element_blank(), panel.border = element_blank(), axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), legend.position = c(1, 0), legend.justification = c(1, 0))')
+  Hint: "You've done this many times already: check that you have all the arguments I mentioned, in that order."
+
+- Class: cmd_question
+  Output: >
+    Now it's finally time for cutting those Voronoi diagrams along the limits of Spain. You'll have to add a new argument
+    within `geom_voronoi()`: `outline`. Set it to our Spatial*DataFrame, that is, `spain_sdf`. It will take some time for the 
+    map to appear, even after R says it's ready… Be patient!
+  CorrectAnswer: ggplot() + geom_voronoi(data = subjects, aes(x = longitude, y = latitude, fill=percentage_pl), outline = spain_sdf) + geom_text(data = subjects, aes(x=longitude, y=latitude, label = total), size = 2) + coord_map() + scale_fill_gradient(low = "lightgrey", high = "tomato") + labs(title = "Plural agreement with singular subjects (COSER)", fill = "% pl") + theme_bw() + theme(panel.grid = element_blank(), panel.border = element_blank(), axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), legend.position = c(1, 0), legend.justification = c(1, 0))
+  AnswerTests: omnitest(correctExpr='ggplot() + geom_voronoi(data = subjects, aes(x = longitude, y = latitude, fill=percentage_pl), outline = spain_sdf) + geom_text(data = subjects, aes(x=longitude, y=latitude, label = total), size = 2) + coord_map() + scale_fill_gradient(low = "lightgrey", high = "tomato") + labs(title = "Plural agreement with singular subjects (COSER)", fill = "% pl") + theme_bw() + theme(panel.grid = element_blank(), panel.border = element_blank(), axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), legend.position = c(1, 0), legend.justification = c(1, 0))')
+  Hint: "No quotations needed. Make sure you added `outline` as an argument of `geom_voronoi()` and not of `aes()`."
+
+- Class: text
+  Output: Told you! Spain was there all along! Voronoi diagrams are both a very advanced mathematical concept and a quite nice way of plotting spatial information by filling all the available space. So I hope that you're as proud of yourself as I am! Now it's time for a break, enjoy!
+
+- Class: mult_question
+  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
+  AnswerChoices: Yes;No
+  CorrectAnswer: NULL
+  AnswerTests: submit_log()
+  Hint: As you feel!
