@@ -1,0 +1,214 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 23. Tagged corpora. Parsing XML files
+  Author: Carlota de Benito Moreno
+  Type: Standard
+  Organization: University of Zurich
+  Version: 2.4.5
+
+- Class: text
+  Output: Welcome to this new lesson, where we'll learn how to read and parse an XML file. Most tagged corpora are stored in this format. We'll use the package `xml2`, which I have loaded for you already.
+  
+- Class: cmd_question
+  Output: >
+    We'll be dealing with the NOAH corpus, a tagged corpus of Swiss German. It's freely available and we can read the files 
+    directly from the web. Create an object called `url` with the value "https://raw.githubusercontent.com/noe-eva/NOAH-Corpus/master/blick.xml".
+  CorrectAnswer: url <- "https://raw.githubusercontent.com/noe-eva/NOAH-Corpus/master/blick.xml"
+  AnswerTests: omnitest(correctExpr='url <- "https://raw.githubusercontent.com/noe-eva/NOAH-Corpus/master/blick.xml"')
+  Hint: Assign the name `url` to the URL I gave you and don't forget the quotation marks!
+
+- Class: cmd_question
+  Output: The function `read_xml()`, from the package `xml2`, can read a document in XML. Use it to read `url`.
+  CorrectAnswer: read_xml(url)
+  AnswerTests: any_of_exprs('read_xml(url)', 'url %>% read_xml()')
+  Hint: No quotation marks needed.
+
+- Class: cmd_question
+  Output: As you can see, the document is now recognised as an XML document and each first level node is listed as such. Save it under the name `blick` (these are articles of the Blick newspaper).
+  CorrectAnswer: blick <- read_xml(url)
+  AnswerTests: any_of_exprs('blick <- read_xml(url)', 'blick <- url %>% read_xml()')
+  Hint: Simply assign the name with the `<-` operator.
+  
+- Class: cmd_question
+  Output: One way of exploring the tree-like structure of an XML document is to use the function `View()`, which you can either type by hand or run it by clicking on `blick` on your global environment. You'll be able to click in each node and explore them.
+  CorrectAnswer: View(blick)
+  AnswerTests: any_of_exprs('View(blick)', 'blick %>% View()')
+  Hint: Its single argument is the name of the object you want to look at (`blick`).
+  
+- Class: text
+  Output: As you can see, the `article` nodes have nodes called `s` (for `sentence`) inside them, which inside have nodes called `w` (for `word`). This is the structure of our document. In this visualization you only get to see the attributes of the most internal node (`w`).
+  
+- Class: cmd_question
+  Output: You can also print this structure to the console with the function `xml_structure()`. Try it now.
+  CorrectAnswer: xml_structure(blick)
+  AnswerTests: any_of_exprs('xml_structure(blick)', 'blick %>% xml_structure()')
+  Hint: Again, its single argument is the name of the object you want to print (`blick`).
+
+- Class: text
+  Output: You got the whole document in the console, which is a bit too much. However, now you can see that the `article` nodes have three attributes (n, dialect and title), the `s` nodes have only one (n) and the `w` nodes have three arguments (n, pos, verified) and an text element.
+
+- Class: cmd_question
+  Output: In order to get all nodes of one kind, you can use the function `xml_find_all()`. Its first argument is the XML document (`blick`), while the second one is the name of the node, within quotations and after two `/`. Print the `w` nodes to the console.
+  CorrectAnswer: xml_find_all(blick, "//w")
+  AnswerTests: any_of_exprs('xml_find_all(blick, "//w")', 'blick %>% xml_find_all("//w")')
+  Hint: The string that will let the function know what node you're interested in should be "//w".
+
+- Class: cmd_question
+  Output: You can also explore only the first node of all with the function `xml_find_first()`. Same notation as before, try it now for the node `article`.
+  CorrectAnswer: xml_find_first(blick, "//article")
+  AnswerTests: any_of_exprs('xml_find_first(blick, "//article")', 'blick %>% xml_find_first("//article")')
+  Hint: The string that will let the function know what node you're interested in should be "//article".
+
+- Class: text
+  Output: These functions are useful to get an idea of the structure of the document you're working with. Other functions are needed for extracting both the attributes or the elements (text) of the nodes. We'll use them to transform our XML document into a tibble. Let's see how they work first.
+  
+- Class: cmd_question
+  Output: >
+    The function `xml_attrs()` gets the attributes of a node, but a node that you 'found' first. That is, it should be applied to 
+    the result of `xml_find_all()` (you can do that with a pipe). Find all cases of the node `article` and get its attributes afterwards.
+  CorrectAnswer: xml_find_all(blick, "//article") %>% xml_attrs()
+  AnswerTests: any_of_exprs('xml_find_all(blick, "//article")  %>% xml_attrs()', 'blick %>% xml_find_all("//article")  %>% xml_attrs()')
+  Hint: You don't need any extra arguments in `xml_attrs()`, simply add it with a pipe to an adapted version of the code you just used above.
+
+- Class: cmd_question
+  Output: >
+    The result is a list: each element of the list is a vector with the three attributes of each article. Check that this is really so by adding the function `class()` to your code with a pipe.
+  CorrectAnswer: xml_find_all(blick, "//article") %>% xml_attrs() %>% class() 
+  AnswerTests: any_of_exprs('xml_find_all(blick, "//article")  %>% xml_attrs() %>% class()', 'blick %>% xml_find_all("//article")  %>% xml_attrs() %>% class()')
+  Hint: You don't need any extra arguments in `class()`, simply add it with a pipe.
+
+- Class: cmd_question
+  Output: >
+    In order to find the text of the nodes you need to use the function `xml_text`, which again must be applied to an object you 
+    first 'found' with `xml_find_all()`. The only node that has some text is `w`, so let's get it!
+  CorrectAnswer: xml_find_all(blick, "//w") %>% xml_text()
+  AnswerTests: any_of_exprs('xml_find_all(blick, "//w")  %>% xml_text()', 'blick %>% xml_find_all("//w")  %>% xml_text()')
+  Hint: You don't need any extra arguments in `xml_text()`, simply add it with a pipe.
+
+- Class: cmd_question
+  Output: This is not a list, but a character vector. Confirm that this is so by adding `class()` with a pipe.
+  CorrectAnswer: xml_find_all(blick, "//w") %>% xml_text() %>% class()
+  AnswerTests: any_of_exprs('xml_find_all(blick, "//w")  %>% xml_text()  %>% class()', 'blick %>% xml_find_all("//w") %>% xml_text() %>% class()')
+  Hint: You don't need any extra arguments in `class()`, simply add it with a pipe.
+
+- Class: text
+  Output: Now we know how to extract all the information from an XML file, so we can convert the information of our XML into a tibble. Let's do it.
+
+- Class: cmd_question
+  Output: > 
+    We'll start with the `article` nodes. You need to find all the nodes and extract their attributes, as you 
+    did above. In order to convert this list into a column of a tibble, use the function `enframe()`.
+    Add an argument `name` and set it to `NULL` (no quotation marks) - otherwise it will add a column called 
+    `name` that we don't need. Add this function with a pipe.
+  CorrectAnswer: xml_find_all(blick, "//article") %>% xml_attrs() %>% enframe(name = NULL)
+  AnswerTests: any_of_exprs('xml_find_all(blick, "//article")  %>% xml_attrs() %>% enframe(name = NULL)', 'blick %>% xml_find_all("//article")  %>% xml_attrs() %>% enframe(name = NULL)')
+  Hint: The first two steps are identical to what you did above.
+
+- Class: cmd_question
+  Output: > 
+    Now we have a tibble with a single column, called `value`, that contains our list. Maybe you remember that
+    we used the function `unnest()` (many moons ago!) to flatten a column that had a list. But that flattened the list into
+    different rows - we'd like to have each attribute of `article` in a column. `unnest_wider()` can do that.
+    Add it with a pipe. As its second argument (the only one, since it's in a pipe) it needs the name of the column
+    to unnest (`value`).
+  CorrectAnswer: xml_find_all(blick, "//article") %>% xml_attrs() %>% enframe(name = NULL) %>% unnest_wider(value)
+  AnswerTests: any_of_exprs('xml_find_all(blick, "//article")  %>% xml_attrs() %>% enframe(name = NULL) %>% unnest_wider(value)', 'blick %>% xml_find_all("//article")  %>% xml_attrs() %>% enframe(name = NULL) %>% unnest_wider(value)')
+  Hint: You don't need quotations at all.
+  
+- Class: cmd_question
+  Output: > 
+    And we got a tibble with our attributes! `n` is actually an identifier for each article. Let's rename it
+    as `article_id` with `rename()`. Add it with a pipe.
+  CorrectAnswer: xml_find_all(blick, "//article") %>% xml_attrs() %>% enframe(name = NULL) %>% unnest_wider(value) %>% rename(article_id = n)
+  AnswerTests: any_of_exprs('xml_find_all(blick, "//article")  %>% xml_attrs() %>% enframe(name = NULL) %>% unnest_wider(value)  %>% rename(article_id = n)', 'blick %>% xml_find_all("//article")  %>% xml_attrs() %>% enframe(name = NULL) %>% unnest_wider(value) %>% rename(article_id = n)')
+  Hint: Remember that `rename()`'s syntax is quite similar to `mutate()`'s. It takes `new_name = old_name`.
+ 
+- Class: cmd_question
+  Output: That's exactly what we need. Save it as `articles`.
+  CorrectAnswer: articles <- xml_find_all(blick, "//article") %>% xml_attrs() %>% enframe(name = NULL) %>% unnest_wider(value) %>% rename(article_id = n)
+  AnswerTests: any_of_exprs('articles <- xml_find_all(blick, "//article")  %>% xml_attrs() %>% enframe(name = NULL) %>% unnest_wider(value)  %>% rename(article_id = n)', 'articles <- blick %>% xml_find_all("//article")  %>% xml_attrs() %>% enframe(name = NULL) %>% unnest_wider(value) %>% rename(article_id = n)')
+  Hint: Simply assign the name with the `<-` operator.
+
+- Class: cmd_question
+  Output: > 
+    We could do the same for the node `s`, but the information it has is actually quite irrelevant. See it for
+    yourself by converting it into a tibble but without saving it or renaming its column. That is, 
+    find all `s` nodes, extract their attributes, enframe the result and unnest it.
+  CorrectAnswer: xml_find_all(blick, "//s") %>% xml_attrs() %>% enframe(name = NULL) %>% unnest_wider(value)
+  AnswerTests: any_of_exprs('xml_find_all(blick, "//s") %>% xml_attrs() %>% enframe(name = NULL) %>% unnest_wider(value)', 'blick %>% xml_find_all("//s") %>% xml_attrs() %>% enframe(name = NULL) %>% unnest_wider(value)')
+  Hint: Adapt slightly the code you used above for the node `article`. Remember that you don't need to use `rename()` or to save it.
+
+- Class: text
+  Output: This column only has identifiers for each sentence. The number before the hyphen is the article identifier, while the one after the hyphen is the sentence identifier. This information is also stored in the `w` node, so we can ignore the `s` node.
+  
+- Class: cmd_question
+  Output: > 
+    The `w` node is important, though. Let's extract its arguments by adapting the code you just used.
+  CorrectAnswer: xml_find_all(blick, "//w") %>% xml_attrs() %>% enframe(name = NULL) %>% unnest_wider(value)
+  AnswerTests: any_of_exprs('xml_find_all(blick, "//w") %>% xml_attrs() %>% enframe(name = NULL) %>% unnest_wider(value)', 'blick %>% xml_find_all("//w") %>% xml_attrs() %>% enframe(name = NULL) %>% unnest_wider(value)')
+  Hint: No saving it or renaming anything - find all attributes `w`, extract them, enframe the result and unnest it.
+
+- Class: cmd_question
+  Output: > 
+    As you can see, the `n` attribute again has identtifiers. The first number is for the article, the second one
+    for the sentence and the third one for the word. We can separate this information into three columns, one for each id.
+    Add `separate()` with a pipe: its needs that you specify what column you want to separate (`n`) and an
+    argument `into` which should equal to a vector with the names of the new columns. They should be 
+    "article_id", "sentence_id" and "word_id".
+  CorrectAnswer: xml_find_all(blick, "//w") %>% xml_attrs() %>% enframe(name = NULL) %>% unnest_wider(value) %>% separate(n, into = c("article_id", "sentence_id", "word_id"))
+  AnswerTests: any_of_exprs('xml_find_all(blick, "//w") %>% xml_attrs() %>% enframe(name = NULL) %>% unnest_wider(value)  %>% separate(n, into = c("article_id", "sentence_id", "word_id"))', 'blick %>% xml_find_all("//w") %>% xml_attrs() %>% enframe(name = NULL) %>% unnest_wider(value) %>% separate(n, into = c("article_id", "sentence_id", "word_id"))')
+  Hint: You need quotation marks for the names of the new columns.
+
+- Class: cmd_question
+  Output: Perfect, now we could join it with the `articles` tibble, because they have the `article_id` column in common. But first save it as `words_attr`.
+  CorrectAnswer: words_attr <- xml_find_all(blick, "//w") %>% xml_attrs() %>% enframe(name = NULL) %>% unnest_wider(value) %>% separate(n, into = c("article_id", "sentence_id", "word_id"))
+  AnswerTests: any_of_exprs('words_attr <- xml_find_all(blick, "//w") %>% xml_attrs() %>% enframe(name = NULL) %>% unnest_wider(value)  %>% separate(n, into = c("article_id", "sentence_id", "word_id"))', 'words_attr <- blick %>% xml_find_all("//w") %>% xml_attrs() %>% enframe(name = NULL) %>% unnest_wider(value) %>% separate(n, into = c("article_id", "sentence_id", "word_id"))')
+  Hint: Simply assign the name with the `<-` operator.
+  
+- Class: cmd_question
+  Output: > 
+    We also need to extract the text of the `w` node. This is even easier, since the result of `xml_text()` 
+    is not a list, but a vector. Find all `w` nodes, extract its text with `xml_text()` and enframe it.
+    After the `name = NULL` argument within `enframe()`, add the argument `value` and set it to "word" (with
+    quotation marks) - this will set the name of the single column to `word` instead of the default name (`value`).
+  CorrectAnswer: xml_find_all(blick, "//w") %>% xml_text() %>% enframe(name = NULL, value = "word")
+  AnswerTests: any_of_exprs('xml_find_all(blick, "//w") %>% xml_text() %>% enframe(name = NULL, value = "word")', 'blick %>% xml_find_all("//w") %>% xml_text() %>% enframe(name = NULL, value = "word")')
+  Hint: This is very similar to the code you've been using, but with some adaptations. The node should be "//w", you're using `xml_text()` instead of `xml_attrs()` and you need that new argument in `enframe()`.
+
+- Class: cmd_question
+  Output: > 
+    This tibble does not have any column in common with `words_attr`, but they have the same number of 
+    rows, so let's paste them together. Use a pipe to add the function add_column(), which needs `words_attr`
+    as its argument.
+  CorrectAnswer: xml_find_all(blick, "//w") %>% xml_text() %>% enframe(name = NULL, value = "word") %>% add_column(words_attr) 
+  AnswerTests: any_of_exprs('xml_find_all(blick, "//w") %>% xml_text() %>% enframe(name = NULL, value = "word") %>% add_column(words_attr)', 'blick %>% xml_find_all("//w") %>% xml_text() %>% enframe(name = NULL, value = "word") %>% add_column(words_attr)')
+  Hint: No quotation marks needed.
+  
+- Class: cmd_question
+  Output: Save the whole tibble as `words`.
+  CorrectAnswer: words <- xml_find_all(blick, "//w") %>% xml_text() %>% enframe(name = NULL, value = "word") %>% add_column(words_attr) 
+  AnswerTests: any_of_exprs('words <- xml_find_all(blick, "//w") %>% xml_text() %>% enframe(name = NULL, value = "word") %>% add_column(words_attr)', 'words <- blick %>% xml_find_all("//w") %>% xml_text() %>% enframe(name = NULL, value = "word") %>% add_column(words_attr)')
+  Hint: Simply assign the name with the `<-` operator.
+
+- Class: cmd_question
+  Output: Now let's put our two tibbles together. Use full_join() to put `articles` (as table x) and `words` (as table y) together.
+  CorrectAnswer: articles %>% full_join(words)
+  AnswerTests: any_of_exprs('articles %>% full_join(words)', 'full_join(articles, words)')
+  Hint: Table x is the first one (the one in the left), table y is the second one (the one in the right).
+  
+- Class: cmd_question
+  Output: And let's save it to `corpus`.
+  CorrectAnswer: corpus <- articles %>% full_join(words)
+  AnswerTests: any_of_exprs('corpus <- articles %>% full_join(words)', 'corpus <- full_join(articles, words)')
+  Hint: Simply assign the name with the `<-` operator.
+  
+- Class: text
+  Output: Great! So you now know how to read, parse and explore an XML file, as well as how to extract its information and transform it into a table, which is easier to work with. In the next lesson we'll see a few things we can do with this data, since we've never worked with a pos-tagged corpus.
+  
+- Class: mult_question
+  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
+  AnswerChoices: Yes;No
+  CorrectAnswer: NULL
+  AnswerTests: submit_log()
+  Hint: As you feel!
+  

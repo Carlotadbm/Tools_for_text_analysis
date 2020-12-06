@@ -1,0 +1,222 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 24. Analysing tagged corpora
+  Author: Carlota de Benito Moreno
+  Type: Standard
+  Organization: University of Zurich
+  Version: 2.4.5
+
+- Class: text
+  Output: Welcome to this second session on tagged corpora. We'll be working with the Blick corpus that we parsed in our last lesson in order to see what kind of information we can get from it. We won't need anything besides the tidyverse.
+
+- Class: cmd_question
+  Output: I have loaded the tibble we created last lesson for you. It's called `blick`, chek it out.
+  CorrectAnswer: blick
+  AnswerTests: omnitest(correctExpr='blick')
+  Hint: Simply print its name.
+  
+- Class: cmd_question
+  Output: >
+    The corpus is already tokenized, so we can calculate very easily which are the most frequent words in these 
+    Blick articles. When we tokenize a corpus with `unnest_tokens()`, the tokens got automatically transformed 
+    to lower case, but we have both upper and lower case letters now. Let's transform them first to lower case
+    with the function `tolower()`, which only needs the name of the column to transform (`word`). Use a pipe.
+  CorrectAnswer: blick %>% mutate(word = tolower(word))
+  AnswerTests: omnitest(correctExpr='blick %>% mutate(word = tolower(word))')
+  Hint: You're changing a column, did you remember to use mutate()?
+
+- Class: cmd_question
+  Output: "Now we can count how many times each unique word appears: add `count()` with a pipe. Set the argument `sort` to TRUE."
+  CorrectAnswer: blick %>% mutate(word = tolower(word)) %>% count(word, sort = TRUE)
+  AnswerTests: omnitest(correctExpr='blick %>% mutate(word = tolower(word)) %>% count(word, sort = TRUE)')
+  Hint: The first argument of count should be the column `word`.
+  
+- Class: text
+  Output: Hum, in the ten most frequent words we got 4 punctuation marks that we obviously don't want. We could filter punctuation marks with a nice regex, but… This is a tagged corpus! That should make things easier, let's see.
+
+- Class: cmd_question
+  Output: >
+    The NOAH's corpus uses an adapted version of the Stuttgart-Tübingen-TagSet (STTS), which you can examine in 
+    "https://files.ifi.uzh.ch/CL/tagger/UIS-STTS-Diffs.html". The information about the specific adaptations 
+    for Swiss German are found in "https://noe-eva.github.io/NOAH-Corpus/corpus.html". Check the list of distinct
+    pos tags in `blick` with `distinct()`. Its second argument is the relevant column (`pos`). In order to see all
+    the tags, add `print(n = Inf)` after a pipe.
+  CorrectAnswer: blick %>% distinct(pos) %>% print(n = Inf)
+  AnswerTests: any_of_exprs('blick %>% distinct(pos) %>% print(n = Inf)', 'distinct(blick, pos) %>% print(n = Inf)')
+  Hint: The function `distinct()` needs `blick` and `pos` as its arguments.
+
+- Class: text
+  Output: There are 69 different pos tags in the corpus, although many of them are identical to another tag, except that they end in a `+`, which indicates they are merged words. 
+  
+- Class: cmd_question
+  Output: >
+    Tags indicating punctuation marks start by "$" ("$.", "$," and "$("), so we can filter them out easily with a 
+    negated `str_detect()`. Adapt the code you had above for counting the words, adding `filter()` before you transformed the data 
+    with `tolower()`. Filter column `pos` so that rows with a pos tah that starts by "$" are removed.
+    The regular expression you need is "^\\$" (you need to scape "$"", since it is a special character in regex).
+  CorrectAnswer: >
+    blick %>% filter(!str_detect(pos, "^\\$")) %>% mutate(word = tolower(word)) %>% count(word, sort = TRUE)
+  AnswerTests: omnitest(correctExpr='blick %>% filter(!str_detect(pos, "^\\\\$")) %>% mutate(word = tolower(word)) %>% count(word, sort = TRUE)')
+  Hint: Remember that you must negate `str_detect()` by adding `!` before it!
+
+- Class: text
+  Output: So the coolest thing about pos tags is that our words are not just words anymore, because they have been categorised. Let's explore those categories a bit.
+  
+- Class: cmd_question
+  Output: >
+    Using `filter()` we can very easily look at all words of a single category. Let's explore the content of
+    the tag "PTKINF", which is one of the additions for Swiss German.
+  CorrectAnswer: blick %>% filter(pos == "PTKINF")
+  AnswerTests: omnitest(correctExpr='blick %>% filter(pos == "PTKINF")')
+  Hint: Remember that `filter()`takes a logical expression. You need the equivalence operator, which is `==`.
+
+- Class: text
+  Output: "Only four occurrences are found, but of three different words (which is the nice thing about tags): 'aafo', 'go', and 'lo'. These are some of the infinitive particles that can appear before an infinitive and after some specific verbs in Swiss German."
+
+- Class: cmd_question
+  Output: >
+    Let's see what those 'merged words' are about. They are all marked by the presence of `+`. Use `str_detect()`
+    within `filter()` to extract them. You'll also need to escape "+" in your regex.
+  CorrectAnswer: >
+    blick %>% filter(str_detect(pos, "\\+"))
+  AnswerTests: omnitest(correctExpr='blick %>% filter(str_detect(pos, "\\\\+"))')
+  Hint: You've used `str_detect()` above, so check the code if you run into trouble. The regex you need is simply "\\+".
+
+- Class: text
+  Output: >
+    Merged words are single graphical words that could be written as two (or maybe more) words. As you can see, 
+    the decision made by the creator of the corpus was to use the pos tag for the first word and indicate that 
+    there's something else with the `+` sign. This is not the only possibility to deal with these words: 
+    they could've been duplicated, so that we had pos tags also for the second word, or complex
+    tags could've been created. There's no best solution here, it depends on what you want the corpus for. 
+    Annotating a corpus is not straightforward and requires a lot of linguistic knowledge, which is why 
+    linguists are needed in the process! 
+
+- Class: text
+  Output: We can also think of more complex searches. For instance, we could find all common nouns preceded by a possessive article. Let's try that.
+
+- Class: cmd_question
+  Output: >
+    Obviously, we only want results within the same sentence, so we'll first group the corpus by 
+    `article_id` and `sentence_id` (in that order). Use a pipe to add `group_by()`.
+  CorrectAnswer: blick %>% group_by(article_id, sentence_id)
+  AnswerTests: omnitest(correctExpr='blick %>% group_by(article_id, sentence_id)')
+  Hint: No quotation marks needed.
+  
+- Class: cmd_question
+  Output: >
+    Our filter is going to be a bit more complex than before. We want to filter the rows in `blick` so that 
+    we keep rows with the value "NN" in `pos`, which indicates common nouns, AND the value "PPOSAT" in the 
+    `pos` before that one, which
+    indicates possessive articles. Do you remember the functions `lag()` and `lead()`? They do precisely that:
+    they find values that are before (`lag()`) or after (`lead()`) something. The logical expression we
+    need in filter should then have two logical expressions combined by `&`. Can you figure it out?
+  CorrectAnswer: blick %>% group_by(article_id, sentence_id) %>% filter(pos == "NN" & lag(pos) == "PPOSAT")
+  AnswerTests: omnitest(correctExpr='blick %>% group_by(article_id, sentence_id) %>% filter(pos == "NN" & lag(pos) == "PPOSAT")')
+  Hint: >
+    You probably got the first part right, so I'll help you with the second part: `& lag(pos) == "PPOSAT"`.
+
+- Class: text
+  Output: You got all nouns that are preceded by a possessive article, but, because there's no field for the whole sentence, you can't see that possessive article! We need ways around this.
+
+- Class: cmd_question
+  Output: >
+    First: note that you got the noun and not the possessive article because your logical expression was
+    based on the NN label. Try the equivalent logical expression `pos == "PPOSAT" & lead(pos) == "NN"`, where you look 
+    for rows with PPOSAT in the pos column and with NN in the row after, to see what you get.
+  CorrectAnswer: blick %>% group_by(article_id, sentence_id) %>% filter(pos == "PPOSAT" & lead(pos) == "NN")
+  AnswerTests: omnitest(correctExpr='blick %>% group_by(article_id, sentence_id) %>% filter(pos == "PPOSAT" & lead(pos) == "NN")')
+  Hint: Simply adapt the code from above with the code I just gave you.
+
+- Class: text
+  Output: Now you got the possessive articles. If you compare both tibbles you will see that 1) the have the same number of rows and 2) the possessive articles have the same article_id and sentence_id as the nouns, but that the word_id is one number smaller, since they are the previous word.
+  
+- Class: cmd_question
+  Output: >
+    One option to see all this information together would be to paste the tibbles together. Rename column `word`
+    in the tibble you just produced as `possessive_before`.
+  CorrectAnswer: blick %>% group_by(article_id, sentence_id) %>% filter(pos == "PPOSAT" & lead(pos) == "NN") %>% rename(possessive_before = word)
+  AnswerTests: omnitest(correctExpr='blick %>% group_by(article_id, sentence_id) %>% filter(pos == "PPOSAT" & lead(pos) == "NN") %>% rename(possessive_before = word)')
+  Hint: "Remember that the syntax of `rename()` is similar to the syntax of `mutate()`: new_name = old_name"
+  
+- Class: cmd_question
+  Output: Now ungroup the tibble with `ungroup()` and select only that `possessive_before` column with `select()`.
+  CorrectAnswer: blick %>% group_by(article_id, sentence_id) %>% filter(pos == "PPOSAT" & lead(pos) == "NN") %>% rename(possessive_before = word) %>% ungroup() %>% select(possessive_before)
+  AnswerTests: omnitest(correctExpr='blick %>% group_by(article_id, sentence_id) %>% filter(pos == "PPOSAT" & lead(pos) == "NN") %>% rename(possessive_before = word) %>% ungroup() %>% select(possessive_before)')
+  Hint: Careful, these are two different pipes!
+  
+- Class: cmd_question
+  Output: And save the result to `possessives`.
+  CorrectAnswer: possessives <- blick %>% group_by(article_id, sentence_id) %>% filter(pos == "PPOSAT" & lead(pos) == "NN") %>% rename(possessive_before = word) %>% ungroup() %>% select(possessive_before)
+  AnswerTests: omnitest(correctExpr='possessives <- blick %>% group_by(article_id, sentence_id) %>% filter(pos == "PPOSAT" & lead(pos) == "NN") %>% rename(possessive_before = word) %>% ungroup() %>% select(possessive_before)')
+  Hint: Simply assign the name to the tibble with the operator `<-`.
+  
+- Class: cmd_question
+  Output: >
+    Now update you code above, the one you used to get the nouns (as opposed to the possessive articles). 
+    First ungroup it and, afterwards, add `possessives` as a new column with `add_column()`.
+  CorrectAnswer: blick %>% group_by(article_id, sentence_id) %>% filter(pos == "NN" & lag(pos) == "PPOSAT") %>% ungroup() %>% add_column(possessives)
+  AnswerTests: omnitest(correctExpr='blick %>% group_by(article_id, sentence_id) %>% filter(pos == "NN" & lag(pos) == "PPOSAT") %>% ungroup() %>% add_column(possessives)')
+  Hint: Careful, these are two different pipes!
+
+- Class: cmd_question
+  Output: >
+    Let's create a new column called `possessive_phrase`, where you paste the content of `possessive_before`
+    and of `word` with `str_c()`. This function needs the names of the columns to paste (in the proper order)
+    and a `sep` argument, which should be set to `" "`, so that the words are separated by a space.
+  CorrectAnswer: blick %>% group_by(article_id, sentence_id) %>% filter(pos == "NN" & lag(pos) == "PPOSAT") %>% ungroup() %>% add_column(possessives) %>% mutate(possessive_phrase = str_c(possessive_before, word, sep = " "))
+  AnswerTests: omnitest(correctExpr='blick %>% group_by(article_id, sentence_id) %>% filter(pos == "NN" & lag(pos) == "PPOSAT") %>% ungroup() %>% add_column(possessives) %>% mutate(possessive_phrase = str_c(possessive_before, word, sep = " "))')
+  Hint: You need quotation marks in `sep`.
+
+- Class: text
+  Output: We got a column with the results of our search. That's just one way of doing things. We could also create a new column with the whole sentence, by pasting together all the words within a sentence. Let's see how.
+
+- Class: cmd_question
+  Output: Again, let's first group `blick` by `article_id` and `sentence_id` with `group_by()`.
+  CorrectAnswer: blick %>% group_by(article_id, sentence_id)
+  AnswerTests: omnitest(correctExpr='blick %>% group_by(article_id, sentence_id)')
+  Hint: No quotation marks needed.
+
+- Class: cmd_question
+  Output: >
+    We can use `str_c()` again to paste all words that have the same `article_id` and `sentence_id`. Before,
+    we used it to paste two columns. Now we only need one column (word) and, instead of the argument `sep`, we
+    need the argument `collapse`, which must also be set to `" "`, so that we have spaces between each word.
+    Do this and store the result in a column called `sentence`. Ungroup the tibble afterwards.
+  CorrectAnswer: blick %>% group_by(article_id, sentence_id) %>% mutate(sentence = str_c(word, collapse = " ")) %>% ungroup()
+  AnswerTests: omnitest(correctExpr='blick %>% group_by(article_id, sentence_id) %>% mutate(sentence = str_c(word, collapse = " ")) %>% ungroup()')
+  Hint: You're creating a new column, so you need `mutate()`. Don't forget to add `ungroup()` with a second pipe.
+  
+- Class: text
+  Output: >
+    As you can see, the problem with this method is that we got also spaces before punctuation marks. That could be fixed with regex, but we won't do it here. (You can do it for extra homework if you somehow still have some free time! :) )
+
+- Class: cmd_question
+  Output: >
+    The good thing about having the whole sentence in the tibble is that you can see more context. That's 
+    also good if you don't want to look for contiguous words. For instance, filter this new tibble 
+    again so that you get all nouns preceded by a possessive article, but this time specify 
+    that the possessive should not be contiguous, but should appear 2 words before, to check for cases where adjectives
+    where used before the nouns. You can use the same logical expression you used above, simply add
+    the argument `n = 2` to `lag()`.
+  CorrectAnswer: blick %>% group_by(article_id, sentence_id) %>% mutate(sentence = str_c(word, collapse = " ")) %>% ungroup() %>% filter(pos == "NN" & lag(pos, n = 2) == "PPOSAT")
+  AnswerTests: omnitest(correctExpr='blick %>% group_by(article_id, sentence_id) %>% mutate(sentence = str_c(word, collapse = " ")) %>% ungroup() %>% filter(pos == "NN" & lag(pos, n = 2) == "PPOSAT")')
+  Hint: Check your parentheses to make sure that this new argument is within `lag()`.
+
+- Class: text
+  Output: You can see a nice example of the context we were looking for already in the first sentence ("Sini Schwiizertüütsche Gschichte", which means 'His/Its Swiss German History').
+
+- Class: text
+  Output: > 
+    In this lesson you learnt a few tips for exploring a pos-tagged corpus. Because we were dealing with a tibble, 
+    you mostly used functions you were already familiar with: for new tasks you mostly just need a bit of 
+    imagination to get to creative solutions to whatever problem you encounter. Next week we'll automatically 
+    tag a corpus ourselves, but you've earned a break now!
+
+- Class: mult_question
+  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
+  AnswerChoices: Yes;No
+  CorrectAnswer: NULL
+  AnswerTests: submit_log()
+  Hint: As you feel!
+  
