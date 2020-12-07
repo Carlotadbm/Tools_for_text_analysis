@@ -11,7 +11,7 @@
   
 - Class: cmd_question
   Output: >
-    We'll be dealing with the NOAH corpus, a tagged corpus of Swiss German. It's freely available and we can read the files 
+    We'll be dealing with the NOAH's corpus, a tagged corpus of Swiss German. It's freely available and we can read the files 
     directly from the web. Create an object called `url` with the value "https://raw.githubusercontent.com/noe-eva/NOAH-Corpus/master/blick.xml".
   CorrectAnswer: url <- "https://raw.githubusercontent.com/noe-eva/NOAH-Corpus/master/blick.xml"
   AnswerTests: omnitest(correctExpr='url <- "https://raw.githubusercontent.com/noe-eva/NOAH-Corpus/master/blick.xml"')
