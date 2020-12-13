@@ -102,7 +102,7 @@
   Hint: It has the two arguments I told you about and you don't need quotations whatsoever.
 
 - Class: cmd_question
-  Output: "The results is a quite messy data frame, but nothing that the tidyverse cannot solve: add `as_tibble()` with a pipe to your previous code."
+  Output: "The result is a quite messy data frame, but nothing that the tidyverse cannot solve: add `as_tibble()` with a pipe to your previous code."
   CorrectAnswer: udpipe_annotate(en_ewt, text) %>% as_tibble()
   AnswerTests: omnitest(correctExpr='udpipe_annotate(en_ewt, text) %>% as_tibble()')
   Hint: Just a good old pipe followed by `as_tibble()`.
@@ -122,7 +122,7 @@
     
 - Class: cmd_question
   Output: > 
-    Although this tibble has a lot more information than the one we dealt with last week, with the NOAH's corpus data, 
+    Although this tibble has much more information than the one we dealt with last week, with the NOAH's corpus data, 
     you already now how to search for patterns and combinations of patterns in this kind of data. We won't focus on
     that today, but let's briefly review what you learnt last week. First, find out all possible values
     in `feats` by using `distinct()`. Add it with a pipe to your code above.
@@ -341,7 +341,7 @@
   Hint: Assign it the name with `<-`.
 
 - Class: cmd_question
-  Output: Now run again the code you prepared for creating the bar plot, but use `comparison_short` instead of `comparison_short`.
+  Output: Now run again the code you prepared for creating the bar plot, but use `comparison_short` instead of `comparison`.
   CorrectAnswer: comparison_short %>% mutate(token = reorder(token, token_id)) %>% ggplot(aes(x = upos, fill = model)) + geom_bar() + facet_wrap(~token, scales = "free_x")
   AnswerTests: omnitest(correctExpr='comparison_short %>% mutate(token = reorder(token, token_id)) %>% ggplot(aes(x = upos, fill = model)) + geom_bar() + facet_wrap(~token, scales = "free_x")')
   Hint: The only thing you need to adapt from the code you used for the bar plot is the name of the tibble.
