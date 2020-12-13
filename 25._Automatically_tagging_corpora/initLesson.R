@@ -4,3 +4,5 @@
       # throughout the lesson.
 
 swirl_options(swirl_logging = TRUE)
+
+text <- "This is just a test sentence that I'm having trouble to write, so I'll try to make it as long as possible by saying the littlest I can"
