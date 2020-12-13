@@ -1,0 +1,364 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 25. Automatically tagging corpora
+  Author: Carlota de Benito Moreno
+  Type: Standard
+  Organization: University of Zurich
+  Version: 2.4.5
+
+- Class: text
+  Output: Hi there! Welcome to this last session of the course. We've come a long way, thanks for sharing the ride!
+  
+- Class: text
+  Output: In this lesson we'll use the library `udpipe` to learn how to automatically tag a corpus with the material of the project Universal Dependencies and compare the results of different language models. I have presented this project in class, so go watch the video if you haven't yet! As a Christmas exception, we'll work with English, since that's our only common language and it's kind of important that we understand the text we're working with today.
+
+- Class: cmd_question
+  Output: > 
+    With the library `udpipe` you can directly download some language models. For English, four are available.
+    We'll work with all four today, so that we can compare their results. You can download these models with the function
+    `udpipe_download_model()`. Run `?udpipe_download_model` to get the help file, so that you see the available models,
+    listed under the argument `language`.
+  CorrectAnswer: ?udpipe_download_model
+  AnswerTests: omnitest(correctExpr='?udpipe_download_model')
+  Hint: Simply run `?udpipe_download_model`.
+  
+- Class: cmd_question
+  Output: > 
+    Let's download the model "english-ewt" first. You just need to add that string within `udpipe_download_model()`. 
+  CorrectAnswer: udpipe_download_model("english-ewt")
+  AnswerTests: omnitest(correctExpr='udpipe_download_model("english-ewt")')
+  Hint: Keep the quotation marks in "english-ewt"`.
+  
+- Class: cmd_question
+  Output: > 
+    The model has now been downloaded to your working directory. In order to load it to your environment, we can use 
+    the function `udpipe_load_model()`. It requires the argument `file`, whose value is the name of the file.
+    In this case, that is "english-ewt-ud-2.5-191206.udpipe" (again with quotation marks). Save the whole thing to an 
+    object called `en_ewt`.
+  CorrectAnswer: en_ewt <- udpipe_load_model(file = "english-ewt-ud-2.5-191206.udpipe")
+  AnswerTests: omnitest(correctExpr='en_ewt <- udpipe_load_model(file = "english-ewt-ud-2.5-191206.udpipe")')
+  Hint: Within `udpipe_load_model()` you need to have `file = "english-ewt-ud-2.5-191206.udpipe")`. Don't forget to assign it a name with `<-`!
+  
+- Class: cmd_question
+  Output: > 
+    You can use `udpipe_load_model()` next time that you want to load the model, but you won't need to download it again, 
+    since it's already in your computer (it'll need to be in your working directory, though). We must repeat this 
+    process for the other three English models now. Download the model "english-gum".
+  CorrectAnswer: udpipe_download_model("english-gum")
+  AnswerTests: omnitest(correctExpr='udpipe_download_model("english-gum")')
+  Hint: You need the function `udpipe_download_model()`, adapt you code from above.
+
+- Class: cmd_question
+  Output: > 
+    Now load it and save it as `en_gum`. If you start writing "english" and press the tab key, RStudio should offer you
+    some possible file names depending on what you have on your working directory. If that doesn't happen, this is the 
+    string you need: "english-gum-ud-2.5-191206.udpipe".
+  CorrectAnswer: en_gum <- udpipe_load_model(file = "english-gum-ud-2.5-191206.udpipe")
+  AnswerTests: omnitest(correctExpr='en_gum <- udpipe_load_model(file = "english-gum-ud-2.5-191206.udpipe")')
+  Hint: You need the function `udpipe_load_model()`, adapt you code from above.
+  
+- Class: cmd_question
+  Output: Download now the model "english-lines".
+  CorrectAnswer: udpipe_download_model("english-lines")
+  AnswerTests: omnitest(correctExpr='udpipe_download_model("english-lines")')
+  Hint: You need the function `udpipe_download_model()`, adapt you code from above.
+
+- Class: cmd_question
+  Output: Now load it and save it as `en_lines`. The name of the file is "english-lines-ud-2.5-191206.udpipe".
+  CorrectAnswer: en_lines <- udpipe_load_model(file = "english-lines-ud-2.5-191206.udpipe")
+  AnswerTests: omnitest(correctExpr='en_lines <- udpipe_load_model(file = "english-lines-ud-2.5-191206.udpipe")')
+  Hint: You need the function `udpipe_load_model()`, adapt you code from above.
+
+- Class: cmd_question
+  Output: Our last model is "english-partut". Download it now.
+  CorrectAnswer: udpipe_download_model("english-partut")
+  AnswerTests: omnitest(correctExpr='udpipe_download_model("english-partut")')
+  Hint: You need the function `udpipe_download_model()`, adapt you code from above.
+
+- Class: cmd_question
+  Output: Now load it and save it as `en_partut`. The name of the file is "english-partut-ud-2.5-191206.udpipe".
+  CorrectAnswer: en_partut <- udpipe_load_model(file = "english-partut-ud-2.5-191206.udpipe")
+  AnswerTests: omnitest(correctExpr='en_partut <- udpipe_load_model(file = "english-partut-ud-2.5-191206.udpipe")')
+  Hint: You need the function `udpipe_load_model()`, adapt you code from above.
+
+- Class: text
+  Output: That was a bit tedious… Working with four models requires some repetition!
+
+- Class: cmd_question
+  Output: Instead of annotating a real corpus, we'll try with an easy sentence that I've stored as a vector for you. Print `text` to see it.
+  CorrectAnswer: text
+  AnswerTests: omnitest(correctExpr='text')
+  Hint: Simply print the name of the object.
+  
+- Class: text
+  Output: As you can see, this is just a (long) sentence stored as a single element in a vector.
+  
+- Class: cmd_question
+  Output: >
+    Let's annotate this sentence with the function `udpipe_annotate()`. Its first argument is the language model: use
+    `en_ewt`. Its second argument is the data it has to annotate: `text`.
+  CorrectAnswer: udpipe_annotate(en_ewt, text)
+  AnswerTests: omnitest(correctExpr='udpipe_annotate(en_ewt, text)')
+  Hint: It has the two arguments I told you about and you don't need quotations whatsoever.
+
+- Class: cmd_question
+  Output: "The results is a quite messy data frame, but nothing that the tidyverse cannot solve: add `as_tibble()` with a pipe to your previous code."
+  CorrectAnswer: udpipe_annotate(en_ewt, text) %>% as_tibble()
+  AnswerTests: omnitest(correctExpr='udpipe_annotate(en_ewt, text) %>% as_tibble()')
+  Hint: Just a good old pipe followed by `as_tibble()`.
+
+- Class: text
+  Output: >
+    This is what `udpipe_annotate()` did: it tokenized our sentence and created a table with one row per token
+    (punctuation marks are also tokens). It assigned a number of ids to each token (since this was a a single document,
+    with a single paragraph and a single sentece, those were pretty easy). It also assigned a lemma; a 
+    pos-tag of the universal set of the UD project (upos) and a pos-tag of the specific treebank (xpos), and
+    a set of morphological features (feats). It has also parsed the sentence syntactically: column `head_token` 
+    let's you know which head each token is related to (for instance, tokens 1 to 5 are associated with token 6, 
+    the word "sentece"). Column `dep_rel` let's you know what kind of relationship this is. Column `deps` is empty in this case,
+    but otherwise it provides information for an "enhanced dependency graph" we won't deal with. Last, column `misc`
+    is used to reconstruct the original text and has information about spaces inside a token - note that you only see some
+    information there for token 8, which is the first part of a contraction ("I'm").
+    
+- Class: cmd_question
+  Output: > 
+    Although this tibble has a lot more information than the one we dealt with last week, with the NOAH's corpus data, 
+    you already now how to search for patterns and combinations of patterns in this kind of data. We won't focus on
+    that today, but let's briefly review what you learnt last week. First, find out all possible values
+    in `feats` by using `distinct()`. Add it with a pipe to your code above.
+  CorrectAnswer: udpipe_annotate(en_ewt, text) %>% as_tibble() %>% distinct(feats)
+  AnswerTests: omnitest(correctExpr='udpipe_annotate(en_ewt, text) %>% as_tibble() %>% distinct(feats)')
+  Hint: The single argument of `distinct()` is the column whose unique values you want (`feats`).
+  
+- Class: cmd_question
+  Output: As you can see, this column stores a lot of information, including a large number of morphological features. Let's find out the unique values in column `upos` now.
+  CorrectAnswer: udpipe_annotate(en_ewt, text) %>% as_tibble() %>% distinct(upos)
+  AnswerTests: omnitest(correctExpr='udpipe_annotate(en_ewt, text) %>% as_tibble() %>% distinct(upos)')
+  Hint: Adapt the code you just wrote.
+
+- Class: cmd_question
+  Output: >
+    We could look for very complex sequences by combining the informaton in these two columns. Let's find out all verbs
+    or auxiliaries ("VERB" and "AUX" in column `upos`) preceded by a 1st person personal pronoun (which is described
+    in `feats` by the sequence "Person=1|PronType=Prs", but note that this is only a partial match: any row that has this 
+    information has some more information too). Copy the code you just had, but replace `distinct()` by `filter()`. 
+    Because we have two conditions in our search, we need a complex logical expression, whose 
+    two members should be connected by `&`. The first element selects the rows in `upos` that are either "AUX" or "VERB", 
+    so you'll need the operator `%in%`. The second element requires a regex, since you're interested in just a part of the string.
+    That is, you'll have to use `str_detect()`.
+    Because you want to look into the element before the verb/auxiliary, its first argument should
+    be `lag(feats)`, to indicate that you're looking in the column `feats` and the row before of the one selected by 
+    the first member of the logical expression. The regex is quite similar to the fragment I gave you above, but you'll
+    have to escape '|'.
+  CorrectAnswer: >
+    udpipe_annotate(en_ewt, text) %>% as_tibble() %>% filter(upos %in% c("AUX", "VERB") & str_detect(lag(feats), "Person=1\\|PronType=Prs"))
+  AnswerTests: omnitest(correctExpr='udpipe_annotate(en_ewt, text) %>% as_tibble() %>% filter(upos %in% c("AUX", "VERB") & str_detect(lag(feats), "Person=1\\\\|PronType=Prs"))')
+  Hint: >
+    Hopefully you're only having trouble with the second element, so I'll help you with that. It should read:
+    `str_detect(lag(feats), "Person=1\\|PronType=Prs")`.
+  
+- Class: text
+  Output: >
+    We got three matches, all of which are preceded by 'I' in `text`. Cool! But you know how to do this already, even
+    if the logical expressions can get tricky every now and then. Today we'll focus on comparing our models. We'll do 
+    that by visualising their differences and similarities, so we would like to have a table with each model. That's
+    what we'll do now.
+
+- Class: cmd_question
+  Output: > 
+    We are only going to compare the results regarding pos-tagging, so let's select columns `token_id`, `upos`, and 
+    `token`. Again, start your code as you did above, by using `udpipe_annotate()` to annotate `text` with the `en_ewt`
+    model and transform it into a tibble with `as_tibble()`. This time, add `select()` with a pipe after those lines.
+  CorrectAnswer: udpipe_annotate(en_ewt, text) %>% as_tibble() %>% select(token_id, upos, token)
+  AnswerTests: omnitest(correctExpr='udpipe_annotate(en_ewt, text) %>% as_tibble() %>% select(token_id, upos, token)')
+  Hint: Please, follow the order that I used in the instructions for the arguments of select.
+
+- Class: cmd_question
+  Output: We'd like to have information about the model we used in our tibble, so add a column called `model` with the value "ewt".
+  CorrectAnswer: udpipe_annotate(en_ewt, text) %>% as_tibble() %>% select(token_id, upos, token) %>% mutate(model = "ewt")
+  AnswerTests: omnitest(correctExpr='udpipe_annotate(en_ewt, text) %>% as_tibble() %>% select(token_id, upos, token) %>% mutate(model = "ewt")')
+  Hint: Did you remember to use `mutate()`? You'll need quotation marks for "ewt".
+
+- Class: cmd_question
+  Output: Now save the result as `test_ewt`
+  CorrectAnswer: test_ewt <- udpipe_annotate(en_ewt, text) %>% as_tibble() %>% select(token_id, upos, token) %>% mutate(model = "ewt")
+  AnswerTests: omnitest(correctExpr='test_ewt <- udpipe_annotate(en_ewt, text) %>% as_tibble() %>% select(token_id, upos, token) %>% mutate(model = "ewt")')
+  Hint: Simply assign it the name by means of the `<-` operator.
+  
+- Class: cmd_question
+  Output: >
+    Tediousness again! Adapt your code above to create `test_gum`. You'll need to adapt the name of the model (`en_gum`)
+    and the value in column `model`: "gum".
+  CorrectAnswer: test_gum <- udpipe_annotate(en_gum, text) %>% as_tibble() %>% select(token_id, upos, token) %>% mutate(model = "gum")
+  AnswerTests: omnitest(correctExpr='test_gum <- udpipe_annotate(en_gum, text) %>% as_tibble() %>% select(token_id, upos, token) %>% mutate(model = "gum")')
+  Hint: Adapt your code from above.
+
+- Class: cmd_question
+  Output: >
+    Now create `test_partut`. You need to adapt the name of the model (`en_partut`) and the value in column `model`: "partut".
+  CorrectAnswer: test_partut <- udpipe_annotate(en_partut, text) %>% as_tibble() %>% select(token_id, upos, token) %>% mutate(model = "partut")
+  AnswerTests: omnitest(correctExpr='test_partut <- udpipe_annotate(en_partut, text) %>% as_tibble() %>% select(token_id, upos, token) %>% mutate(model = "partut")')
+  Hint: Adapt your code from above.
+  
+- Class: cmd_question
+  Output: >
+    And, last, create `test_lines`. You need to adapt the name of the model (`en_lines`) and the value in column `model`: "lines".
+  CorrectAnswer: test_lines <- udpipe_annotate(en_lines, text) %>% as_tibble() %>% select(token_id, upos, token) %>% mutate(model = "lines")
+  AnswerTests: omnitest(correctExpr='test_lines <- udpipe_annotate(en_lines, text) %>% as_tibble() %>% select(token_id, upos, token) %>% mutate(model = "lines")')
+  Hint: Adapt your code from above.
+
+- Class: cmd_question
+  Output: >
+    We'll now combine these four tables. You'll need to use `add_row()` three times (by means of pipes). Add them
+    in the order we created them: `test_ewt`, `test_gum`, `test_partut`, `test_lines`.
+  CorrectAnswer: test_ewt %>% add_row(test_gum) %>% add_row(test_partut) %>% add_row(test_lines)
+  AnswerTests: any_of_exprs('test_ewt %>% add_row(test_gum) %>% add_row(test_partut) %>% add_row(test_lines)', 'add_row(test_ewt, test_gum) %>% add_row(test_partut) %>% add_row(test_lines)')
+  Hint: The function `add_row()` takes the two tibbles to be joined as arguments.
+
+- Class: cmd_question
+  Output: >
+    Because some tokens are appear more than once in our sentence but we'd like to have them separately in our 
+    visualization, we'll change the information in column `token` to paste the information in `token_id` with `str_c()`,
+    so that our tokens are unique. Use `mutate()` to modify `token` so that we'll get a sequence with the number in 
+    `token_id`, followed by "_" and, after that, the word in `token`. Add it to your code above with a pipe.
+  CorrectAnswer: test_ewt %>% add_row(test_gum) %>% add_row(test_partut) %>% add_row(test_lines) %>% mutate(token = str_c(token_id, "_", token))
+  AnswerTests: any_of_exprs('test_ewt %>% add_row(test_gum) %>% add_row(test_partut) %>% add_row(test_lines) %>% mutate(token = str_c(token_id, "_", token))', 'add_row(test_ewt, test_gum) %>% add_row(test_partut) %>% add_row(test_lines) %>% mutate(token = str_c(token_id, "_", token))')
+  Hint: >
+    The function `str_c()` requires three arguments: token_id, "_" and token. You only need quotation marks for the underscore.
+
+- Class: cmd_question
+  Output: >
+    Last, we'd like our visualization to be ordered by `token_id`, but because this column is codified as character, 
+    it's actually ordered alphabetically (as in 1, 10, 11…). Let's transform it into a numeric vector with `as.numeric()`.
+  CorrectAnswer: test_ewt %>% add_row(test_gum) %>% add_row(test_partut) %>% add_row(test_lines) %>% mutate(token = str_c(token_id, "_", token), token_id = as.numeric(token_id))
+  AnswerTests: any_of_exprs('test_ewt %>% add_row(test_gum) %>% add_row(test_partut) %>% add_row(test_lines) %>% mutate(token = str_c(token_id, "_", token), token_id = as.numeric(token_id))', 'add_row(test_ewt, test_gum) %>% add_row(test_partut) %>% add_row(test_lines) %>% mutate(token = str_c(token_id, "_", token), token_id = as.numeric(token_id))', 'test_ewt %>% add_row(test_gum) %>% add_row(test_partut) %>% add_row(test_lines) %>% mutate(token = str_c(token_id, "_", token)) %>% mutate(token_id = as.numeric(token_id))', 'add_row(test_ewt, test_gum) %>% add_row(test_partut) %>% add_row(test_lines) %>% mutate(token = str_c(token_id, "_", token)) %>% mutate(token_id = as.numeric(token_id))')
+  Hint: Did you remember to embed it in `mutate()`?
+
+- Class: cmd_question
+  Output: Let's save the result in an objecto called `comparison`.
+  CorrectAnswer: comparison <- test_ewt %>% add_row(test_gum) %>% add_row(test_partut) %>% add_row(test_lines) %>% mutate(token = str_c(token_id, "_", token), token_id = as.numeric(token_id))
+  AnswerTests: any_of_exprs('comparison <- test_ewt %>% add_row(test_gum) %>% add_row(test_partut) %>% add_row(test_lines) %>% mutate(token = str_c(token_id, "_", token), token_id = as.numeric(token_id))', 'comparison <- add_row(test_ewt, test_gum) %>% add_row(test_partut) %>% add_row(test_lines) %>% mutate(token = str_c(token_id, "_", token), token_id = as.numeric(token_id))', 'comparison <- test_ewt %>% add_row(test_gum) %>% add_row(test_partut) %>% add_row(test_lines) %>% mutate(token = str_c(token_id, "_", token)) %>% mutate(token_id = as.numeric(token_id))', 'comparison <- add_row(test_ewt, test_gum) %>% add_row(test_partut) %>% add_row(test_lines) %>% mutate(token = str_c(token_id, "_", token)) %>% mutate(token_id = as.numeric(token_id))')
+  Hint: Simply assign it the name with `<-`.
+
+- Class: figure
+  Output: >
+    One way of visualising the coincidences and discrepancies between these four models would be as in the plot you 
+    have now in the plot tab: the (ordered) tokens in the x-axis, the different pos-tags in the y-axis and one line per model.
+    Most of the time all lines follow the same path, but, when they don't, it means that not all models annotated
+    the token with the same tags.
+  Figure: Line_plot.R
+  FigureType: new
+  
+- Class: cmd_question
+  Output: >
+    Let's create the plot ourselves. First, use a pipe to reorder the column `token` of the tibble `comparison` on
+    the bases of the column `token_id` with `reorder()`.
+  CorrectAnswer: comparison %>%  mutate(token = reorder(token, token_id))
+  AnswerTests: omnitest(correctExpr='comparison %>%  mutate(token = reorder(token, token_id))')
+  Hint: Did you remember to use `mutate()`? The first argument of `reorder()` is the column you want to reorder (`token`), while its second argument is the column you want to reorder it by (`token_id`).
+ 
+- Class: cmd_question
+  Output: >
+    Now add `ggplot()` with another pipe. Within its argument `aes()` (remember that it's a function), set the arguments
+    `x` to `token` and `y` to `upos`. We'll add three more arguments: `group`, `linetype` and `colour` and set them 
+    all to `model`. They indicate that there should be one line per model, with different line types and colours.
+  CorrectAnswer: comparison %>%  mutate(token = reorder(token, token_id)) %>% ggplot(aes(x = token, y = upos, group = model, linetype = model, colour = model))
+  AnswerTests: omnitest(correctExpr='comparison %>%  mutate(token = reorder(token, token_id)) %>% ggplot(aes(x = token, y = upos, group = model, linetype = model, colour = model))')
+  Hint: Remember that all those areguments are arguments of `aes()`, not of `ggplot()`.
+
+- Class: cmd_question
+  Output: >
+    You already knew that the plot would be empty, right? :) The geom_ function we need is `geom_line()`. Add it to your code with `+`.
+  CorrectAnswer: comparison %>%  mutate(token = reorder(token, token_id)) %>% ggplot(aes(x = token, y = upos, group = model, linetype = model, colour = model)) + geom_line()
+  AnswerTests: omnitest(correctExpr='comparison %>%  mutate(token = reorder(token, token_id)) %>% ggplot(aes(x = token, y = upos, group = model, linetype = model, colour = model)) + geom_line()')
+  Hint: Did you use a pipe or a plus sign to add `geom_line()`?
+
+- Class: cmd_question
+  Output: >
+    You can't see much because of how the x-axis is displayed. We've learnt how to rotate the x-axis labels for such
+    cases, but we'll use a different mechanism now. Add the function `scale_x_discrete()` with `+` and set its
+    argument `guide` to the function `guide_axis()`. Within the latter, add the argument `n.dodge` and set it to 2.
+    This will alter the position of each of every two labels so that they don't overlap.
+  CorrectAnswer: comparison %>%  mutate(token = reorder(token, token_id)) %>% ggplot(aes(x = token, y = upos, group = model, linetype = model, colour = model)) + geom_line() + scale_x_discrete(guide = guide_axis(n.dodge = 2))
+  AnswerTests: omnitest(correctExpr='comparison %>%  mutate(token = reorder(token, token_id)) %>% ggplot(aes(x = token, y = upos, group = model, linetype = model, colour = model)) + geom_line() + scale_x_discrete(guide = guide_axis(n.dodge = 2))')
+  Hint: The argument `guide` should be equal to `guide_axis(n.dodge = 2)`. Pay attention to what function each argument belongs to!
+  
+- Class: text
+  Output: Remember that you can zoom in your plot to see it better.
+
+- Class: cmd_question
+  Output: >
+    Another possible visualization could use barplots. Let's try it out. Again, after reordering column `token`, add 
+    `ggplot() with a new pipe. Within its argument `aes()`, set `x` to `upos` and `fill` to `model`, so that each
+    model is represented by a different colour. Last, add `geom_bar()` after `+`.
+  CorrectAnswer: comparison %>% mutate(token = reorder(token, token_id)) %>% ggplot(aes(x = upos, fill = model)) + geom_bar()
+  AnswerTests: omnitest(correctExpr='comparison %>% mutate(token = reorder(token, token_id)) %>% ggplot(aes(x = upos, fill = model)) + geom_bar()')
+  Hint: The beginning of you code should look identical to the line plot you just created. Adapt the rest (you don't need `scale_x_discrete()` now!)
+  
+- Class: cmd_question
+  Output: >
+    Obviously, this is a complete chaos, because we haven't included `token` as a variable. We'll do it now: add
+    `facet_wrap()` after `+` to your code and write `token` as its first argument. Remember that it must be preceded
+    by `~`. Add a second argument, `scales`, and set it to "free_x".
+  CorrectAnswer: comparison %>% mutate(token = reorder(token, token_id)) %>% ggplot(aes(x = upos, fill = model)) + geom_bar() + facet_wrap(~token, scales = "free_x")
+  AnswerTests: omnitest(correctExpr='comparison %>% mutate(token = reorder(token, token_id)) %>% ggplot(aes(x = upos, fill = model)) + geom_bar() + facet_wrap(~token, scales = "free_x")')
+  Hint: You need the quotations in "free_x".
+  
+- Class: text
+  Output: Now we have a small bar plot for each token (you'll probably need to zoom in). Whenever there is more than one column, it means that different models reached different conclusions about the pos-tag of the word. For instance, is "test" a noun or and adjective, since it appears before another noun? That's not a simple question, no wonder machines get confused!
+
+- Class: cmd_question
+  Output: >
+    How could we only take into account the cases where there were discrepancies, so that we don't have that many barplots? 
+    As always, there are different ways of doing this. Let's try one of them. Start a new piece of code and use a 
+    pipe to group `comparison` by `token_id`.
+  CorrectAnswer: comparison %>% group_by(token_id)
+  AnswerTests: omnitest(correctExpr='comparison %>% group_by(token_id)')
+  Hint: The function you're looking for is `group_by()`.
+
+- Class: cmd_question
+  Output: >
+    Now we'll create a new column with the number of times that each pos-tag appears within those groups. For that we can use
+    the function `add_count()`. This function does not require mutate, you can add it directly with a pipe. Write
+    `upos` as its single argument and it will add a column called `n` with the results of counting each pos-tag in `upos`. Because 
+    the tibble is grouped, it counts only within each group of token_id. Use another pipe to ungroup the tibble.
+  CorrectAnswer: comparison %>% group_by(token_id) %>% add_count(upos) %>% ungroup()
+  AnswerTests: omnitest(correctExpr='comparison %>% group_by(token_id) %>% add_count(upos) %>% ungroup()')
+  Hint: Add `add_count(upos)` with a pipe and don't forget to add `ungroup()` afterwards.
+  
+- Class: cmd_question
+  Output: >
+    Whenever `n` has a value of 4 it means that all models predicted the same pos-tag. Filter the tibble to keep
+    only cases where `n` is smaller than 4.
+  CorrectAnswer: comparison %>% group_by(token_id) %>% add_count(upos) %>% ungroup() %>% filter(n < 4)
+  AnswerTests: omnitest(correctExpr='comparison %>% group_by(token_id) %>% add_count(upos) %>% ungroup() %>% filter(n < 4)')
+  Hint: The operator that indicates 'smaller than' is `<`.
+
+- Class: cmd_question
+  Output: Save the result to an object called `comparison_short`.
+  CorrectAnswer: comparison_short <- comparison %>% group_by(token_id) %>% add_count(upos) %>% ungroup() %>% filter(n < 4)
+  AnswerTests: omnitest(correctExpr='comparison_short <- comparison %>% group_by(token_id) %>% add_count(upos) %>% ungroup() %>% filter(n < 4)')
+  Hint: Assign it the name with `<-`.
+
+- Class: cmd_question
+  Output: Now run again the code you prepared for creating the bar plot, but use `comparison_short` instead of `comparison_short`.
+  CorrectAnswer: comparison_short %>% mutate(token = reorder(token, token_id)) %>% ggplot(aes(x = upos, fill = model)) + geom_bar() + facet_wrap(~token, scales = "free_x")
+  AnswerTests: omnitest(correctExpr='comparison_short %>% mutate(token = reorder(token, token_id)) %>% ggplot(aes(x = upos, fill = model)) + geom_bar() + facet_wrap(~token, scales = "free_x")')
+  Hint: The only thing you need to adapt from the code you used for the bar plot is the name of the tibble.
+
+- Class: text
+  Output: This plot is easier to inspect. Because we had a very small piece of text to work with, it's easy to look at each case individually and decide which model worked better. As you can see, trouble arises in grammatical words, such as "that", "as", "by", that can typicall serve several functions, but also in words that appear in complex syntactic contexts, such as a noun in aposition to another noun ("test sentence") or an adjective arguably used as a noun ("the littlest").
+
+- Class: text
+  Output: Lemmatization, pos-tagging, morphological annotation… They are all processes that allow us for conducting more sophisticated analysis. Some corpora are already annotated, and we've learnt now how to annotate them ourselves. (Working with a .txt or .csv file looks exactly the same, you can try it out as voluntary homework, check OLAT.) 
+  
+- Class: text
+  Output: But I think it's crucial that we keep in mind that automatic annotation always makes mistakes. Machines are not perfect and language is extremely complex. So it's always good practice to review the results we get, look for inconsistencies and evaluate how big an effect they can have in our analysis. Machines can help us, but we're still in charge and must be rigurous with our work! That means that we need to invest a bit more time than if we blindly trust the machine, but still much less than if we have to do all the work by hand!
+
+- Class: mult_question
+  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
+  AnswerChoices: Yes;No
+  CorrectAnswer: NULL
+  AnswerTests: submit_log()
+  Hint: As you feel!
+
