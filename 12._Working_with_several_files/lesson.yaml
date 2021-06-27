@@ -43,7 +43,7 @@
   Hint: You only need to introduce the name `read_delim`, without the parentheses it takes when working as a function. And its arguments are simply added after commas.
   
 - Class: text
-  Output: "Note that the code beforewe just used assumes that there are no tabs ('\t') in any of the lines of these files, since we specify only one column name. This assumption is true for the files we have, but I'm not sure if it holds for all WhatsApp chats… If there were tabs in the lines, reading them like this would actually create a separation and, thus, a new column, that might get lost. If that were to happen, you would get a warning from R. Adding more columns (by expanding `col_names` with a longer vector) until you read everything in the lines would be one possible solution."
+  Output: "Note that the code we just used assumes that there are no tabs ('\t') in any of the lines of these files, since we specify only one column name. This assumption is true for the files we have, but I'm not sure if it holds for all WhatsApp chats… If there were tabs in the lines, reading them like this would actually create a separation and, thus, a new column, that might get lost. If that were to happen, you would get a warning from R. Adding more columns (by expanding `col_names` with a longer vector) until you read everything in the lines would be one possible solution."
 
 - Class: text
   Output: You can see that both files were read into the tibble, because it has 112 rows, instead of the 56 rows the single file had in the last lesson. Moreover, our new tibble has a single column called text.

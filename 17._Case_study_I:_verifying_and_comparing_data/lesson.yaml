@@ -81,7 +81,7 @@
 
 - Class: text
   Output: >
-    The console informs us that they were joined them by the columns `label`, `word` and `ID`. It recognised that they have the
+    The console informs us that they were joined by the columns `label`, `word` and `ID`. It recognised that they have the
     same name and assumes both tibbles have them in common. Since both original tibbles have 231 rows and the new one too,
     we can safely assume that they were identical in both tibbles.
 
@@ -200,7 +200,7 @@
   
 - Class: text
   Output: > 
-    Most of these discordances seem to be foiund in the use of capital letters and diacritics. Again, you could 
+    Most of these discordances seem to be found in the use of capital letters and diacritics. Again, you could 
     solve them in R or manually, depending on your needs. If you only want to have a tibble with the data from all 
     three files, you could even discard one of these columns if you realise that one is consistently wrong while the other
     one is consistently right.
@@ -238,7 +238,7 @@
 - Class: cmd_question
   Output: >
     In order to create `vowel_pattern`, we'll use `str_replace_all()` (in order to avoid the diacritics). 
-    So we'll desing a regex that removes both the initial C ("^C") and the regex you used above. Separate them by `|`. 
+    So we'll design a regex that removes both the initial C ("^C") and the regex you used above. Separate them by `|`. 
     The last argument is a second regex, indicating the replacement, which is empty.
   CorrectAnswer: vowels %>% mutate(context_after = str_extract(context, "(C|_#|nC|N)$")) %>% mutate(vowel_pattern = str_replace_all(context, "^C|(C|_#|nC|N)$", ""))
   AnswerTests: any_of_exprs('vowels %>% mutate(context_after = str_extract(context, "(C|_#|nC|N)$")) %>% mutate(vowel_pattern = str_replace_all(context, "^C|(C|_#|nC|N)$", ""))', 'vowels %>% mutate(context_after = str_extract(context, "(C|_#|nC|N)$"), vowel_pattern = str_replace_all(context, "^C|(C|_#|nC|N)$", ""))')
@@ -268,7 +268,7 @@
   
 - Class: text
   Output: > 
-    As you can see, for all four types of vowels the same four types of following contexts appear, althougn not with the same frequency.
+    As you can see, for all four types of vowels the same four types of following contexts appear, although not with the same frequency.
     In this lesson you learnt how to compare different tables that should have the same information in order to detect possible
     mistakes or inconsistencies, and also how to check the distribution of values (and pairs of values). These are all things that
     researchers have to do very often, since manual annotations is rarely free of mistakes (recall that so it is automatic

@@ -127,7 +127,7 @@
   Output: >
     Two things to note: because these are not collocations, but co-occurrences, the order of appearance is not important, so we
     basically get every result twice. Second, we found perfect correlations between collocations (Jiménez Redondo and Kreissl-Dörfler are last
-    name, Grã Bretanha and Reino Unido mean 'Great Britain' and 'United Kingdom') but also of words that are very close semantically 
+    names, Grã Bretanha and Reino Unido mean 'Great Britain' and 'United Kingdom') but also of words that are very close semantically 
     (Cuba-cubanos: 'Cuba - cubans'; vinhos-enológicas: 'wine - oenological') 
 
 - Class: text

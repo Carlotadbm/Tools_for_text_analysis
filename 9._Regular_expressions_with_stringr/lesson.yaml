@@ -13,7 +13,7 @@
   Output: Again, we'll be relying on the tidyverse, using the `stringr` library. In this lesson you'll practice constructing regex and using their most important functionalities.
 
 - Class: cmd_question
-  Output: I have loaded two files for you. `quijote` contains the frequency list of Don Quixote and `verne` contains the sentences of Verne's `Le Tour du monde en quatre-vingts jours`. Check quijote, to remeber how it looks like.
+  Output: I have loaded two files for you. `quijote` contains the frequency list of Don Quixote and `verne` contains the sentences of Verne's `Le Tour du monde en quatre-vingts jours`. Check quijote, to remember how it looks like.
   CorrectAnswer: quijote
   AnswerTests: omnitest(correctExpr='quijote')
   Hint: Simply run its name.
@@ -102,7 +102,7 @@
   Hint: You just need to adapt the regex in your code above. Remember that you're not using `str_view_all()` now!
 
 - Class: text
-  Output: You were familiar with some special characters already. "\\t" matchs tabs, while "\\r" and "\\n" match carraige return and newlines respectively. We talked about them in the first session, since Linux based systems (such as Mac) code newlines with "\\n", while Windows uses the more complex "\\r\\n".
+  Output: You were familiar with some special characters already. "\\t" matchs tabs, while "\\r" and "\\n" match carriage return and newlines respectively. We talked about them in the first session, since Linux based systems (such as Mac) code newlines with "\\n", while Windows uses the more complex "\\r\\n".
   
 - Class: cmd_question
   Output: Brackets are used to delimit character classes, that are used to match only one out of several characters. Could you visualise the Spanish diphthongs "ie" and "ue" in column `word` in `quijote` defining a character class?
