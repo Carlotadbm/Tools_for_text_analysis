@@ -28,7 +28,7 @@
   Hint: You'll need to use the `-` sign to indicat the you want to remove lines 1:7 and a parenthesis in order to apply `-` to the whole vector.
 
 - Class: cmd_question
-  Output: Now, because the structure of TextGrid largely relies in the order of its lines, let's create a column `line_number` with the line numbers. Use `seq_along()`.
+  Output: Now, because the structure of TextGrid largely relies on the order of its lines, let's create a column `line_number` with the line numbers. Use `seq_along()`.
   CorrectAnswer: textgrid %>% slice(-(1:7)) %>% mutate(line_number = seq_along(text))
   AnswerTests: any_of_exprs('textgrid %>% slice(-(1:7)) %>% mutate(line_number = seq_along(text))', 'textgrid %>% slice(-c(1:7)) %>% mutate(line_number = seq_along(text))')
   Hint: Did you use `mutate()`? You need it in order to create a new column. The single argument of seq_along should be `text`, since it's the only column we have.
@@ -54,7 +54,7 @@
     Now we must calculate the number of rows each one contains by substracting the first line of each 
     tier from the first line of the previous tier. We can use `lead()` for that. 
     Create a new column called `repetitions` where you substract `line_number` from the lead of `line_number`.
-    You'll have to add a `default` argument to `lead()` that equal the number of rows of textgrid_cleaner + 1
+    You'll have to add a `default` argument to `lead()` that equals the number of rows of textgrid_cleaner + 1
     (`nrow(textgrid_cleaner) + 1`).
   CorrectAnswer: textgrid_cleaner %>% filter(str_detect(text, "item")) %>% mutate(repetitions = lead(line_number, default = nrow(textgrid_cleaner) + 1) - line_number) 
   AnswerTests: omnitest(correctExpr='textgrid_cleaner %>%  filter(str_detect(text, "item"))  %>% mutate(repetitions = lead(line_number, default = nrow(textgrid_cleaner) + 1) - line_number)')
@@ -223,7 +223,7 @@
     We want to rename `text` as `context`, which is the name it has in the `voyelles` Excel table. 
     We don't need to rename anything else, because `xmax` and `xmin` are the same as in `textgrid_2`, so they're superfluous.
     In our `mutate()` the only thing that changes is that we're dealing with `context` now, not with `label` or  `word`.
-    And now we want to remove are `tiers`, `intervals`, `index` plus `xmax` and `xmin`. (In this order, please!)
+    And now we want to remove all `tiers`, `intervals`, `index` plus `xmax` and `xmin`. (In this order, please!)
     Don't save it yet, let's look at the result first.
   CorrectAnswer: textgrid_cleaner_all %>% filter(tiers == 3) %>% rename(context = text) %>% mutate(context = str_replace_all(context, '"', "")) %>% select(-c(tiers, intervals, index, xmax, xmin))
   AnswerTests: omnitest(correctExpr="textgrid_cleaner_all %>% filter(tiers == 3) %>% rename(context = text) %>% mutate(context = str_replace_all(context, '\"', \"\")) %>% select(-c(tiers, intervals, index, xmax, xmin))")

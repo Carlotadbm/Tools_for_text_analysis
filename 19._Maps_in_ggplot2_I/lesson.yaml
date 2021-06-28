@@ -51,7 +51,7 @@
 - Class: cmd_question
   Output: > 
     The package `ggplot2` has already some data with the geographical representation of countries and regions of the world.
-    The function that access it is called `map_data()` and its first argument should be "world", because we want regions from the whole world.
+    The function that accesses it is called `map_data()` and its first argument should be "world", because we want regions from the whole world.
     Its second argument is a vector with all the countries and regions we want. I've loaded them in a vector called `spanish_countries`, check it out first.
   CorrectAnswer: spanish_countries
   AnswerTests: omnitest(correctExpr='spanish_countries')

@@ -150,7 +150,7 @@
 
 - Class: cmd_question
   Output: > 
-    As you can see, the `n` attribute again has identtifiers. The first number is for the article, the second one
+    As you can see, the `n` attribute again has identifiers. The first number is for the article, the second one
     for the sentence and the third one for the word. We can separate this information into three columns, one for each id.
     Add `separate()` with a pipe: its needs that you specify what column you want to separate (`n`) and an
     argument `into` which should equal to a vector with the names of the new columns. They should be 
