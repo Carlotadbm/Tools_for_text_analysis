@@ -1,0 +1,408 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: Polite web scraping
+  Author: Carlota de Benito Moreno
+  Type: Standard
+  Organization: University of Zurich
+  Version: 2.4.5
+
+- Class: text
+  Output: >
+    Hi there! Welcome to this lesson about polite web scraping, for which we'll use the libraries `rvest`
+    and `polite`. We'll also need libraries `xml2` (to read the structure of html files), `utils` 
+    (to download images) and `tidyverse`. I have loaded them for you. 
+    Remember that you can install a new library with the function `install.packages("library_name")` and 
+    load it with the function `library(library_name)`.
+  
+- Class: text
+  Output: >
+    I recommend that you work on an RStudio script. Go to File > New File > RScript and write your
+    solutions on the script. (Remember that you have to run them - the shortcut is command + enter
+    in Mac and control + enter in Windows.) That way you can save them for later. You can 
+    write comments that help you document what you're doing: simply take notes after typing `#`.
+    
+- Class: text
+  Output: >
+    We have two goals in this session. First, we'll create a corpus of blog posts. Later, we'll 
+    learn how to bulk-download images from the Internet. We'll use my own blog, so that 
+    we're sure that there are no privacy concerns. But we'll discuss ethical scraping 
+    too, so don't worry.
+    
+- Class: cmd_question
+  Output: >
+    Let's first explore the website we want to scrape wit the function `read_html()`. It's single
+    argument is the url of the site, within quotations: "http://www.semevadelalengua.es/". Save
+    it as `semevadelalengua`.
+  CorrectAnswer: semevadelalengua <- read_html("http://www.semevadelalengua.es/")
+  AnswerTests: omnitest(correctExpr='semevadelalengua <- read_html("http://www.semevadelalengua.es/")')
+  Hint: Did you save it? Simply use `<-` to assign it the appropriate name.   
+    
+- Class: cmd_question
+  Output: >
+    Print it to see what it looks like.
+  CorrectAnswer: semevadelalengua
+  AnswerTests: omnitest(correctExpr='semevadelalengua')
+  Hint: Simply write its name and run the code.
+  
+- Class: cmd_question
+  Output: >
+    HTML structures is rather complicated. We can check its structure with `html_structure()`.
+    Try it out, its single argument is the url, which we saved as `semevadelalengua`. 
+  CorrectAnswer: html_structure(semevadelalengua)
+  AnswerTests: any_of_exprs('semevadelalengua %>% html_structure()', 'html_structure(semevadelalengua)')
+  Hint: Simply write its name and run the code.
+ 
+- Class: text
+  Output: >
+    As you can see, html structure is hard to read. I actually recommend to open the website 
+    in your preferred explorer and check the source code (right click on the website). 
+    It's useful to look for key words within the source code to find your way to the information you're looking for.
+    
+- Class: text
+  Output: >
+    The website we want to crawl has 10 different posts, which we would like to download. Because we're 
+    going to bulk-download data, we'll use the polite package, which helps us crawl data respecting the
+    wishes of the creator of the website and indicating who we are and what we are doing. This 
+    way you can make clear your intentions of being an ethical crawler.
+
+- Class: cmd_question
+  Output: >
+    The function `bow()` allows us to do that. Its first argument is the url of the site 
+    (within quotations, "http://www.semevadelalengua.es/"). Its second argument is called 
+    user_agent and you can use it to specify a message to the site owner. It's good practice
+    writing your name, why you need the data you're downloading and your contact information.
+    Of course, everything within quotations. But because that is too complicated for now,
+    simply write "Carlota de Benito". Save the result as `session`.
+  CorrectAnswer: session <- bow("http://www.semevadelalengua.es/", user_agent = "Carlota de Benito") 
+  AnswerTests: any_of_exprs('session <- bow("http://www.semevadelalengua.es/", user_agent = "Carlota de Benito")', 'session <- "http://www.semevadelalengua.es/" %>% bow(user_agent = "Carlota de Benito")')
+  Hint: >
+    Remember that arguments with names are assinged
+    its values via an equal sign: `user_agent = "Carlota de Benito"`.
+    
+    
+- Class: text
+  Output: >
+    Each of the posts we're interested in has its own id. The URLs follow this format:
+    "http://www.semevadelalengua.es/?p=838". The number that follows the parameter `p` 
+    is included in the HTML as the attribute `id` of the element `article` (if you 
+    haven't yet, explore both the website and its source code). 
+    
+- Class: cmd_question
+  Output: >
+    So the first thing we want to do is to find the post's ids and save them. 
+    We're going to use pipe syntax and we'll do it in four steps. First thing 
+    is to scrape the website. Use the funcion `scrape()`: its argument is the result
+    of our bow, that is, our object `session`.
+  CorrectAnswer: scrape(session)
+  AnswerTests: omnitest(correctExpr='scrape(session)')
+  Hint: No quotations needed.
+  
+- Class: cmd_question
+  Output: >
+    This retrieves the whole website, but we're only interested in the element `article`.
+    So add a pipe (`%>%`) after your previous code and add the function `html_elements()`
+    after it. Its single argument is the name of the element we're interested in, within 
+    quotations.
+  CorrectAnswer: scrape(session) %>% html_elements("article")
+  AnswerTests: omnitest(correctExpr='scrape(session) %>% html_elements("article")')
+  Hint: Within `html_elements()` you should have "article".
+  
+- Class: cmd_question
+  Output: >
+    Good! But this is still too much information… We just need the `id` attribute.
+    So add a pipe and the function `html_attr()`, whose single argument is the attribute
+    you're interested in.
+  CorrectAnswer: scrape(session) %>% html_elements("article") %>% html_attr("id")
+  AnswerTests: omnitest(correctExpr='scrape(session) %>% html_elements("article") %>% html_attr("id")')
+  Hint: Within `html_attr()` you should have "id".
+  
+- Class: cmd_question
+  Output: >
+    Great! Now we have a character vector with the 10 different ids. Save it as `ids`.
+  CorrectAnswer: ids <- scrape(session) %>% html_elements("article") %>% html_attr("id")
+  AnswerTests: omnitest(correctExpr='ids <- scrape(session) %>% html_elements("article") %>% html_attr("id")')
+  Hint: You need to assign it the name using `<-`, but you will have to write this at the beginning of your code.
+
+- Class: cmd_question
+  Output: >
+    But we actually only need the numerical id, not the "post-" part… So we'll remove that.
+    We can do that with the function `str_remove()`, which takes two arguments: the vector
+    with the text strings you want to modify (`ids`) and that text string you want to remove ("post-").
+    Only the latter needs quotations.
+  CorrectAnswer: str_remove(ids, "post-")
+  AnswerTests: any_of_exprs('str_remove(ids, "post-")', 'ids %>% str_remove("post-")')
+  Hint: >
+    The content of `str_remove` should look like this: `(ids, "post-")`.
+    
+- Class: cmd_question
+  Output: >
+   Now let's save it as `ids_clean`.
+  CorrectAnswer: ids_clean <- str_remove(ids, "post-")
+  AnswerTests: any_of_exprs('ids_clean <- str_remove(ids, "post-")', 'ids_clean <- ids %>% str_remove("post-")')
+  Hint: You need to assign it the name using `<-`, but you will have to write this at the beginning of your code.
+
+- Class: cmd_question
+  Output: >
+    Now this is going to get complicated…, because we want to work with several elements at a time (each post).
+    For that we'll use the function `map()`. Its first argument is the vector we just created (`ids_clean`).
+    Its second argument is the function we want to apply to every argument, which is `scrape()` again.
+    But it must be preceded by the sign `~`. Within `scrape()` we need to arguments: `session` and 
+    `query = list(p=.x)`. This means that you want to scrape websites secondary to the one saved in `session`, 
+    and that to find those websites something must be added to the url: a parameter `p` wich should equal each
+    element of the vector that is the first argument of map (that is what .x stands for). That is,
+    this code will generate 10 urls with the following structure and download its content: "http://www.semevadelalengua.es/?p=838".
+    It'll take a while, don't worry!
+  CorrectAnswer: map(ids_clean, ~scrape(session, query = list(p=.x)))
+  AnswerTests: any_of_exprs('map(ids_clean, ~scrape(session, query = list(p=.x)))', 'ids_clean %>% map(~scrape(session, query = list(p=.x)))')
+  Hint: >
+    The second argument of map looks like this: ~scrape(session, query = list(p=.x)). Note that at 
+    the end of your code you should have 3 closing parentheses.
+    
+- Class: cmd_question
+  Output: >
+    Let's save this as `posts_lengua`.
+  CorrectAnswer: posts_lengua <- map(ids_clean, ~scrape(session, query = list(p=.x)))
+  AnswerTests: any_of_exprs('posts_lengua <- map(ids_clean, ~scrape(session, query = list(p=.x)))', 'posts_lengua <- ids_clean %>% map(~scrape(session, query = list(p=.x)))')
+  Hint: >
+    You need to assign it the name using `<-`, but you will have to write this at the beginning of your code.
+
+- Class: text
+  Output: >
+    Normally we only want to download some elements of each website. For instance,
+    the text content of each article, which is stored in elements `p`. We are going to need
+    `map()` again. Because we don't care about easy, we'll have a pipe within `map()`.
+    Exciting, huh? 
+
+- Class: cmd_question
+  Output: >
+    Ok, so the first argument of map is `posts_lengua`. The second argument will be
+    the function `html_elements()`, again preceded by `~` (`~html_elements()`), 
+    which has two arguments: `.x`, to indicate that we want to apply it to every
+    element of `posts_lengua`and "p", which is the attribute we need. Write a pipe `%>%`
+    after this, but still within `map()`: there should still be one closing parenthesis 
+    after the pipe. After the pipe write the function `html_text2()`, which will retrieve
+    the text of each `p` element. 
+  CorrectAnswer: map(posts_lengua, ~html_elements(.x, "p") %>% html_text2()) 
+  AnswerTests: any_of_exprs('map(posts_lengua, ~html_elements(.x, "p") %>% html_text2())', 'posts_lengua %>% map(~html_elements(.x, "p") %>% html_text2())', 'map(posts_lengua, ~html_elements(.x, "p") %>% html_text2)', 'posts_lengua %>% map(~html_elements(.x, "p") %>% html_text2)')
+  Hint: >
+    The second argument of map looks like this: ~html_elements(.x, "p") %>% html_text2(). Note that at 
+    the end of your code you should have 2 closing parentheses.
+    
+- Class: cmd_question
+  Output: >
+    Nice! We now again have a list of 10 elements, each of which contains a vector of each 
+    paragraph (`p` element). Let's save this as `content_lengua`.
+  CorrectAnswer: content_lengua <-map(posts_lengua, ~html_elements(.x, "p") %>% html_text2()) 
+  AnswerTests: any_of_exprs('content_lengua <- map(posts_lengua, ~html_elements(.x, "p") %>% html_text2())', 'content_lengua <- posts_lengua %>% map(~html_elements(.x, "p") %>% html_text2())', 'content_lengua <- map(posts_lengua, ~html_elements(.x, "p") %>% html_text2)', 'content_lengua <- posts_lengua %>% map(~html_elements(.x, "p") %>% html_text2)')
+  Hint: >
+    You need to assign it the name using `<-`, but you will have to write this at the beginning of your code.
+
+- Class: cmd_question
+  Output: >
+    Now, we typically prefer to work with tables than with vectors or lists, so let's 
+    transform this into a tibble. We'll be using pipe sytnax again. First thing 
+    is to convert our vector `content_lengua` into a tibble, with the function `tibble()`.
+    Write the name of the vector followed by a pipe. Now write the function `tibble()`. As its argument write 
+    `posts = .` (no quotations needed). This means that we want to name the single column that 
+    will be created as `posts`. 
+  CorrectAnswer: content_lengua %>% tibble(posts = .)
+  AnswerTests: omnitest(correctExpr='content_lengua %>% tibble(posts = .)')
+  Hint: No quotations needed!
+
+- Class: cmd_question
+  Output: >
+    Right now we just have ten rows, one per document and we cannot actually
+    see its content, because they are lists. But before unnesting these lists to
+    see its content we want to make sure that we know to which post they belong, 
+    so we'll add a new column called `id`. Add a pipe after your code followed by
+    the function `mutate()`. The syntax of mutate is as follows: 
+    `name_of_column_to_be_created = content_of_column`. We want to call our column `id`
+    and we want it to have the same content as our vector `ids_clean`.
+  CorrectAnswer: content_lengua %>% tibble(posts = .) %>% mutate(id = ids_clean)
+  AnswerTests: omnitest(correctExpr='content_lengua %>% tibble(posts = .) %>% mutate(id = ids_clean)')
+  Hint: >
+    This is how `mutate()` should look like: `mutate(id = ids_clean)`.
+    
+- Class: cmd_question
+  Output: >
+    Now we can unnest our lists. This will exapand our tibble, generating one
+    new row for each element of the lists in column `posts`, which will inherit the 
+    values of our `id` column as well. Add a pipe followed by the function 
+    `unnest_auto()`, whose single argument is the column to be unnested (`posts`).
+  CorrectAnswer: content_lengua %>% tibble(posts = .) %>% mutate(id = ids_clean) %>% unnest_auto(posts)
+  AnswerTests: omnitest(correctExpr='content_lengua %>% tibble(posts = .) %>% mutate(id = ids_clean) %>% unnest_auto(posts)')
+  Hint: >
+    No quotations needed!
+    
+- Class: cmd_question
+  Output: >
+    Great! Now we can save our tibble as `content_lengua_tb`.
+  CorrectAnswer: content_lengua_tb <- content_lengua %>% tibble(posts = .) %>% mutate(id = ids_clean) %>% unnest_auto(posts)
+  AnswerTests: omnitest(correctExpr='content_lengua_tb <- content_lengua %>% tibble(posts = .) %>% mutate(id = ids_clean) %>% unnest_auto(posts)')
+  Hint: >
+    You need to assign it the name using `<-`, but you will have to write this at the beginning of your code.
+
+- Class: cmd_question
+  Output: >
+    We're going to write it as a .csv file, so we'll set our working directory first. 
+    Remember that you can do that very easily in RStudio: go to the files tab that you have in the
+    bottom right window, navigate through your computer to find the folder where you would like to
+    save the file, click on "More" and then click on "Set as working directory". Look at the console -
+    this run the setwd() function without requiring you to type a complicated path.
+  CorrectAnswer: setwd("path")
+  AnswerTests: expr_uses_func('setwd')
+  Hint: >
+    If you can't see the "More" button, your window might be too small, try making it bigger.
+    
+- Class: cmd_question
+  Output: >
+    To write the table to a .csv file we'll use the tidyverse function `write_delim()`. 
+    Its first argument is the name of the object you want to save (no
+    quotation marks). Its second argument is the name of the file you want to write (with quotation
+    marks and extension). Its last argument is `delim`, which we'll set as tabs ("\t", within 
+    quotation marks). Write the object `content_lengua_tb` into a file called "content_lengua_tb.csv".
+  CorrectAnswer: write_delim(content_lengua_tb, "content_lengua_tb.csv", delim = "\t")
+  AnswerTests: any_of_exprs('write_delim(content_lengua_tb, "content_lengua_tb.csv", delim = "\t")', 'content_lengua_tb %>% write_delim("content_lengua_tb.csv", delim = "\t")')
+  Hint: >
+    Check your use of the quotation marks, did you follow the instructions?
+
+- Class: text
+  Output: >
+    Ok, let's scrape some images now! We'll scrape all images in the first page 
+    of the website we've been working with. First thing is to find the urls of each image. 
+    This are saved as the attribute "src" of the element "img", which is found within 
+    the elements "figure".
+
+- Class: cmd_question
+  Output: >
+   Again, we'll use pipe syntax. Let's use `scrape()` to get the content of `session` first.
+  CorrectAnswer: scrape(session)
+  AnswerTests: any_of_exprs('scrape(session)', 'session %>% scrape()')
+  Hint: >
+    `session` is the single argument of `scrape()`.
+    
+- Class: cmd_question
+  Output: >
+   Now add a pipe followed by the function `html_elements()`, whose single argument should be "figure".
+  CorrectAnswer: scrape(session) %>% html_elements("figure")
+  AnswerTests: any_of_exprs('scrape(session) %>% html_elements("figure")', 'session %>% scrape() %>% html_elements("figure")')
+  Hint: >
+    You've done this before, check it out in your script if you forgot how.
+
+- Class: cmd_question
+  Output: >
+   Now add another pipe followed by the function `html_elements()`, 
+   this time its single argument should be "img".
+  CorrectAnswer: scrape(session) %>% html_elements("figure") %>% html_elements("img")
+  AnswerTests: any_of_exprs('scrape(session) %>% html_elements("figure") %>% html_elements("img")', 'session %>% scrape() %>% html_elements("figure") %>% html_elements("img")')
+  Hint: >
+    You've done this before, check it out in your script if you forgot how.
+     
+- Class: cmd_question
+  Output: >
+   Now add another pipe, this time followed by the function `html_attr()`, 
+   whose single argument should be "src".
+  CorrectAnswer: scrape(session) %>% html_elements("figure") %>% html_elements("img") %>% html_attr("src")
+  AnswerTests: any_of_exprs('scrape(session) %>% html_elements("figure") %>% html_elements("img") %>% html_attr("src")', 'session %>% scrape() %>% html_elements("figure") %>% html_elements("img") %>% html_attr("src")')
+  Hint: >
+    Still very similar to what you just did!
+    
+- Class: cmd_question
+  Output: >
+   Great! You have a vector with the urls of all images. Save it as images_urls.
+  CorrectAnswer: images_urls <- scrape(session) %>% html_elements("figure") %>% html_elements("img") %>% html_attr("src")
+  AnswerTests: any_of_exprs('images_urls <- scrape(session) %>% html_elements("figure") %>% html_elements("img") %>% html_attr("src")', 'images_urls <- session %>% scrape() %>% html_elements("figure") %>% html_elements("img") %>% html_attr("src")')
+  Hint: >
+    You need to assign it the name using `<-`, but you will have to write this at the beginning of your code.
+     
+- Class: text
+  Output: >
+    Let's try downloading just one image, to see how it works.
+
+- Class: cmd_question
+  Output: >
+   We'll use function `download.file()`, from library `utils`. Its first argument, is the url 
+   from the image we want to download. Let's download the first url of our `images_urls` vector: 
+   use brackets to do that: `images_urls[1]`. Its second argument is the name you want the file
+   to have: let's call it "photo1.png". You'll need quotations. Now let's add a third argument, 
+   called `mode` and set it to "wb" (with quotations too). This specifoes that this is a binary file, 
+   which is especially important in Windows.
+  CorrectAnswer: download.file(images_urls[1], "photo1.png", mode="wb")
+  AnswerTests: omnitest(correctExpr='download.file(images_urls[1], "photo1.png", mode="wb")')
+  Hint: >
+    Don't use pipes, please.
+
+- Class: text
+  Output: >
+    You should have a new file in you working directory now, called "photo1.png". Cool, right?
+    
+- Class: text
+  Output: >
+    As you can see, in `download.file()` we'll need to give a name of each file. Let's create
+    a vector with such names.
+
+- Class: cmd_question
+  Output: >
+   An easy way of doing this is modyfing our `images_urls` vector. Let's remove the first 
+   part of each url as well as its extension. We'll use str_remove_all, whose first 
+   argument is the vector we want to modify. Its second argument is the text you want to remove.
+   We'll use a regular expression for this - if you want to know more about regular expressions, I have 
+   a swirl course on them :) Use the following (you'll need the quotations): 
+   "(http://www.semevadelalengua.es/wp-content/uploads/20\\d\\d/\\d\\d/|\\.png|.jpe?g)".
+  CorrectAnswer: >
+    str_remove_all(images_urls, "(http://www.semevadelalengua.es/wp-content/uploads/20\\d\\d/\\d\\d/|\\.png|.jpe?g)")
+  AnswerTests: any_of_exprs('str_remove_all(images_urls, "(http://www.semevadelalengua.es/wp-content/uploads/20\\\\d\\\\d/\\\\d\\\\d/|\\\\.png|.jpe?g)")', 'images_urls %>% str_remove_all("(http://www.semevadelalengua.es/wp-content/uploads/20\\\\d\\\\d/\\\\d\\\\d/|\\\\.png|.jpe?g)")')
+  Hint: >
+    You don't need quotations for the name of the vector.
+
+- Class: cmd_question
+  Output: >
+   Now let's add the extension ".png" to all of these names. Add a pipe to your code
+   above, followed by the function `str_c()`. Its first argument is simply a dot `.`.
+   Its second argument is the string ".png".
+  CorrectAnswer: >
+    str_remove_all(images_urls, "(http://www.semevadelalengua.es/wp-content/uploads/20\\d\\d/\\d\\d/|\\.png|.jpe?g)") %>% str_c(., ".png")
+  AnswerTests: any_of_exprs('str_remove_all(images_urls, "(http://www.semevadelalengua.es/wp-content/uploads/20\\\\d\\\\d/\\\\d\\\\d/|\\\\.png|.jpe?g)") %>% str_c(., ".png")', 'images_urls %>% str_remove_all("(http://www.semevadelalengua.es/wp-content/uploads/20\\\\d\\\\d/\\\\d\\\\d/|\\\\.png|.jpe?g)") %>% str_c(., ".png")')
+  Hint: >
+    You need quotations for the string.
+    
+- Class: cmd_question
+  Output: >
+   Let's save this as `destinations`.
+  CorrectAnswer: >
+    destinations <- str_remove_all(images_urls, "(http://www.semevadelalengua.es/wp-content/uploads/20\\d\\d/\\d\\d/|\\.png|.jpe?g)") %>% str_c(., ".png")
+  AnswerTests: any_of_exprs('destinations <- str_remove_all(images_urls, "(http://www.semevadelalengua.es/wp-content/uploads/20\\\\d\\\\d/\\\\d\\\\d/|\\\\.png|.jpe?g)") %>% str_c(., ".png")', 'destinations <- images_urls %>% str_remove_all("(http://www.semevadelalengua.es/wp-content/uploads/20\\\\d\\\\d/\\\\d\\\\d/|\\\\.png|.jpe?g)") %>% str_c(., ".png")')
+  Hint: >
+    You need to assign it the name using `<-`, but you will have to write this at the beginning of your code.
+
+- Class: cmd_question
+  Output: >
+   Last thing we want to do is to bulk-download all images. Instead of `map()`, we'll use
+   `walk2()`, which allows us to pair two elements of a vector (the url to download and the 
+   name of the file). These are its two first arguments: `images_urls` and `destinations`.
+   The third argument is the function we need: `download.file`, with no parentheses nor `~`.
+   The last arguement is the `mode` argument we used above when we downloaded "photo1.png", 
+   which must be set to "wb". Don't use pipes.
+  CorrectAnswer: walk2(images_urls, destinations, download.file, mode = "wb")
+  AnswerTests: omnitest(correctExpr='walk2(images_urls, destinations, download.file, mode = "wb")')
+  Hint: >
+    The last argument should look like this: `mode = "wb"`.
+
+- Class: text
+  Output: >
+    Your working directory should be full of new images now! How cool is that? We did a lot 
+    of difficult things in this session. If you want to familiarise yourself more with some 
+    of the things we did, I have a (rather long) swirl course for that that you're
+    welcome to try out. The information is on the readme file of the Github repository that you'll find 
+    here: https://github.com/Carlotadbm/Tools_for_text_analysis. So far it is work in progress, so
+    don't hesitate to contact me if you have any questions or detect that you need some extra material :)
+    every piece of feedback is welcome!
+
+- Class: text
+  Output: >
+    Right now, though… I think it's time for a well deserved break!
+               
+               
+               
+
+
