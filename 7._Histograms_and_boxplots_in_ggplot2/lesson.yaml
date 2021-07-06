@@ -194,7 +194,7 @@
   Output: The limits of the box indicate the 1st and 3rd quartile, while the end of the whiskers indicate the minimum and maximum values (there are no outliers in this sample). The thick horizontal line around value 52 is the median.
 
 - Class: cmd_question
-  Output: In this lesson's video we talked about the standard deviation, that tells us how compact is our data around the mean. You can easily calculate it in R with the function sd(). Try it out.
+  Output: In this lesson's video we talked about the standard deviation, that tells us how compact our data is around the mean. You can easily calculate it in R with the function sd(). Try it out.
   CorrectAnswer: sd(verne_count_chapter$n)
   AnswerTests: omnitest(correctExpr='sd(verne_count_chapters$n)')
   Hint: Function `sd()` is a base R function, so you need to use the `$` notation.

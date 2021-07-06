@@ -52,8 +52,8 @@
   Output: >
     Tags indicating punctuation marks start by "$" ("$.", "$," and "$("), so we can filter them out easily with a 
     negated `str_detect()`. Adapt the code you had above for counting the words, adding `filter()` before you transformed the data 
-    with `tolower()`. Filter column `pos` so that rows with a pos tah that starts by "$" are removed.
-    The regular expression you need is "^\\$" (you need to scape "$"", since it is a special character in regex).
+    with `tolower()`. Filter column `pos` so that rows with a pos tag that starts by "$" are removed.
+    The regular expression you need is "^\\$" (you need to escape "$"", since it is a special character in regex).
   CorrectAnswer: >
     blick %>% filter(!str_detect(pos, "^\\$")) %>% mutate(word = tolower(word)) %>% count(word, sort = TRUE)
   AnswerTests: omnitest(correctExpr='blick %>% filter(!str_detect(pos, "^\\\\$")) %>% mutate(word = tolower(word)) %>% count(word, sort = TRUE)')

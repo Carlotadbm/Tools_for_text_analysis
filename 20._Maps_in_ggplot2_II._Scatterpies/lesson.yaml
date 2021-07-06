@@ -135,7 +135,7 @@
   Hint: You need quotations for all elements within the three vectors you have (and you need `c()` for every vector as well).
 
 - Class: cmd_question
-  Output: The plot is almost ready. Let's set use the Mercator projection by adding `coord_map()` with `+`.
+  Output: The plot is almost ready. Let's use the Mercator projection by adding `coord_map()` with `+`.
   CorrectAnswer: ggplot(spain, aes(x = long, y = lat)) + geom_map(map=spain, aes(map_id=region), fill="white", colour="black") + geom_scatterpie(data = subjects2_map, aes(x = longitude, y = latitude, r = sqrt(total)/15), cols = c("sg", "pl"), alpha = 0.5) + scale_fill_manual(breaks = c("sg", "pl"), labels = c("3sg", "3pl"), values = c("sg" = "white", "pl" = "red")) + coord_map()
   AnswerTests: omnitest(correctExpr='ggplot(spain, aes(x = long, y = lat)) + geom_map(map=spain, aes(map_id=region), fill="white", colour="black") + geom_scatterpie(data = subjects2_map, aes(x = longitude, y = latitude, r = sqrt(total)/15), cols = c("sg", "pl"), alpha = 0.5) + scale_fill_manual(breaks = c("sg", "pl"), labels = c("3sg", "3pl"), values = c("sg" = "white", "pl" = "red")) + coord_map()')
   Hint: Simply add `coord_map()`, but not with a pipe! Use `+`.

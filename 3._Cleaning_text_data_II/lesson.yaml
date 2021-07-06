@@ -131,7 +131,7 @@
   Hint: You are bored of doing this already, so you might have mistyped something.
   
 - Class: cmd_question
-  Output: It looks like values in rel_freq got rounded up/down, but actually that's not what happened. It's just a representation thing. That is, R gave you only five digits, because it has a default limit. But you can ask it to give you more! Run head() again, byt this time, pass crea_table$rel_freq as its first argument and add a second argument that reads digits = 8.
+  Output: It looks like values in rel_freq got rounded up/down, but actually that's not what happened. It's just a representation thing. That is, R gave you only five digits, because it has a default limit. But you can ask it to give you more! Run head() again, but this time, pass crea_table$rel_freq as its first argument and add a second argument that reads digits = 8.
   CorrectAnswer: head(crea_table$rel_freq, digits = 8)
   AnswerTests: omnitest(correctExpr='head(crea_table$rel_freq, digits = 8)')
   Hint: Remember that you're asking for a single column, not the whole tibble now.
@@ -140,7 +140,7 @@
   Output: See? So there they were! 
 
 - Class: text
-  Output: I know this whole proces was a bit tedious, but I hope that you now understand quite well how mutate() works. It's a crucial function, since it allows us to modify and create columns with tidyverse syntax. 
+  Output: I know this whole process was a bit tedious, but I hope that you now understand quite well how mutate() works. It's a crucial function, since it allows us to modify and create columns with tidyverse syntax. 
 
 - Class: text
   Output: Little by little we'll be learning how to optimise the coding process, so that it's nicer, cleaner and less tedious. You now deserve a break, but whenever you feel like going back to R, check the OLAT video about pipes and try to do the recommended homework. Your code will start looking very elegant soon enough!

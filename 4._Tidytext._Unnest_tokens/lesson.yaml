@@ -103,7 +103,7 @@
   Hint: The argument of summary() should be verne_words$n
 
 - Class: text
-  Output: As you can see, most words appear 1 to 3 times, while some words are quite frequent… Grammar words, most likely! That's basically the result of how languages work. We'll talk about that in next lesson, but let's go back now and play around with unnest_tokens().
+  Output: As you can see, most words appear 1 to 3 times, while some words are quite frequent… Grammar words, most likely! That's basically the result of how languages work. We'll talk about that in the next lesson, but let's go back now and play around with unnest_tokens().
 
 - Class: cmd_question
   Output: By default, unnest_tokens() transforms all higher case letters to lower case and tokenizes the text by word. But we could change these options. Check how by runing ? before the name of the function, so that RStudio opens a help file for you.

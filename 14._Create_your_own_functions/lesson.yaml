@@ -13,7 +13,7 @@
   Output: So far we have been using functions from packages that other people created, for writing scripts for solving a given task.
 
 - Class: text
-  Output: Sometimes we prepare some code that we will need quite often, but applied to different objects. It then makes sense to create a function that we can run everytime we need it. This is advance programming, but it's not as hard as it sounds (I hope!). It's crucial that you're using a script for this lesson!
+  Output: Sometimes we prepare some code that we will need quite often, but applied to different objects. It then makes sense to create a function that we can run everytime we need it. This is advanced programming, but it's not as hard as it sounds (I hope!). It's crucial that you're using a script for this lesson!
 
 - Class: text
   Output: "We'll be working with the raw .txt files of the Europarl corpus. They all share a similar structure: a `tag` is followed by a new line with its `content`. For our analysis we need to have tags in one column and content in another one, but this requires a bit of preprocessing, which is the same for every file."
@@ -88,7 +88,7 @@
   Hint: You're modifying a column, did you use `mutate()`?
 
 - Class: cmd_question
-  Output: We're ready for spreading out tibble! Besides its first argument, that you already have in your pipe, `spread()` needs the column with the values that should be new columns (`type`) and the column with the values to be spread (`text`). Add it to your pipe.
+  Output: We're ready for spreading our tibble! Besides its first argument, that you already have in your pipe, `spread()` needs the column with the values that should be new columns (`type`) and the column with the values to be spread (`text`). Add it to your pipe.
   CorrectAnswer: europarl_1 %>% mutate(type = str_detect(text, "^<"), type = ifelse(type == TRUE, "tag", "content")) %>% filter(!type == lag(type, default = "content")) %>% mutate(index = seq_along(text), index = ceiling(index / 2)) %>% spread(type, text)
   AnswerTests: any_of_exprs('europarl_1 %>% mutate(type = str_detect(text, "^<"), type = ifelse(type == TRUE, "tag", "content")) %>% filter(!type == lag(type, default = "content")) %>% mutate(index = seq_along(text), index = ceiling(index / 2)) %>% spread(type, text)', 'europarl_1 %>% mutate(type = str_detect(text, "^<")) %>% mutate(type = ifelse(type == TRUE, "tag", "content")) %>% filter(!type == lag(type, default = "content")) %>% mutate(index = seq_along(text), index = ceiling(index / 2)) %>% spread(type, text)', 'europarl_1 %>% mutate(type = str_detect(text, "^<"), type = ifelse(type == TRUE, "tag", "content")) %>% filter(!type == lag(type, default = "content")) %>% mutate(index = seq_along(text)) %>% mutate(index = ceiling(index/2)) %>% spread(type, text)', 'europarl_1 %>% mutate(type = str_detect(text, "^<")) %>% mutate(type = ifelse(type == TRUE, "tag", "content")) %>% filter(!type == lag(type, default = "content")) %>% mutate(index = seq_along(text)) %>% mutate(index = ceiling(index/2)) %>% spread(type, text)')
   Hint: You simply have to add `spread(type, text)`.
@@ -130,7 +130,7 @@
   Script: function.R
 
 - Class: text
-  Output: Notice that a a new function appeared in your environment (there was one already there, that's the one I had to create to check that your answer was correct).
+  Output: Notice that a new function appeared in your environment (there was one already there, that's the one I had to create to check that your answer was correct).
 
 - Class: cmd_question
   Output: Now it's time for you to see that all this effort really paid off. Run `read_europarl()`, using "ep-02-12-17.txt" as its single argument.

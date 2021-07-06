@@ -60,7 +60,7 @@
   Output: The first thing you'll notice is that your columns are not sorted by size, despite you told count() to sort n! Sadly, that's because that `sort` argument has only an effect in how the tibble is shown, but not in how it is structured internally. The x-axis is sorted alphabetically. In order to change that, we need to reorder the levels of column ´word´, which define its internal structure.
 
 - Class: cmd_question
-  Output: For changing a column we need to use mutate() applied to out tibble, which means that it shoud go before our ggplot() function. The function that can reorder the factors is fct_reorder, whose first argument is the column you want to rearrange (`word`) and the second, the column by which you want to rearrange it (`n`). By default it will rearrange it in ascending order, but because we want the highest value on top, use `desc(n)`.
+  Output: For changing a column we need to use mutate() applied to our tibble, which means that it should go before our ggplot() function. The function that can reorder the factors is fct_reorder, whose first argument is the column you want to rearrange (`word`) and the second, the column by which you want to rearrange it (`n`). By default it will rearrange it in ascending order, but because we want the highest value on top, use `desc(n)`.
   CorrectAnswer: verne_words_freq %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col()
   AnswerTests: omnitest(correctExpr='verne_words_freq %>% mutate(word = fct_reorder(word, desc(n))) %>% ggplot(aes(x = word, y = n, fill = n)) + geom_col()')
   Hint: Did you remember that `mutate()` syntax requires assigning the result of `fct_reorder()` to the column you want to change (`word`) by means of the equal sign?

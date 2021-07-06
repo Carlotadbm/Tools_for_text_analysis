@@ -34,7 +34,7 @@
   Hint: Write the arguments in the order I told you about them.
 
 - Class: text
-  Output: Even if you don't speak Portuguese, I'm sure you can tell that most of these bigrams are combinations of grammar words (which tend to be rather short crosslinguistically, so that's a good hint). They don't say much about the text, so it's better to remove them.
+  Output: Even if you don't speak Portuguese, I'm sure you can tell that most of these bigrams are combinations of grammar words (which tend to be rather short crosslinguistically, so that's a good hint. They don't say much about the text, so it's better to remove them.
 
 - Class: cmd_question
   Output: We'll first get the list of Portuguese stopwords from the library `stopwords`. We need the function `get_stopwords()`, with the single argument "pt". Save it as `pt_sw`.

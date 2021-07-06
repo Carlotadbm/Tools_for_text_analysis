@@ -52,7 +52,7 @@
   Hint: You'll have to apply your pipe to `quijote`, while the first argument of `str_detect()` will simply be 'word' now.
 
 - Class: cmd_question
-  Output: More frequently you will want to alter the number of rows of your tibble, keeping only words that start by "a". That is, normally you'll want to include `str_detect()` in `filter()`, which, as you might remember, takes a logical expression. Can you do thatn now?
+  Output: More frequently you will want to alter the number of rows of your tibble, keeping only words that start by "a". That is, normally you'll want to include `str_detect()` in `filter()`, which, as you might remember, takes a logical expression. Can you do that now?
   CorrectAnswer: quijote %>% filter(str_detect(word, "^a"))
   AnswerTests: any_of_exprs('quijote %>% filter(str_detect(word, "^a"))', 'quijote %>% filter(str_detect(word, "\\ba"))')
   Hint: "You just need to adapt your code above a little bit: instead of using `mutate()` you have to use `filter()`, which simply takes the logical vector, that is, you should not specify a new colum."
@@ -160,7 +160,7 @@
   Hint: The second argument of `str_replace_all()` should now read `c("qu" = "k", "[aeouáéíóú]" = "i")`.
 
 - Class: cmd_question
-  Output: Let's complicate it a bit more using back references. Create a new columnd `inverted_word` in `quijote` where every sequence of consonant + vowel (defined as "([bcdfghjklmñpqrstvwxzy])([aeiouáéíóúü])") is replaced by the same consonant and vowel, but in the inverted order vowel + consonant. This is not a multiple replacement, its a single one! But you'll need back references.
+  Output: Let's complicate it a bit more using back references. Create a new column `inverted_word` in `quijote` where every sequence of consonant + vowel (defined as "([bcdfghjklmñpqrstvwxzy])([aeiouáéíóúü])") is replaced by the same consonant and vowel, but in the inverted order vowel + consonant. This is not a multiple replacement, its a single one! But you'll need back references.
   CorrectAnswer: >
     quijote %>% mutate(inverted_word = str_replace_all(word, "([bcdfghjklmñpqrstvwxzy])([aeiouáéíóúü])", "\\2\\1"))
   AnswerTests: omnitest(correctExpr='quijote %>% mutate(inverted_word = str_replace_all(word, "([bcdfghjklmñpqrstvwxzy])([aeiouáéíóúü])", "\\\\2\\\\1"))')
