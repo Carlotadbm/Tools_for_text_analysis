@@ -32,9 +32,9 @@
   Output: So the Real Academia Española uploaded a nice .txt file except for all the extra spaces and that it forgot to name the second column. This is a problem, since most R functions recognise the number of columns of a tabulated object by looking at the first row. But we're gonna get around this. At least delimiters are tabs!
   
 - Class: cmd_question
-  Output: We'll read crea now with the function read_delim() and save it to crea_table. We'll need the argument delim (which, as you saw, are tabs, that is, "\t") and we'll also specify col_names, to force it to read four columns instead of three. The argument col_names takes a character vector. Name your columns order, word, abs_freq and rel_freq.
-  CorrectAnswer: crea_table <- read_delim(crea, delim = "\t", col_names = c("order", "word", "abs_freq", "rel_freq"))
-  AnswerTests: omnitest(correctExpr='crea_table <- read_delim(crea, delim = "\t", col_names = c("order", "word", "abs_freq", "rel_freq"))')
+  Output: We'll read crea now with the function read_delim() and save it to crea_table. We'll need the argument delim (which, as you saw, are tabs, that is, "\t"). Because the first row has basically a problem, we'll skip it. For that, add the argument "skip = 1". Last, we'll specify col_names, since we just removed them. The argument col_names takes a character vector. Name your columns order, word, abs_freq and rel_freq.
+  CorrectAnswer: crea_table <- read_delim(crea, delim = "\t", skip = 1, col_names = c("order", "word", "abs_freq", "rel_freq"))
+  AnswerTests: omnitest(correctExpr='crea_table <- read_delim(crea, delim = "\t", skip = 1, col_names = c("order", "word", "abs_freq", "rel_freq"))')
   Hint: Recall that named arguments identify their values by means of =. Also recall that elements of a character vector need quotation marks!
   
 - Class: cmd_question
