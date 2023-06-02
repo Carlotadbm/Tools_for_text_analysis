@@ -10,7 +10,7 @@
   Output: "Hi there, welcome back! In this session I will show you how to work with several files at the same time. That's something that you will need very often if you have a corpus. You don't want to read each file individually! Lucky you, this is the 21st century and we have solutions for everything you're feeling lazy about :)"
 
 - Class: text
-  Output: Besides the tidyverse and some of the language recognition libraries we used before, I have also loaded the library `fs`, which helps us dealing with files. This library combined with the `map()` functions we saw in lesson 11 will make you feel powerful! You should've downloaded two zip folders from OLAT (`WA` and `PS`), unzipped them and put them in your working directory.
+  Output: Besides the tidyverse and some of the language recognition libraries we used before, I have also loaded the library `fs`, which helps us dealing with files. This library combined with the `map()` functions we saw in lesson 11 will make you feel powerful! You should've downloaded two zip folders from the website (`WA` and `PS`), unzipped them and put them in your working directory.
 
 - Class: text
   Output: We'll start with the WA folder, which has two WhatsApp chats. OK, actually, they are two copies of the chat we used in lesson 11, because I have permission to use that one. FYI, I deleted the two first lines in both files for this lesson. What we're going to do is read both files into a tibble, add an identifier for the file as a column and detect the language of every row.

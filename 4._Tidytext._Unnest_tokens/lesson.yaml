@@ -7,7 +7,7 @@
   Version: 2.4.5
 
 - Class: text
-  Output: Hi there! In this lesson we will get started with text analysis. For that we will need the libraries tidyverse and tidytext. I've loaded them for you, but that only works if you had installed them previously. You should've also downloaded the file "verne_text_clean.txt" from OLAT and have it in your working directory. The file has Jules Verne's "Le tour du monde en quatre-vingt jours" and that's what will be working with today. Ideally you have already checked the file with a text editor, to see how it looks like.
+  Output: Hi there! In this lesson we will get started with text analysis. For that we will need the libraries tidyverse and tidytext. I've loaded them for you, but that only works if you had installed them previously. You should've also downloaded the file "verne_text_clean.txt" from the website and have it in your working directory. The file has Jules Verne's "Le tour du monde en quatre-vingt jours" and that's what will be working with today. Ideally you have already checked the file with a text editor, to see how it looks like.
 
 - Class: cmd_question
   Output: First thing is reading our text file. So far we have only read files from a URL, but now we'll read one that is in our computer. For simplicity, I recommend that you have the files you want to work with in your working directory. For this exercise, it must be there! Use read_lines() and instead of calling a URL, call the name of the file, that is, "verne_text_clean.txt". Save it in an object called verne. 
@@ -43,7 +43,7 @@
   Hint: Add this to your pipe  %>% filter(text != "")
   
 - Class: text
-  Output: In the console you saw now that row 4 is not empty anymore. They're all gone now. If you found that line of code a bit difficult, that's completely normal. Logical expressions are kind of hard to get at the beginning. As extra practice I recommend that you do swirl's R Programming cours on Logical (see the recommended homework in OLAT).
+  Output: In the console you saw now that row 4 is not empty anymore. They're all gone now. If you found that line of code a bit difficult, that's completely normal. Logical expressions are kind of hard to get at the beginning. As extra practice I recommend that you do swirl's R Programming cours on Logical.
 
 - Class: cmd_question
   Output: Let's now add a new column called paragraph that numbers our paragraphs. One way to do it is using seq_along(), embedded in a mutate, of course. The new column paragraph then should contain the result of applying seq_along() to column text. Add that to your pipe

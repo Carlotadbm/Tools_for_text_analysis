@@ -10,7 +10,7 @@
   Output: Hi there! In this lesson we'll create some bar charts with count data, again from Verne's novel `Le Tour du monde en quatre-vingts jours`. First, we will plot the most frequent words in the text (once stopwords are removed). Again, I really recommend you work on a script. 
 
 - Class: text
-  Output: As you can see, I have loaded the libraries tidyverse and tidytext for you, as well as verne_text and fr_sw_own (our list of french stopwords). You can find the latter in your Materials folder in OLAT, by the way!
+  Output: As you can see, I have loaded the libraries tidyverse and tidytext for you, as well as verne_text and fr_sw_own (our list of french stopwords). You can find the latter in the Downloads folder from the website, by the way!
 
 - Class: cmd_question
   Output: Print verne_text to the console to refresh your memory.
@@ -40,7 +40,7 @@
   Output: So verne_words_freq is a 2-column tibble with the most frequent content words in our text and the number of times they appear. What would a chart that shows exactly this information look like? Think about it for a sec, maybe draw it on a piece of paper.
  
 - Class: figure
-  Output: "Maybe you thought about something like this. That's what we'll be plotting, anyway. But if you had another idea in mind, why not try to create it later? Or upload your drawing to the OLAT forum so that we can try? :)"
+  Output: "Maybe you thought about something like this. That's what we'll be plotting, anyway. But if you had another idea in mind, why not try to create it later?"
   Figure: Plot_words.R
   FigureType: new
   

@@ -7,7 +7,7 @@
   Version: 2.4.5
 
 - Class: text
-  Output: Hi there! Welcome to this lesson on regular expressions. Before starting you should've watched the video that is available in OLAT.
+  Output: Hi there! Welcome to this lesson on regular expressions. Before starting you should've watched the video that is available at the website.
 
 - Class: text
   Output: Again, we'll be relying on the tidyverse, using the `stringr` library. In this lesson you'll practice constructing regex and using their most important functionalities.

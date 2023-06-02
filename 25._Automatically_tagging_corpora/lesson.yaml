@@ -350,7 +350,7 @@
   Output: This plot is easier to inspect. Because we had a very small piece of text to work with, it's easy to look at each case individually and decide which model worked better. As you can see, trouble arises in grammatical words, such as "that", "as", "by", that can typicall serve several functions, but also in words that appear in complex syntactic contexts, such as a noun in aposition to another noun ("test sentence") or an adjective arguably used as a noun ("the littlest").
 
 - Class: text
-  Output: Lemmatization, pos-tagging, morphological annotation… They are all processes that allow us for conducting more sophisticated analysis. Some corpora are already annotated, and we've learnt now how to annotate them ourselves. (Working with a .txt or .csv file looks exactly the same, you can try it out as voluntary homework, check OLAT.) 
+  Output: Lemmatization, pos-tagging, morphological annotation… They are all processes that allow us for conducting more sophisticated analysis. Some corpora are already annotated, and we've learnt now how to annotate them ourselves. (Working with a .txt or .csv file looks exactly the same, why noy play around a little after this session?) 
   
 - Class: text
   Output: But I think it's crucial that we keep in mind that automatic annotation always makes mistakes. Machines are not perfect and language is extremely complex. So it's always good practice to review the results we get, look for inconsistencies and evaluate how big an effect they can have in our analysis. Machines can help us, but we're still in charge and must be rigurous with our work! That means that we need to invest a bit more time than if we blindly trust the machine, but still much less than if we have to do all the work by hand!

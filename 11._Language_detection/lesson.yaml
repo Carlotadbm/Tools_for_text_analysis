@@ -10,7 +10,7 @@
   Output: "Hi there! Welcome to this session where we'll learn about language detection. There are several packages that perform language detection in R and I have loaded 4 of them for you: textcat, cld2, cld3 and franc. I have also loaded the tidyverse, of course."
   
 - Class: text
-  Output: In you environment you will also see four character vectors. `wa` corresponds to the WhatsApp chat that you'll find in OLAT. I recommend that you take a look at the file before you start this lesson. We'll talk about the other vectors later.
+  Output: In you environment you will also see four character vectors. `wa` corresponds to the WhatsApp chat that you'll find at the website. I recommend that you take a look at the file before you start this lesson. We'll talk about the other vectors later.
   
 
 - Class: cmd_question

@@ -167,7 +167,7 @@
   Hint: The third argument of `str_replace_all()` needs back references that invert the order of the expressions in parentheses in your regex, that is, it shoudl be "\\2\\1".
 
 - Class: text
-  Output: "I'm sure that last part was a bit demanding… But you're done now! I hope that you can see the potential of regex now, but you'll probably want to practice them a little bit more. Check the homework in OLAT, but maybe take a well-deserved break first :)"
+  Output: "I'm sure that last part was a bit demanding… But you're done now! I hope that you can see the potential of regex now, but you'll probably want to practice them a little bit more."
   
 - Class: mult_question
   Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
