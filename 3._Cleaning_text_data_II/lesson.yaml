@@ -122,7 +122,7 @@
   Output: Above we read our data using the following code, read_delim(crea, delim = "\t", skip = 1, col_names = c("order", "word", "abs_freq", "rel_freq")). Try to transform it into a pipe. The object you're manipulating is `crea`.
   CorrectAnswer: crea %>% read_delim(delim = "\t", skip = 1, col_names = c("order", "word", "abs_freq", "rel_freq"))
   AnswerTests: omnitest(correctExpr='crea %>% read_delim(delim = "\t", skip = 1, col_names = c("order", "word", "abs_freq", "rel_freq"))')
-  Hint: `crea` should appear before the pipe %>%
+  Hint: The object `crea` should appear before the pipe %>%
 
 - Class: cmd_question
   Output: So here's where the magic happens! You can add a pipe at the end of the last code and add your next step, which was mutate(crea_table, word = str_conv(word, "latin1")). Add it with a pipe now. Remember to remove the first argument!
