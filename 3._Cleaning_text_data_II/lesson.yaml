@@ -73,10 +73,7 @@
   AnswerTests: omnitest(correctExpr='head(crea_table)')
   Hint: You know this!
 
-
-
-
-  - Class: text
+- Class: text
   Output: Very good! Note that column abs_freq has commas for thousands separator. We do not want that! We will get rid of them with a combination of mutate() and the function str_replace_all().
 
 - Class: cmd_question
