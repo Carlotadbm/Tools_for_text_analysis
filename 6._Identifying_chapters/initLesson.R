@@ -7,13 +7,15 @@ swirl_options(swirl_logging = TRUE)
 library(tidyverse)
 library(tidytext)
 
-.get_course_path <- function(){
-  tryCatch(swirl:::swirl_courses_dir(),
-           error = function(c) {file.path(find.package("swirl"),"Courses")}
-  )
-}
 
-verne_text <- read_lines(file.path(.get_course_path(), "Tools_for_text_analysis", "6._Identifying_chapters", "verne_text_clean.txt")) %>%
+verne_url <- "https://www.gutenberg.org/cache/epub/800/pg800.txt"
+verne_file <- read_file(verne_url)
+
+verne_text <- verne_file %>% 
+  str_replace_all("(\r\n){2,}", "\t") %>% 
+  str_replace_all("\r\n", " ") %>% 
+  str_replace_all("\t", "\r\n") %>% 
+  read_lines(skip = 11) %>% 
   as_tibble() %>%
   rename(text = value) %>% 
   filter(text != "") %>% 
