@@ -150,10 +150,4 @@
 
 - Class: text
   Output: "And we will do so, but not now. You earned your break! This week there isn't any homework, so that you have time to let everything we have been doing sink in or maybe finish some old homework you didn't get the chance to finish. Or just relax if you're completely up to date. Again: very well done. This will pay off, I'm positive!"
-  
-- Class: mult_question
-  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
-  AnswerChoices: Yes;No
-  CorrectAnswer: NULL
-  AnswerTests: submit_log()
-  Hint: As you feel!
+

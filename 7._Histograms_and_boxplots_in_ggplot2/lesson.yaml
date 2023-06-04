@@ -205,12 +205,4 @@
 - Class: text
   Output: You proficiently created two different plots using ggplot2, congratulations! Although it might look complicated at the beginning, ggplot2 is extremely powerful (you can do about anything you want) and, moreover, most of the time you only need to adapt a little bit the code you used for another plot, which is quite convenient. In the next lesson we'll explore ggplot2 a bit more.
   
-- Class: mult_question
-  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
-  AnswerChoices: Yes;No
-  CorrectAnswer: NULL
-  AnswerTests: submit_log()
-  Hint: As you feel!
-  
 
-  

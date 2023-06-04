@@ -157,10 +157,3 @@
 
 - Class: text
   Output: Told you! Spain was there all along! Voronoi diagrams are both a very advanced mathematical concept and a quite nice way of plotting spatial information by filling all the available space. So I hope that you're as proud of yourself as I am! Now it's time for a break, enjoy!
-
-- Class: mult_question
-  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
-  AnswerChoices: Yes;No
-  CorrectAnswer: NULL
-  AnswerTests: submit_log()
-  Hint: As you feel!

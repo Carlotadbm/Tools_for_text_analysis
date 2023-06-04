@@ -177,10 +177,3 @@
 - Class: text
   Output: "I think you earned a break now. And I'd like to add that I'm very impressed by the great job you're doing, solving these lessons on your own. I know how complex it is (since I have to write the instructions I'm quite conscious of that), and I'm proud and impressed! Just wanted to tell you :) I really hope it's not only hard, but also fun (and useful)."
 
-- Class: mult_question
-  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
-  AnswerChoices: Yes;No
-  CorrectAnswer: NULL
-  AnswerTests: submit_log()
-  Hint: As you feel!
-

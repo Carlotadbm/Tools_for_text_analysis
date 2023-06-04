@@ -204,11 +204,3 @@
   
 - Class: text
   Output: Great! So you now know how to read, parse and explore an XML file, as well as how to extract its information and transform it into a table, which is easier to work with. In the next lesson we'll see a few things we can do with this data, since we've never worked with a pos-tagged corpus.
-  
-- Class: mult_question
-  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
-  AnswerChoices: Yes;No
-  CorrectAnswer: NULL
-  AnswerTests: submit_log()
-  Hint: As you feel!
-  

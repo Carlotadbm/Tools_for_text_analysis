@@ -354,11 +354,3 @@
   
 - Class: text
   Output: But I think it's crucial that we keep in mind that automatic annotation always makes mistakes. Machines are not perfect and language is extremely complex. So it's always good practice to review the results we get, look for inconsistencies and evaluate how big an effect they can have in our analysis. Machines can help us, but we're still in charge and must be rigurous with our work! That means that we need to invest a bit more time than if we blindly trust the machine, but still much less than if we have to do all the work by hand!
-
-- Class: mult_question
-  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
-  AnswerChoices: Yes;No
-  CorrectAnswer: NULL
-  AnswerTests: submit_log()
-  Hint: As you feel!
-

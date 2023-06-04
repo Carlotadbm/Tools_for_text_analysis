@@ -133,7 +133,7 @@
   Output: "The last function we'll explore in this session is `str_replace()`, which replaces a match with a new string. Its structure is the same as in the previous functions, but with a third argument: first the vector, second the regex to match and third the string to replace the match with."
 
 - Class: cmd_question
-  Output: Again, this is a function that you'll normally want to use within a mutate. Create a new column called `word_i` where you replace vowels (defined as "[aeouáéíóú]") in the `word` in `quijote` by "i".
+  Output: Again, this is a function that you'll normally want to use within a mutate. Create a new column called `word_i` where you replace vowels (defined as "[aeouáéíóú]") in the `word` column in `quijote` by "i".
   CorrectAnswer: quijote %>% mutate(word_i = str_replace(word, "[aeouáéíóú]", "i"))
   AnswerTests: omnitest(correctExpr='quijote %>% mutate(word_i = str_replace(word, "[aeouáéíóú]", "i"))')
   Hint: This mutate is very similar to the ones you used above, again with `quijote`. But now you're using the function `str_replace()` and you need a third argument with the string used for the replacement.
@@ -168,15 +168,6 @@
 
 - Class: text
   Output: "I'm sure that last part was a bit demanding… But you're done now! I hope that you can see the potential of regex now, but you'll probably want to practice them a little bit more."
-  
-- Class: mult_question
-  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
-  AnswerChoices: Yes;No
-  CorrectAnswer: NULL
-  AnswerTests: submit_log()
-  Hint: As you feel!
-
-
 
 
 

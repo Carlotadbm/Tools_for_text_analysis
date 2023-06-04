@@ -102,7 +102,7 @@
   Hint: You just need to adapt the regex in your code above. Remember that you're not using `str_view_all()` now!
 
 - Class: text
-  Output: You were familiar with some special characters already. "\\t" matchs tabs, while "\\r" and "\\n" match carriage return and newlines respectively. We talked about them in the first session, since Linux based systems (such as Mac) code newlines with "\\n", while Windows uses the more complex "\\r\\n".
+  Output: You were familiar with some special characters already. "\\t" matchs tabs, while "\\r" and "\\n" match carriage return and newlines respectively. Linux based systems (such as Mac) code newlines with "\\n", while Windows uses the more complex "\\r\\n".
   
 - Class: cmd_question
   Output: Brackets are used to delimit character classes, that are used to match only one out of several characters. Could you visualise the Spanish diphthongs "ie" and "ue" in column `word` in `quijote` defining a character class?
@@ -197,14 +197,6 @@
 
 - Class: text
   Output: You earned a break now! In the next session you'll see how to integrate regex in your tidyverse workflow.
-  
-- Class: mult_question
-  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
-  AnswerChoices: Yes;No
-  CorrectAnswer: NULL
-  AnswerTests: submit_log()
-  Hint: As you feel!
-
 
 
 

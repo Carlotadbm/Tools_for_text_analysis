@@ -7,19 +7,41 @@
   Version: 2.4.5
 
 - Class: text
-  Output: Hi there! In this lesson we will get started with text analysis. For that we will need the libraries tidyverse and tidytext. I've loaded them for you, but that only works if you had installed them previously. You should've also downloaded the file "verne_text_clean.txt" from the website and have it in your working directory. The file has Jules Verne's "Le tour du monde en quatre-vingt jours" and that's what will be working with today. Ideally you have already checked the file with a text editor, to see how it looks like.
+  Output: Hi there! In this lesson we will get started with text analysis. For that we will need the libraries tidyverse and tidytext. I've loaded them for you, but that only works if you had installed them previously. You should've also downloaded the file "verne_text_clean.txt" from the website and have it in your working directory. The file has Jules Verne's "Le tour du monde en quatre-vingt jours" and that's what will be working with today. 
+
+- Class: text
+  Output: Let's get the text file first. Go to the url "https://www.gutenberg.org/cache/epub/800/pg800.txt" on your browser. You'll see the whole novel there. You know how to read it directly into R, but, as you can see, the lines are not meaningul in these files, they are lines on a white page. It'd be nicer to work with meaningful paragraphs.
+
+- Class: text
+  Output: For doing that, we need to replace the new lines by spaces, but not always… when we have more than one, we want them to be new lines, because several new lines is what actually separate paragraphs in this text file.
 
 - Class: cmd_question
-  Output: First thing is reading our text file. So far we have only read files from a URL, but now we'll read one that is in our computer. For simplicity, I recommend that you have the files you want to work with in your working directory. For this exercise, it must be there! Use read_lines() and instead of calling a URL, call the name of the file, that is, "verne_text_clean.txt". Save it in an object called verne. 
+  Output: Working around this requires knowing regex and we're not there yet. So simply trust me here and copy and run the following code. read_file("https://www.gutenberg.org/cache/epub/800/pg800.txt") %>% str_replace_all("(\r\n){2,}", "\t") %>% str_replace_all("\r\n", " ") %>% str_replace_all("\t", "\r\n") %>% write_lines("verne_text_clean.txt")
+  CorrectAnswer: read_file("https://www.gutenberg.org/cache/epub/800/pg800.txt") %>% str_replace_all("(\r\n){2,}", "\t") %>% str_replace_all("\r\n", " ") %>% str_replace_all("\t", "\r\n") %>% write_lines("verne_text_clean.txt")
+  AnswerTests: omnitest(correctExpr='read_file("https://www.gutenberg.org/cache/epub/800/pg800.txt") %>% str_replace_all("(\r\n){2,}", "\t") %>% str_replace_all("\r\n", " ") %>% str_replace_all("\t", "\r\n") %>% write_lines("verne_text_clean.txt")')
+  Hint: Copy the whole thing, from read_file to the end.
+
+- Class: text
+  Output: In a few sessions you'll understand better what we did. Right now, the crucial thing is that we saved a cleaner file to your working directory.
+
+
+- Class: cmd_question
+  Output: So far we have only read files from a URL, but now we'll read one that is in our computer. For simplicity, it's always easier to have the files you want to work with in your working directory. Use read_lines() and instead of calling a URL, call the name of the file, that is, "verne_text_clean.txt". Save it in an object called `verne`. 
   CorrectAnswer: verne <- read_lines("verne_text_clean.txt")
   AnswerTests: omnitest(correctExpr='verne <- read_lines("verne_text_clean.txt")')
   Hint: Did you inclued the file extension? And quotation marks?
   
 - Class: cmd_question
-  Output: As you can now see in you environment, verne is a chartacter vector with 2333 elements. Let's check the first 15.
+  Output: As you can now see in you environment, verne is a chartacter vector with 2234 elements. Let's check the first 15.
   CorrectAnswer: head(verne, 15)
   AnswerTests: omnitest(correctExpr='head(verne, 15)')
   Hint: Use head()!
+
+- Class: cmd_question
+  Output: I don't think we need the first 11 lines, right? We're only interested in what Verne wrote. Luckily, read_lines() allows us to skip some of the first rows, with the argument `skip`, which takes as its value the number of rows you want to skip. Read it again, skiping the first 11 rows now. 
+  CorrectAnswer: verne <- read_lines("verne_text_clean.txt", skip = 11)
+  AnswerTests: omnitest(correctExpr='verne <- read_lines("verne_text_clean.txt", skip = 11)')
+  Hint: Your second argument should be skip = 11. Recall to save it as verne!
   
 - Class: text
   Output: Each element of verne is a paragraph. As you can see, there are some empty rows that we don't need. Moreover, we would prefer to have a tibble. Also, it'd be a good idea to number the paragraphs. That's what we'll do now. I want you to 1) use pipes and 2) don't save it until the last step. Let's go!
@@ -70,7 +92,7 @@
   Output: Cool, right? As you can see, we have one row per word token and we also have the location of each word within the different paragraphs, in column paragraph. As you can see in the info printed to the console, the tibble has 68,773 rows - that's the number of word tokens in our text. Not bad, Jules Verne, not bad.
 
 - Class: cmd_question
-  Output: In order to see how many word types there are, we can use the count() function. It creates a new column called n with the number of occurrences of every unique value in the column you gave it as its second argument (first in a pipe). Add a count() to your previous code with pipe, also adding the argument sort = TRUE, so that the most frequent words appear on top.
+  Output: In order to see how many unique words and how many occurrences of each word there are, we can use the count() function. It creates a new column called n with the number of occurrences of every unique value in the column you gave it as its second argument (first in a pipe). Add a count() to your previous code with pipe, also adding the argument sort = TRUE, so that the most frequent words appear on top.
   CorrectAnswer: verne_text %>% unnest_tokens(word, text) %>% count(word, sort = TRUE) 
   AnswerTests: omnitest(correctExpr='verne_text %>% unnest_tokens(word, text) %>% count(word, sort = TRUE)')
   Hint: In your pipe, the firs argument of count() is word.
@@ -85,7 +107,7 @@
   Hint: The name of the new variable precedes the assignment operator <- at the beginning of all your code.
   
 - Class: cmd_question
-  Output: How often does a word type appear on average? The function mean() can calculate this, but it is a base R function. That means we cannot use a pipe and that we must use the $ notation to indicate the name of the column.
+  Output: How often does any word appear on average? The function mean() can calculate this, but it is a base R function. That means we cannot use a pipe and that we must use some specific notation. We'll need the name of the tibble, followed by $ and followed vy the name of the column with the values we want to calculate the average from.
   CorrectAnswer: mean(verne_words$n)
   AnswerTests: omnitest(correctExpr='mean(verne_words$n)')
   Hint: The argument of mean() should be verne_words$n
@@ -142,13 +164,5 @@
   Hint: Did you add n = 2? 
   
 - Class: text
-  Output: Well, well, so you can now tokenize a text in several types of tokens and calculate word types, as well as a few summary statistics of the resulting distribution. I think you earned a break. Next lesson we'll deal with stop words!
-  
-- Class: mult_question
-  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
-  AnswerChoices: Yes;No
-  CorrectAnswer: NULL
-  AnswerTests: submit_log()
-  Hint: As you feel!
+  Output: Well, well, so you can now tokenize a text in several types of tokens and calculate how many of those tokens there are, as well as a few summary statistics of the resulting distribution. I think you earned a break. Next lesson we'll deal with stop words!
 
-  

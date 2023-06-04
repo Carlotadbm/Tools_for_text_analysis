@@ -117,12 +117,4 @@
 - Class: text
   Output: You absolutely earned a break now. In the activities folder you'll find a few suggestions for exploring verne_text_full in more detail using some of the things we learnt this week. But I also suggest that, if you had a different idea for getting the column with the chapters that we created in this lesson, you try it out. When you're done or if you're struggling with it, post it in the forum, cause we'll love to see it! And keep in mind that I only learnt abouth lead() because I thought that it'd be nice if it existed for this exercise… And it did! So don't be afraid to google in your quest for new amzing R functions.
 
-- Class: mult_question
-  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
-  AnswerChoices: Yes;No
-  CorrectAnswer: NULL
-  AnswerTests: submit_log()
-  Hint: As you feel!
- 
-  
 

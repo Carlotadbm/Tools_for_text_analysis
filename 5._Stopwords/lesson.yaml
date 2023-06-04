@@ -7,7 +7,7 @@
   Version: 2.4.5
 
 - Class: text
-  Output: Hi there! In this session we'll be working with stop words. We'll need the libraries tidyverse, tidytext and stopwords. I loaded them for you, but you should have installed them before. I've also loaded the tibble verne_words that we worked on before in your environment.
+  Output: Hi there! In this session we'll be working with stop words. We'll need the libraries tidyverse, tidytext and stopwords. I've loaded them for you. I've also loaded the tibble verne_words that we worked on before, you'll see it in your environment.
 
 - Class: cmd_question
   Output: Print verne_words to the console so that you can recall how it looks like.
@@ -86,7 +86,7 @@
   Output: Cool tip - If you click on fr_sw_own in your environment RStudio will run the View() for you. 
 
 - Class: cmd_question
-  Output: Deciding which words you want to keep and which words you want to remove really depends on what you are interest in. Because this is just a "scholarly exercise", I decide for you. Remove rows c(1, 2, 4:8, 13, 16:17, 19, 22, 27, 31, 32, 35, 37, 38, 41, 42, 44:47, 54:57, 60:63, 65, 66, 68, 71:74) from fr_sw_own and save it to fr_sw_own. Use a pipe!
+  Output: Deciding which words you want to keep and which words you want to remove really depends on what you are interested in. Because this is just a "scholarly exercise", I decide for you. Remove rows c(1, 2, 4:8, 13, 16:17, 19, 22, 27, 31, 32, 35, 37, 38, 41, 42, 44:47, 54:57, 60:63, 65, 66, 68, 71:74) from fr_sw_own and save it to fr_sw_own. Use a pipe!
   CorrectAnswer: fr_sw_own <- fr_sw_own %>% slice(-c(1, 2, 4:8, 13, 16:17, 19, 22, 27, 31, 32, 35, 37, 38, 41, 42, 44:47, 54:57, 60:63, 65, 66, 68, 71:74))
   AnswerTests: omnitest(correctExpr='fr_sw_own <- fr_sw_own %>% slice(-c(1, 2, 4:8, 13, 16:17, 19, 22, 27, 31, 32, 35, 37, 38, 41, 42, 44:47, 54:57, 60:63, 65, 66, 68, 71:74))')
   Hint: Did you use slice()? And did you remember to use the operator - to indicate that you want to remove those rows instead of keeping them?
@@ -138,10 +138,3 @@
 
 - Class: text
   Output: Removing stop words is very useful for analysing the content of a text. Moreover, you practised quite a few tidyverse functions for transforming data. We'll keep on practising in the next lesson, but you might need a break now… Enjoy!
-
-- Class: mult_question
-  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
-  AnswerChoices: Yes;No
-  CorrectAnswer: NULL
-  AnswerTests: submit_log()
-  Hint: As you feel!

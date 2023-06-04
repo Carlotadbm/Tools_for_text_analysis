@@ -51,7 +51,7 @@
 - Class: cmd_question
   Output: >
     Now we'll filter the resulting tibble in order to keep groups with 10 or more words. The function `n()` identifies the
-    sizes of these groups, so with the `>=` operator you can create the logical expression to inclide in `filter()`. 
+    sizes of these groups, so with the `>=` operator you can create the logical expression to include in `filter()`. 
     If you're afraid that your computer will go too slowly, keep groups of 30 or more words.
   CorrectAnswer: europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 30)
   AnswerTests: any_of_exprs('europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 10)', 'europarl_pt %>% unnest_tokens(word, content) %>% anti_join(pt_sw) %>% group_by(word) %>% filter(n() >= 30)')
@@ -82,15 +82,10 @@
   
 - Class: text
   Output: >
-    (You got a warning saying that `tbl_df()` is deprecated. Now that you know how functions work you can understand this
-    warning better: inside `pairwise_count()` there is a line with `tbl_df()`, which is deprecated. But that's OK, it works anyway.
-    
-- Class: text
-  Output: >
     We got a table with one row per pair of words that appear in the same piece of text (`fragment`) and the number of fragments they appear in.
     As you can see, this takes a while. You can also notice that our list of stopwords is not great for this task.
     For instance, keeping 'é', which means 'is', might not very sensible. But you already know how to solve that problem, 
-    so we'll ignore it now.
+    by expanding your stopwords list, so we'll ignore it now.
 
 - Class: cmd_question
   Output: >
@@ -203,7 +198,7 @@
      As with `ggplot()`, the graph is empty, because we still need to add some `geom_` layers (all from the library ggraph).
      And, as with `ggplot()`, we must use `+` instead of pipes to add them to our code. We'll first add `geom_node_text()`, with two 
      arguments. The first one is one you already know from ggplot2: `aes()`. We want to specify the aesthetics `label`, which
-     shouls equal to the attribute whose values we want to plot as text in the graph: `name`. As a second argument (of 
+     should equal to the attribute whose values we want to plot as text in the graph: `name`. As a second argument (of 
      `ggraph()`, not of `aes()`) add `repel = TRUE`, which tells `ggraph()` to avoid overlapping between labels.
   CorrectAnswer: words_correlation %>% filter(correlation >= 0.7) %>% graph_from_data_frame() %>% ggraph() + geom_node_text(aes(label = name), repel = TRUE)
   AnswerTests: omnitest(correctExpr='words_correlation %>% filter(correlation >= 0.7) %>% graph_from_data_frame() %>% ggraph() + geom_node_text(aes(label = name), repel = TRUE)')
@@ -272,7 +267,7 @@
   Output: >
     Now you can copy the code from the graph above, since we'll only need some minor adaptations. Obviously, there's no
     `correlation` column here, and we're interested in `n` instead. Adapt `geom_edge_link()`. Also, remove the line with
-    `geom_node_point()`, you'll se why later.
+    `geom_node_point()`, you'll see why later.
   CorrectAnswer: europarl_pt_bigram_sep %>% count(word1, word2, sort = TRUE) %>% filter(n >= 50) %>% graph_from_data_frame() %>% ggraph(layout = "nicely") + geom_node_text(aes(label = name), repel = TRUE) + geom_edge_link(aes(edge_alpha = n)) + theme_void()
   AnswerTests: omnitest(correctExpr='europarl_pt_bigram_sep %>% count(word1, word2, sort = TRUE) %>% filter(n >= 50) %>% graph_from_data_frame() %>% ggraph(layout = "nicely") + geom_node_text(aes(label = name), repel = TRUE) + geom_edge_link(aes(edge_alpha = n)) + theme_void()')
   Hint: Did you copy the code above from the line with `graph_from_data_frame()`?
@@ -292,10 +287,3 @@
     There's a lot to learn about Portuguese from this graph, since we get lexical collocations (direitos humanos 'human rights',
     estados membros 'member states'), prepositional collocations (luta contra 'fight against') and grammatical collocations
     (além disso 'moreover'). Plus, it's a quite cool visualisation :) But it was a lot, let's take a break now!
-    
-- Class: mult_question
-  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
-  AnswerChoices: Yes;No
-  CorrectAnswer: NULL
-  AnswerTests: submit_log()
-  Hint: As you feel!

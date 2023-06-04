@@ -184,11 +184,3 @@
 
 - Class: text
   Output: Well, now that you can save any plot you create I think you should take a break! There are still some homework and voluntary activities you can do, if you just can't stop coding! Enjoy!
-  
-- Class: mult_question
-  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
-  AnswerChoices: Yes;No
-  CorrectAnswer: NULL
-  AnswerTests: submit_log()
-  Hint: As you feel!
-

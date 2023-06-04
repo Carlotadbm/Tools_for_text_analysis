@@ -75,76 +75,48 @@
 - Class: text
   Output: unknown is what R says for ASCII characters, because these are the same both in Latin-1 and in UTF-8. Whenever there was a non-ASCII character, R used UTF-8 to read it… and failed, as we saw.
 
+- Class: cmd_question
+  Output: That is because our .txt file was encoded in Latin-1, but the function read_lines() assumes everything it reads is in UTF-8. We can change the encoding of quixote with the function str_conv(), which takes our vector as its first value and the encoding value ("latin1") as a second value. Try it now.
+  CorrectAnswer: str_conv(quixote, 'latin1')
+  AnswerTests: omnitest(correctExpr = "str_conv(quixote, 'latin1')")
+  Hint: You need to use quotation marks for "latin1".
 
 - Class: cmd_question
-  Output: That is because our .txt file was encoded in Latin-1, but the function read_lines() assumes everything it reads is in UTF-8. We can change the encoding of quixote by assigning the value "latin1" to the result of the Encoding() function. Try it now.
-  CorrectAnswer: Encoding(quixote) <- "latin1"
-  AnswerTests: omnitest(correctExpr = "Encoding(quixote) <- 'latin1'")
-  Hint: Use the assign operator <- to assign "latin1" (with quotation marks!) to the last function you ran.
-
-- Class: cmd_question
-  Output: Ok, did it work? Check if the 15 first elements of quixote are displayed correctly.
-  CorrectAnswer: head(quixote, 15)
-  AnswerTests: omnitest(correctExpr = "head(quixote, 15)")
-  Hint: You did this already! If you're feeling lazy you can't simply use the up arrow until you find it :)
-
-- Class: mult_question
-  Output: What values do you think will show up if you run Encoding(quixote) now?
-  AnswerChoices: latin1 and unknown;latin1;unknown
-  CorrectAnswer: latin1 and unknown
-  AnswerTests: omnitest(correctVal= "latin1 and unknown")
-  Hint: Remember that ASCII characters are the same in both encodings, so R can't decide.
+  Output: It worked! But you didn't save it. Update quixote.
+  CorrectAnswer: quixote <- str_conv(quixote, "latin1")
+  AnswerTests: omnitest(correctExpr = "quixote <- str_conv(quixote, 'latin1')")
+  Hint: Save the code you just used to quixote.
   
 - Class: cmd_question
-  Output: Check it now.
+  Output: Check its encoding now.
   CorrectAnswer: Encoding(quixote)
   AnswerTests: omnitest(correctExpr = "Encoding(quixote)")
   Hint: You also did this already!
 
 - Class: text
-  Output: We have now told R what encoding it should use to read quixote correctly. But we know that it's preferrable to have our text files in UTF-8. We'll convert the file now.
-
-- Class: mult_question
-  Output: Can we change the encoding of Quixote by running Encoding(quixote) <- "UTF-8"?
-  AnswerChoices: No;Yes
-  CorrectAnswer: No
-  AnswerTests: omnitest(correctVal= "No")
-  Hint: 50 % chance… ;)
-
-- Class: text
-  Output: No, we can't. Why? Because assigning a value to Encoding() does not change anything in the object quixote, but in how R deals with quixote.
-
-- Class: cmd_question
-  Output: For changing the encoding we will have to use a different function, namely, enc2utf8(). And, because you want to change the quixote object, you need to save that change… By giving it a name. Name it quixote_utf8.
-  CorrectAnswer: quixote_utf8 <- enc2utf8(quixote)
-  AnswerTests: omnitest(correctExpr = "quixote_utf8 <- enc2utf8(quixote)")
-  Hint: Pass quixote as the single argument of enc2utf8() and assign it to the variable quixote_utf8.
-
-- Class: cmd_question
-  Output: What do you expect now that the output of Encoding(quixote_utf8) will be? Try it out!
-  CorrectAnswer: Encoding(quixote_utf8)
-  AnswerTests: omnitest(correctExpr = "Encoding(quixote_utf8)")
-  Hint: Just type Encoding(quixote_utf8).
-
-- Class: mult_question
-  Output: Ok, so now that you know that the answer is UTF-8, do you think that R will display all characters correctly when you print quixote_utf8?
-  AnswerChoices: Yes;No
-  CorrectAnswer: Yes
-  AnswerTests: omnitest(correctVal= "Yes")
-  Hint: Again, 50 % chance!
-
-- Class: cmd_question
-  Output: Let's see if that's right. Print the first 15 elements of quixote_utf8
-  CorrectAnswer: head(quixote_utf8, 15)
-  AnswerTests: omnitest(correctExpr = "head(quixote_utf8, 15)")
-  Hint: Did you remember to set the second argument to 15?
+  Output: As you can see, R has re-encoded our text to UTF-8. Nice.
 
 - Class: text
   Output: Well done! Now you should be able to convert to UTF-8 almost any old text you find… Congratulations! If you want to explore more options of some of the functions we used in this lesson, I recommend you run ?Encoding and ?head. Have fun!
-  
+
 - Class: mult_question
-  Output: Would you like to submit the log of this lesson to Google Forms so that I can use your progress as feedback on where I should improve in my swirl courses? Whatever you say, this will open a Google Form - if you don't want that I see your progress, do not send it!
-  AnswerChoices: Yes;No
-  CorrectAnswer: NULL
-  AnswerTests: submit_log()
-  Hint: As you feel!
+  Output: By the way, do you know what kind of object is quixote?
+  AnswerChoices: vector;data frame;list
+  CorrectAnswer: vector
+  AnswerTests: omnitest(correctVal= 'vector')
+  Hint: 33 % chance!
+
+- Class: cmd_question
+  Output: Exactly, it's a vector. You can actually ask R to check that I'm saying the truth. Pass quixote as the single argument of is.vector().
+  CorrectAnswer: is.vector(quixote)
+  AnswerTests: omnitest(correctExpr = "is.vector(quixote)")
+  Hint: No quotation marks.  
+
+- Class: cmd_question
+  Output: To check what kind of objects you're dealing with, you can use class(). Pass quixote as its single argument.
+  CorrectAnswer: class(quixote)
+  AnswerTests: omnitest(correctExpr = "class(quixote)")
+  Hint: No quotation marks.  
+
+- Class: text
+  Output: You get the answer 'character', which means that it is a character vector. Time for a break, isn't it?
