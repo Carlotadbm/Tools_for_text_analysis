@@ -1,0 +1,222 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 27. Reading excel files
+  Author: Carlota de Benito Moreno
+  Type: Standard
+  Organization: University of Zurich
+  Version: 2.4.5
+
+- Class: text
+  Output: >
+    Hi there! In this lesson we will learn how to read Excel files 
+    and keep on cleaning and transforming data. For that we will need 
+    the libraries `tidyverse` and `readxl`. I've loaded them for you. 
+    You should've also downloaded the files "CHDT_ling_input1.xlsx", 
+    "CHDT_ling_input2.xlsx" and "CHDT_social.xlsx" from the website and 
+    have them in a folder called `input` in your working directory.
+
+- Class: text
+  Output: >
+    The first two files have the answers from two sets of participants in an experiment in Swiss German, 
+    while the latter has some social information from the participants. The first thing is reading them, 
+    so let's go.
+
+- Class: cmd_question
+  Output: >
+    The function we need is called read_excel. As its first argument it needs the path and name of the
+    file you want to open ("CHDT_ling_input1.xlsx"). This must be between quotation marks and should start by 
+    "input/", which is the folder where you should have it. Add a second named argument called `sheet` that 
+    equals 1 (the Excel sheet where your data is). 
+  CorrectAnswer: read_excel("input/CHDT_ling_input1.xlsx", sheet = 1)
+  AnswerTests: omnitest(correctExpr='read_excel("input/CHDT_ling_input1.xlsx", sheet = 1)')
+  Hint: Your second argument should be `sheet = 1`.
+
+- Class: cmd_question
+  Output: >
+    As you can see, it read our Excel table as a tibble, that's very convenient! Let's save it now, as `input1`.
+  CorrectAnswer: input1 <- read_excel("input/CHDT_ling_input1.xlsx", sheet = 1)
+  AnswerTests: omnitest(correctExpr='input1 <- read_excel("input/CHDT_ling_input1.xlsx", sheet = 1)')
+  Hint: Your second argument should be `sheet = 1`.
+
+- Class: cmd_question
+  Output: >
+    Read now "CHDT_ling_input2.xlsx" and save it as `input2`.
+  CorrectAnswer: input2 <- read_excel("input/CHDT_ling_input2.xlsx", sheet = 1)
+  AnswerTests: omnitest(correctExpr='input2 <- read_excel("input/CHDT_ling_input2.xlsx", sheet = 1)')
+  Hint: Same as before!
+
+- Class: cmd_question
+  Output: >
+    Read now "CHDT_social.xlsx" and save it as `social`.
+  CorrectAnswer: input2 <- read_excel("input/CHDT_social.xlsx", sheet = 1)
+  AnswerTests: omnitest(correctExpr='input2 <- read_excel("input/CHDT_social.xlsx", sheet = 1)')
+  Hint: Same as before!
+
+- Class: cmd_question
+  Output: >
+    Check `input1` using View, so that you can explore it a little bit. You'll notice that its column names
+    are sometimes in English and sometimes in Spanish (in two cases, with the word `respuesta`, which means `answer`).
+  CorrectAnswer: View(input1)
+  AnswerTests: omnitest(correctExpr='View(input1)')
+  Hint: Careful, `View()` starts by an upper case V!
+  
+- Class: cmd_question
+  Output: >
+    Let's put everything in English, don't you think? We'll use `rename()` for that, which works with
+    the same syntax as `mutate()`. That is, new_name = old_name. This is easy enough, so let's do both columns
+    at once. Rename `respuesta` as `answer` and `respuesta_id` as `answer_id` (in this order). 
+    Use a pipe and a single rename function; you must separate each renaming sequence by a comma.
+  CorrectAnswer: input1 %>% rename(answer = respuesta, answer_id = respuesta_id) 
+  AnswerTests: omnitest(correctExpr='input1 %>% rename(answer = respuesta, answer_id = respuesta_id) ')
+  Hint: The arguments of `rename()` should be `answer = respuesta, answer_id = respuesta_id`.
+ 
+- Class: cmd_question
+  Output: >
+    Let's save this now as `input1_clean`.
+  CorrectAnswer: input1_clean <- input1 %>% rename(answer = respuesta, answer_id = respuesta_id) 
+  AnswerTests: omnitest(correctExpr='input1_clean <- input1 %>% rename(answer = respuesta, answer_id = respuesta_id) ')
+  Hint: Assing it the new name with an arrow.
+
+- Class: cmd_question
+  Output: >
+    So `input2` has exactly the same problem… Let's create `input2_clean` by renaming the same two colums.
+  CorrectAnswer: input2_clean <- input2 %>% rename(answer = respuesta, answer_id = respuesta_id) 
+  AnswerTests: omnitest(correctExpr='input2_clean <- input2 %>% rename(answer = respuesta, answer_id = respuesta_id) ')
+  Hint: Same code as above, simply update `input1` to `input2` (both times).
+
+- Class: cmd_question
+  Output: >
+    These two objects have the same exact structure, but not the same data. They come from two different sets
+    of participants. This is indicated in column `input`. We can check the unique values in a column with 
+    the function `distinct`. Its first argument is the name of the tibble (but you'll use a pipe) and the
+    second one, the name of the column whose unique values you want to find out. Try it with `input1_clean`
+    and colum `input`.
+  CorrectAnswer: input1_clean %>% distinct(input)
+  AnswerTests: omnitest(correctExpr='input1_clean %>% distinct(input)')
+  Hint: Remember that you should be using a pipe, so your first argument appears before the pipe.
+  
+- Class: text
+  Output: >
+    As you can see, the single value that we have is `1`. In `input2`, it is `2`. These values
+    indicate the participant group. 
+
+- Class: cmd_question
+  Output: >
+    This `distinct()`function is very useful. Because participants had to provide answers to different stimuli,
+    `input1_clean` has many rows with the same id, since these ids are participant ids. If we wanted to
+    count how many different participants we had, we could use `distinct()` with column `id` and, afterwards,
+    add (with a pipe) the function nrow(), which let's you know how many rows a table has. Try it out.
+  CorrectAnswer: input1_clean %>% distinct(id) %>% nrow
+  AnswerTests: omnitest(correctExpr='input1_clean %>% distinct(id) %>% nrow')
+  Hint: You are using two pipes now. The first part of the code is very similar to what you just did, but remember to update the name of the column.
+  
+- Class: cmd_question
+  Output: >
+    Since both `input1_clean` and `input2_clean` have the same structure and have information from the same experiment, it makes sense
+    that we want to have a single table. Because they have the same structure, we would like to simply 
+    paste one below the other one. This is easily done with the function `rbind()`, (which means 'bind rows').
+    Its arguments are the tibbles that you want to paste, which in this case are `input1_clean` and `input2_clean`.
+    Let's write them in this order. Use a pipe!
+  CorrectAnswer: input1_clean %>% rbind(input2_clean)
+  AnswerTests: omnitest(correctExpr='input1_clean %>% rbind(input2_clean)')
+  Hint: Remember that you're using a pipe, so within the parentheses in `rbind()` you should only have `input2_clean`.
+
+- Class: text
+  Output: >
+    Look at the result that was printed in the console. This new tibble has 11679 rows, which is the number
+    of rows of `input1_clean` and `input2_clean` when you add them together.
+
+- Class: text
+  Output: >
+    It makes sense that the information in `social` is in a different table, since we have 
+    different types of observations (that is, of information). In `social` we store information about our
+    participants. But both tables have column `id` in common, with participant ids. That means we can 
+    put the information from both tables together, adding the appropriate information from `social` to every
+    participant in our input_clean tables.
+ 
+- Class: cmd_question
+  Output: >
+    We do that with the function `left_join()`. This function will add the information from all rows in its
+    second argument (`social`) that have a match in the first argument (our rbinded tables) by any columns
+    with the same name. So add it to your pipe. Of course, because it's a pipe, you just need to write 
+    the second argument (which looks like the first).
+  CorrectAnswer: input1_clean %>% rbind(input2_clean) %>% left_join(social)
+  AnswerTests: omnitest(correctExpr='input1_clean %>% rbind(input2_clean) %>% left_join(social)')
+  Hint: Your second argument is `social`! Write it inside `left_join()`.
+
+- Class: cmd_question
+  Output: Now you have a tibble with 8 variables (columns)! Let's save it, call it `full_table`.
+  CorrectAnswer: full_table <- input1_clean %>% rbind(input2_clean) %>% left_join(social)
+  AnswerTests: omnitest(correctExpr='full_table <- input1_clean %>% rbind(input2_clean) %>% left_join(social)')
+  Hint: Assign the new name at the beginning of the pipe.
+  
+- Class: text
+  Output: >
+    When you have a very large dataset, sometimes it's useful to create a smaller random sample that is a 
+    subset of it. We'll learn how to do that now.
+
+- Class: cmd_question
+  Output: Basically we want to subset a number of rows from our table and for that we already know `slice()`, as you
+  might remember. For selecting a random sample we use `slice_sample()`. Its first argument is the table you
+  want to get the sample from, which in this case is `full_table`. Add a second argument, `n`, that equals
+  to 340 (the number of participants we have). Use a pipe! I'm going to ask you to write `set.seed(3);`
+  before the beginning of your code (semicolon included, and in the same line as the begining of your pipe!).
+  We're dealing with random results now, but I'd like you to have the same results as I did, which is what
+  this function does. It anchors a given random result (but you need to run it every time before creating 
+  a random sample).
+  CorrectAnswer: set.seed(3); full_table %>% slice_sample(n = 340)
+  AnswerTests: omnitest(correctExpr='set.seed(3); full_table %>% slice_sample(n = 340)')
+  Hint: Your second argument is named, so it should read `n = 340' (no quotation marks!).
+
+full_table %>% slice_sample(n = 340) %>% count(id, sort = T)
+
+- Class: cmd_question
+  Output: >
+    You got a smaller tibble, as you wanted. It's a random sample, so now we might have an unbalanced
+    distribution of our participants. Let's check how many times appear how many participants. Add the 
+    function `count()` to your pipe. It counts how many times each single values of a given column appears, 
+    which you need to specify as its second argument. Count how many times each participant appears.
+  CorrectAnswer: set.seed(3); full_table %>% slice_sample(n = 340)  %>% count(id)
+  AnswerTests: omnitest(correctExpr='set.seed(3); full_table %>% slice_sample(n = 340)  %>% count(id)')
+  Hint: Participants are found in column `id`, which must be the argument of `count()`. Add it to your code above (don't forget `set.seed()`!).
+
+- Class: text
+  Output: >
+    As you can see, you got 217 rows (that is, 217 participants). Some of them appear once, some others
+    twice…
+
+- Class: cmd_question
+  Output: >
+    By the way, you can sort the results of `count()` by adding the named argument `sort = TRUE`. Try it out.
+  CorrectAnswer: set.seed(3); full_table %>% slice_sample(n = 340)  %>% count(id, sort = TRUE)
+  AnswerTests: omnitest(correctExpr='set.seed(3); full_table %>% slice_sample(n = 340)  %>% count(id, sort = TRUE)')
+  Hint: The last line of the pipe should read `count(id, sort = TRUE)`.
+
+- Class: cmd_question
+  Output: >
+    But we might want to have a random sample that is balanced by speaker, having one example from each.
+    That is easy enough, because we can group our sample first, so that `slice_sample()` operates within
+    each group. The function for that is `group_by()`, whose argument would be the column where you want to
+    create the groups (`id` in these case). Copy your code from above and add group_by() to your pipe, BEFORE 
+    the line with slice_sample(). But we also want to update `slice_sample()` now, because we don't want 340
+    examples from each participant, but only one. So set `n` to 1.
+  CorrectAnswer: set.seed(3); full_table %>% group_by(id) %>% slice_sample(n = 1)  %>% count(id, sort = TRUE)
+  AnswerTests: omnitest(correctExpr='set.seed(3); full_table %>% group_by(id) %>% slice_sample(n = 1)  %>% count(id, sort = TRUE)')
+  Hint: Remember that `group_by()` should be added before `slice_sample()` in your pipe and that you need to update `slice_sample()`. Don't forget `set.seed()`!
+
+- Class: cmd_question
+  Output: >
+    If you look at the result printed in the console, you'll see that it says that your tibble is grouped.
+    It's good practice to ungroup your tibbles (groups can give problems), so add `ungroup()` with a pipe
+    at the end.
+  CorrectAnswer: set.seed(3); full_table %>% group_by(id) %>% slice_sample(n = 1)  %>% count(id, sort = TRUE) %>% ungroup()
+  AnswerTests: omnitest(correctExpr='set.seed(3); full_table %>% group_by(id) %>% slice_sample(n = 1)  %>% count(id, sort = TRUE) %>% ungroup()')
+  Hint: Remember that `group_by()` should be added before `slice_sample()` in your pipe and that you need to update `slice_sample()`. Don't forget `set.seed()`!
+
+
+- Class: text
+  Output: >
+    I think you've earned a break! So that you know: you can write `set.seed()` in a different line, before your 
+    pipe, without the semicolon. But in swirl this gets a bit tedious, so this is why I asked you
+    to write it like that. Enjoy your rest!
+
