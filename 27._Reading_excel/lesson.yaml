@@ -106,8 +106,8 @@
     `input1_clean` has many rows with the same id, since these ids are participant ids. If we wanted to
     count how many different participants we had, we could use `distinct()` with column `id` and, afterwards,
     add (with a pipe) the function nrow(), which let's you know how many rows a table has. Try it out.
-  CorrectAnswer: input1_clean %>% distinct(id) %>% nrow
-  AnswerTests: omnitest(correctExpr='input1_clean %>% distinct(id) %>% nrow')
+  CorrectAnswer: input1_clean %>% distinct(id) %>% nrow()
+  AnswerTests: omnitest(correctExpr='input1_clean %>% distinct(id) %>% nrow()')
   Hint: You are using two pipes now. The first part of the code is very similar to what you just did, but remember to update the name of the column.
   
 - Class: cmd_question
@@ -160,13 +160,9 @@
     Basically we want to subset a number of rows from our table and for that we already know `slice()`, as you
     might remember. For selecting a random sample we use `slice_sample()`. Its first argument is the table you
     want to get the sample from, which in this case is `full_table`. Add a second argument, `n`, that equals
-    to 340 (the number of participants we have). Use a pipe! I'm going to ask you to write `set.seed(3);`
-    before the beginning of your code (semicolon included, and in the same line as the begining of your pipe!).
-    We're dealing with random results now, but I'd like you to have the same results as I did, which is what
-    this function does. It anchors a given random result (but you need to run it every time before creating 
-    a random sample).
-  CorrectAnswer: set.seed(3); full_table %>% slice_sample(n = 340)
-  AnswerTests: omnitest(correctExpr='set.seed(3); full_table %>% slice_sample(n = 340)')
+    to 340 (the number of participants we have). Use a pipe! 
+  CorrectAnswer: full_table %>% slice_sample(n = 340)
+  AnswerTests: omnitest(correctExpr='full_table %>% slice_sample(n = 340)')
   Hint: Your second argument is named, so it should read `n = 340' (no quotation marks!).
 
 - Class: cmd_question
@@ -175,20 +171,20 @@
     distribution of our participants. Let's check how many times appear how many participants. Add the 
     function `count()` to your pipe. It counts how many times each single values of a given column appears, 
     which you need to specify as its second argument. Count how many times each participant appears.
-  CorrectAnswer: set.seed(3); full_table %>% slice_sample(n = 340)  %>% count(id)
-  AnswerTests: omnitest(correctExpr='set.seed(3); full_table %>% slice_sample(n = 340)  %>% count(id)')
-  Hint: Participants are found in column `id`, which must be the argument of `count()`. Add it to your code above (don't forget `set.seed()`!).
+  CorrectAnswer: full_table %>% slice_sample(n = 340)  %>% count(id)
+  AnswerTests: omnitest(correctExpr='full_table %>% slice_sample(n = 340)  %>% count(id)')
+  Hint: Participants are found in column `id`, which must be the argument of `count()`. Add it to your code above.
 
 - Class: text
   Output: >
-    As you can see, you got 217 rows (that is, 217 participants). Some of them appear once, some others
+    As you can see, you got less than 340 rows (that is, less than 340 participants). Some of them appear once, some others
     twice…
 
 - Class: cmd_question
   Output: >
     By the way, you can sort the results of `count()` by adding the named argument `sort = TRUE`. Try it out.
-  CorrectAnswer: set.seed(3); full_table %>% slice_sample(n = 340)  %>% count(id, sort = TRUE)
-  AnswerTests: omnitest(correctExpr='set.seed(3); full_table %>% slice_sample(n = 340)  %>% count(id, sort = TRUE)')
+  CorrectAnswer: full_table %>% slice_sample(n = 340)  %>% count(id, sort = TRUE)
+  AnswerTests: omnitest(correctExpr='full_table %>% slice_sample(n = 340)  %>% count(id, sort = TRUE)')
   Hint: The last line of the pipe should read `count(id, sort = TRUE)`.
 
 - Class: cmd_question
@@ -199,23 +195,24 @@
     create the groups (`id` in these case). Copy your code from above and add group_by() to your pipe, BEFORE 
     the line with slice_sample(). But we also want to update `slice_sample()` now, because we don't want 340
     examples from each participant, but only one. So set `n` to 1.
-  CorrectAnswer: set.seed(3); full_table %>% group_by(id) %>% slice_sample(n = 1)  %>% count(id, sort = TRUE)
-  AnswerTests: omnitest(correctExpr='set.seed(3); full_table %>% group_by(id) %>% slice_sample(n = 1)  %>% count(id, sort = TRUE)')
-  Hint: Remember that `group_by()` should be added before `slice_sample()` in your pipe and that you need to update `slice_sample()`. Don't forget `set.seed()`!
+  CorrectAnswer: full_table %>% group_by(id) %>% slice_sample(n = 1)  %>% count(id, sort = TRUE)
+  AnswerTests: omnitest(correctExpr='full_table %>% group_by(id) %>% slice_sample(n = 1)  %>% count(id, sort = TRUE)')
+  Hint: Remember that `group_by()` should be added before `slice_sample()` in your pipe and that you need to update `slice_sample()`. 
 
 - Class: cmd_question
   Output: >
     If you look at the result printed in the console, you'll see that it says that your tibble is grouped.
     It's good practice to ungroup your tibbles (groups can give problems), so add `ungroup()` with a pipe
     at the end.
-  CorrectAnswer: set.seed(3); full_table %>% group_by(id) %>% slice_sample(n = 1)  %>% count(id, sort = TRUE) %>% ungroup()
-  AnswerTests: omnitest(correctExpr='set.seed(3); full_table %>% group_by(id) %>% slice_sample(n = 1)  %>% count(id, sort = TRUE) %>% ungroup()')
-  Hint: Remember that `group_by()` should be added before `slice_sample()` in your pipe and that you need to update `slice_sample()`. Don't forget `set.seed()`!
+  CorrectAnswer: full_table %>% group_by(id) %>% slice_sample(n = 1)  %>% count(id, sort = TRUE) %>% ungroup()
+  AnswerTests: omnitest(correctExpr='full_table %>% group_by(id) %>% slice_sample(n = 1)  %>% count(id, sort = TRUE) %>% ungroup()')
+  Hint: Remember that `group_by()` should be added before `slice_sample()` in your pipe and that you need to update `slice_sample()`.
 
 
 - Class: text
   Output: >
-    I think you've earned a break! So that you know: you can write `set.seed()` in a different line, before your 
-    pipe, without the semicolon. But in swirl this gets a bit tedious, so this is why I asked you
-    to write it like that. Enjoy your rest!
+    I think you've earned a break! So that you know: the function `set.seed()` is used to anchor a 
+    given random result. You need to write any number inside and run it every time before you 
+    create a random result of any kind. This way, your results will be random, but always the same. 
+    Enjoy your rest!
 
