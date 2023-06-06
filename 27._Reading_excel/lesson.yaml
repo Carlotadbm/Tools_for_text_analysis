@@ -169,8 +169,6 @@
   AnswerTests: omnitest(correctExpr='set.seed(3); full_table %>% slice_sample(n = 340)')
   Hint: Your second argument is named, so it should read `n = 340' (no quotation marks!).
 
-full_table %>% slice_sample(n = 340) %>% count(id, sort = T)
-
 - Class: cmd_question
   Output: >
     You got a smaller tibble, as you wanted. It's a random sample, so now we might have an unbalanced
