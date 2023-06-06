@@ -48,8 +48,8 @@
 - Class: cmd_question
   Output: >
     Read now "CHDT_social.xlsx" and save it as `social`.
-  CorrectAnswer: input2 <- read_excel("input/CHDT_social.xlsx", sheet = 1)
-  AnswerTests: omnitest(correctExpr='input2 <- read_excel("input/CHDT_social.xlsx", sheet = 1)')
+  CorrectAnswer: social <- read_excel("input/CHDT_social.xlsx", sheet = 1)
+  AnswerTests: omnitest(correctExpr='social <- read_excel("input/CHDT_social.xlsx", sheet = 1)')
   Hint: Same as before!
 
 - Class: cmd_question
