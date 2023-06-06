@@ -156,14 +156,15 @@
     subset of it. We'll learn how to do that now.
 
 - Class: cmd_question
-  Output: Basically we want to subset a number of rows from our table and for that we already know `slice()`, as you
-  might remember. For selecting a random sample we use `slice_sample()`. Its first argument is the table you
-  want to get the sample from, which in this case is `full_table`. Add a second argument, `n`, that equals
-  to 340 (the number of participants we have). Use a pipe! I'm going to ask you to write `set.seed(3);`
-  before the beginning of your code (semicolon included, and in the same line as the begining of your pipe!).
-  We're dealing with random results now, but I'd like you to have the same results as I did, which is what
-  this function does. It anchors a given random result (but you need to run it every time before creating 
-  a random sample).
+  Output: >
+    Basically we want to subset a number of rows from our table and for that we already know `slice()`, as you
+    might remember. For selecting a random sample we use `slice_sample()`. Its first argument is the table you
+    want to get the sample from, which in this case is `full_table`. Add a second argument, `n`, that equals
+    to 340 (the number of participants we have). Use a pipe! I'm going to ask you to write `set.seed(3);`
+    before the beginning of your code (semicolon included, and in the same line as the begining of your pipe!).
+    We're dealing with random results now, but I'd like you to have the same results as I did, which is what
+    this function does. It anchors a given random result (but you need to run it every time before creating 
+    a random sample).
   CorrectAnswer: set.seed(3); full_table %>% slice_sample(n = 340)
   AnswerTests: omnitest(correctExpr='set.seed(3); full_table %>% slice_sample(n = 340)')
   Hint: Your second argument is named, so it should read `n = 340' (no quotation marks!).
