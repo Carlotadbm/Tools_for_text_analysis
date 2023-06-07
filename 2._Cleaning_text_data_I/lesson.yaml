@@ -45,7 +45,7 @@
 
 
 - Class: mult_question
-  Output: We can ask R to separate each row wherever it finds one or more spaces. How many rows will we get if we do so?
+  Output: We can ask R to separate each row wherever it finds one or more spaces. How many columns will we get if we do so?
   AnswerChoices: 3;2;1
   CorrectAnswer: 3
   AnswerTests: omnitest(correctVal= '3')
