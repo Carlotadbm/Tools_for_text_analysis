@@ -71,7 +71,7 @@
   CorrectAnswer: >
     mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n)) + geom_col() + facet_wrap(~Verb)
   AnswerTests:  >
-    omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n)) + geom_col() facet_wrap(~Verb)')
+    omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n)) + geom_col() + facet_wrap(~Verb)')
   Hint: You should add facet_wrap(~Verb) after a plus sign at the end of your code.
 
 - Class: cmd_question
@@ -82,7 +82,7 @@
   CorrectAnswer:  >
     mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n)) + geom_col() + facet_wrap(~Verb, scales = "free")
   AnswerTests:  >
-    omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n)) + geom_col() facet_wrap(~Verb, scales = "free")')
+    omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n)) + geom_col() + facet_wrap(~Verb, scales = "free")')
   Hint: The content of facet_wrap should be `~Verb, scales = "free"`.
 
 - Class: cmd_question
