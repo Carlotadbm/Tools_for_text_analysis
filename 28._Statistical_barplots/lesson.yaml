@@ -86,7 +86,7 @@
     Now we can add some labels to our plot with the function labs(). Set the argument `title` to 
     "Presence of de-complements by verb", `x` to "Presence of de-complement" and `y` to "Occurrences".
   CorrectAnswer: mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n)) + geom_col() + facet_wrap(~Verb, scales = "free") + labs(title = "Presence of de-complements by verb", x = "Presence of de-complement", y = "Occurrences")
-  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n)) + geom_col() facet_wrap(~Verb, scales = "free") + labs(title = "Presence of de-complements by verb", x = "Presence of de-complement", y = "Occurrences")')
+  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n)) + geom_col() + facet_wrap(~Verb, scales = "free") + labs(title = "Presence of de-complements by verb", x = "Presence of de-complement", y = "Occurrences")')
   Hint: >
     All the functions you add now should follow a plus sign, not a pipe. And you need the quotations 
     for the titles!
@@ -96,7 +96,7 @@
     And we can also change the general appearance of the plot, by adding theme_light() to our code, for 
     instance. Try it out.
   CorrectAnswer: mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n)) + geom_col() + facet_wrap(~Verb, scales = "free") + labs(title = "Presence of de-complements by verb", x = "Presence of de-complement", y = "Occurrences") + theme_light()
-  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n)) + geom_col() facet_wrap(~Verb, scales = "free") + labs(title = "Presence of de-complements by verb", x = "Presence of de-complement", y = "Occurrences") + theme_light()')
+  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n)) + geom_col() + facet_wrap(~Verb, scales = "free") + labs(title = "Presence of de-complements by verb", x = "Presence of de-complement", y = "Occurrences") + theme_light()')
   Hint: >
     All the functions you add now should follow a plus sign, not a pipe! This one is empty.
 
@@ -137,7 +137,7 @@
     Again our plot is empty… But you know why now! Add geom_col() to your code. And, since you're at it, 
     add facet_wrap(~Verb, scales = "free") too.
   CorrectAnswer: mock_verbs %>% count(Verb, De_complement, Reflexive_pronoun) %>% ggplot(aes(x = De_complement, y = n, fill = Reflexive_pronoun)) + geom_col() + facet_wrap(~Verb, scales = "free")
-  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement, Reflexive_pronoun) %>% ggplot(aes(x = De_complement, y = n, fill = Reflexive_pronoun)) +geom_col() + facet_wrap(~Verb, scales = "free")')
+  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement, Reflexive_pronoun) %>% ggplot(aes(x = De_complement, y = n, fill = Reflexive_pronoun)) + geom_col() + facet_wrap(~Verb, scales = "free")')
   Hint: Remember that you should add these functions after a plus sign now.
 
 - Class: cmd_question
@@ -148,7 +148,7 @@
     The syntax we need is a bit difficult, so I'll tell you what to type. Add
     `scale_fill_manual(values = wes_palette("Darjeeling1")[c(5, 2)])` after a plus sign.
   CorrectAnswer: mock_verbs %>% count(Verb, De_complement, Reflexive_pronoun) %>% ggplot(aes(x = De_complement, y = n, fill = Reflexive_pronoun)) + geom_col() + facet_wrap(~Verb, scales = "free") + scale_fill_manual(values = wes_palette("Darjeeling1")[c(5, 2)])
-  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement, Reflexive_pronoun) %>% ggplot(aes(x = De_complement, y = n, fill = Reflexive_pronoun)) +geom_col() + facet_wrap(~Verb, scales = "free") + scale_fill_manual(values = wes_palette("Darjeeling1")[c(5, 2)])')
+  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement, Reflexive_pronoun) %>% ggplot(aes(x = De_complement, y = n, fill = Reflexive_pronoun)) + geom_col() + facet_wrap(~Verb, scales = "free") + scale_fill_manual(values = wes_palette("Darjeeling1")[c(5, 2)])')
   Hint: Add what I gave you to your code after a plus sign.
 
 - Class: text
