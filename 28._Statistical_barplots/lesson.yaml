@@ -1,0 +1,218 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 28. Statistical barplots in ggplot2
+  Author: Carlota de Benito Moreno
+  Type: Standard
+  Organization: University of Zurich
+  Version: 2.4.5
+
+- Class: text
+  Output: >
+    Hi there! In this lesson we'll create some charts with count data.
+    We will use some historical data from Spanish, regarding verbs of mocking ('burlar' and 'mofar').
+    I have loaded the data for you (its called `mock_verbs`). Each row is an example of either of these
+    verbs in historical corporal, and it is anotated for the presence or absence of both a reflexive pronoun
+    and a complement with the preposition `de`, as well as for which verb appeared in the example and the
+    year of the example.
+
+- Class: text
+  Output: >
+    As you can see, I have also loaded the libraries tidyverse and wesanderson (with colour palettes) for 
+    you. 
+
+- Class: cmd_question
+  Output: Print `mock_verbs` to see how it looks like.
+  CorrectAnswer: mock_verbs
+  AnswerTests: omnitest(correctExpr='mock_verbs')
+  Hint: Just run its name!
+
+- Class: figure
+  Output: >
+    We will plot what you should be seeing in your viewer now. That is, the number of examples with and
+    without a de-complement by verb in a barplot. 
+  Figure: Plot_1.R
+  FigureType: new
+  
+- Class: cmd_question
+  Output: >
+    For that, we'll first have to calculate those occurrances, with `count`. Because we want to know
+    how many examples there are grouping by to variables (Verb and De_complement), it should have those
+    two arguments. Using a pipe, let's count them. Put the arguments in the order I mentioned them!
+  CorrectAnswer: mock_verbs %>% count(Verb, De_complement)
+  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement)')
+  Hint: Remember to use a pipe and separate both arguments of `count` by commas.
+
+- Class: cmd_question
+  Output: >
+    Now we generated a table with all the information that we need, so we can start our plot. Let's do it in
+    this same pipe. Add `ggplot` with a pipe. Inside, add the argument `aes()`, which is a function.
+    Its arguments are the variables that we want to plot. In the x-axis we want to have presence/absence of
+    De_complement, so we should write `x = De_complement`. In the y-axis we want to have the number of 
+    occurrances, which is stored in column n. This should be the second argument.
+  CorrectAnswer: mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n))
+  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n))')
+  Hint: The second argument of aes() should be `y = n`.
+
+- Class: cmd_question
+  Output: >
+    An empty plot just appeared in your viewer. But why is it empty? Because we didn't add a layer with
+    the geometry! So ggplot does not know that we want to have a barplot. Add geom_col() to your code, 
+    and remember that you don't need to use a pipe, but a plus sign!
+  CorrectAnswer: mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n)) + geom_col()
+  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n)) + geom_col()')
+  Hint: geom_col() should be empty and have the parentheses.
+
+- Class: cmd_question
+  Output: >
+    We're getting closer! In order to create two subplots, one with data from each verb, we need to use one 
+    of my favourite functions from ggplot2: `facet_wrap`. Add it after a plus sign to your code.
+    As its argument, write `~Verb` (with no quotation marks). This function uses a peculiar syntax, 
+    as you see, with the tilde. Try it out.
+  CorrectAnswer: mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n)) + geom_col() + facet_wrap(~Verb)
+  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n)) + geom_col() facet_wrap(~Verb)')
+  Hint: You should add facet_wrap(~Verb) after a plus sign at the end of your code.
+
+- Class: cmd_question
+  Output: >
+    As you can see, the scale of both subplots is the same one. Because `mofar`has much fewer examples than 
+    `burlar`, our visualization does not look so great. But we can add the argument `scales = "free"` to
+    facet_wrap to fix this. Do it now.
+  CorrectAnswer: mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n)) + geom_col() + facet_wrap(~Verb, scales = "free")
+  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n)) + geom_col() facet_wrap(~Verb, scales = "free")')
+  Hint: The content of facet_wrap should be `~Verb, scales = "free"`.
+
+- Class: cmd_question
+  Output: >
+    Now we can add some labels to our plot with the function labs(). Set the argument `title` to 
+    "Presence of de-complements by verb", `x` to "Presence of de-complement" and `y` to "Occurrences".
+  CorrectAnswer: mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n)) + geom_col() + facet_wrap(~Verb, scales = "free") + labs(title = "Presence of de-complements by verb", x = "Presence of de-complement", y = "Occurrences")
+  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n)) + geom_col() facet_wrap(~Verb, scales = "free") + labs(title = "Presence of de-complements by verb", x = "Presence of de-complement", y = "Occurrences")')
+  Hint: >
+    All the functions you add now should follow a plus sign, not a pipe. And you need the quotations 
+    for the titles!
+
+- Class: cmd_question
+  Output: >
+    And we can also change the general appearance of the plot, by adding theme_light() to our code, for 
+    instance. Try it out.
+  CorrectAnswer: mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n)) + geom_col() + facet_wrap(~Verb, scales = "free") + labs(title = "Presence of de-complements by verb", x = "Presence of de-complement", y = "Occurrences") + theme_light()
+  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement) %>% ggplot(aes(x = De_complement, y = n)) + geom_col() facet_wrap(~Verb, scales = "free") + labs(title = "Presence of de-complements by verb", x = "Presence of de-complement", y = "Occurrences") + theme_light()')
+  Hint: >
+    All the functions you add now should follow a plus sign, not a pipe! This one is empty.
+
+- Class: text
+  Output: You already know how to customize other elements of the plot, so we'll leave this one here.
+
+- Class: figure
+  Output: >
+    Let's add a bit more of complexity to our visualizations. We will plot what you should be seeing in 
+    your viewer now. That is, the number of examples with and without a de-complement, but also with
+    and without a reflexive pronoun, by verb in a barplot. 
+  Figure: Plot_2.R
+  FigureType: new
+
+- Class: cmd_question
+  Output: >
+    Again, we'll need to start by creating the table with the data we want to have. That is, we need to 
+    calculate the number of occurrances in each subgroup. The code we need is very similar to the one we 
+    just had, but we need to add an extra argument to count(), namely, `Reflexive_pronoun`. Using a pipe, 
+    calculate the occurrances using `count()`. Put the arguments in the following order: 
+    Verb, De_complement, Reflexive_pronoun.
+  CorrectAnswer: mock_verbs %>% count(Verb, De_complement, Reflexive_pronoun)
+  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement, Reflexive_pronoun)')
+  Hint: Remember to use a pipe and separate all arguments of `count` by commas. Check your code above, it's quite similar!
+
+- Class: cmd_question
+  Output: >
+    So the next step is, again, to add the function ggplot() to our pipe. It should look very similar to 
+    what we haf above, but with a new argument, because we want to also have colour as a variable.
+    This argument is called `fill` and it is determined by the column `Reflexive_pronoun`. Add ggplot()
+    to your code by aapating what you had above.
+  CorrectAnswer: mock_verbs %>% count(Verb, De_complement, Reflexive_pronoun) %>% ggplot(aes(x = De_complement, y = n, fill = Reflexive_pronoun))
+  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement, Reflexive_pronoun) %>% ggplot(aes(x = De_complement, y = n, fill = Reflexive_pronoun))')
+  Hint: Please add `fill = Reflexive_pronoun` as the third argument.
+
+- Class: cmd_question
+  Output: >
+    Again our plot is empty… But you know why now! Add geom_col() to your code. And, since you're at it, 
+    add facet_wrap(~Verb, scales = "free") too.
+  CorrectAnswer: mock_verbs %>% count(Verb, De_complement, Reflexive_pronoun) %>% ggplot(aes(x = De_complement, y = n, fill = Reflexive_pronoun)) + geom_col() + facet_wrap(~Verb, scales = "free")
+  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement, Reflexive_pronoun) %>% ggplot(aes(x = De_complement, y = n, fill = Reflexive_pronoun)) +geom_col() + facet_wrap(~Verb, scales = "free")')
+  Hint: Remember that you should add these functions after a plus sign now.
+
+- Class: cmd_question
+  Output: >
+    Just to do something fancy, let's use one of the wesanderon palettes. Because we want to modify the
+    colours of a fill variable, we need the function `scale_fill_manual()`. We'll pick the fifth and second
+    colour of the palette called "Darjeeling" and we need to write that in the argument called `values`. 
+    The syntax we need is a bit difficult, so I'll tell you what to type. Add
+    `scale_fill_manual(values = wes_palette("Darjeeling1")[c(5, 2)])` after a plus sign.
+  CorrectAnswer: mock_verbs %>% count(Verb, De_complement, Reflexive_pronoun) %>% ggplot(aes(x = De_complement, y = n, fill = Reflexive_pronoun)) + geom_col() + facet_wrap(~Verb, scales = "free") + scale_fill_manual(values = wes_palette("Darjeeling1")[c(5, 2)])
+  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement, Reflexive_pronoun) %>% ggplot(aes(x = De_complement, y = n, fill = Reflexive_pronoun)) +geom_col() + facet_wrap(~Verb, scales = "free") + scale_fill_manual(values = wes_palette("Darjeeling1")[c(5, 2)])')
+  Hint: Add what I gave you to your code after a plus sign.
+
+- Class: text
+  Output: >
+    To understand the syntax we used (especially regarding the use of brackets), I recommend you do 
+    the first swirl lessons of the R programming course when you get some time.
+
+- Class: text
+  Output: >
+    This plot has a lot of information, but is based on absolute number of examples. Using a relative
+    measure, such as a percentage, will provide us a nicer comparison. It is good to look at both, to see
+    on how many examples are statistics are based on - you can already see that we don't have that many 
+    examples of `mofar`.
+
+- Class: figure
+  Output: >
+    The plot we want to create now looks like the one that just appeared in your viewer. As you can see, it
+    is very similar to the one that we did, so we will be able to recycle some of our code again.
+  Figure: Plot_3.R
+  FigureType: new
+
+- Class: cmd_question
+  Output: >
+    Again, we need to create the table with the data we want to have first. Here we want to start with the 
+    same information as in the plot above, to calculate the percentages first. So copy the first two lines 
+    of the previous pipe (that is, the name of the tibble and the count function).
+  CorrectAnswer: mock_verbs %>% count(Verb, De_complement, Reflexive_pronoun)
+  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement, Reflexive_pronoun)')
+  Hint: Copy your code from above!
+
+- Class: cmd_question
+  Output: >
+    We will add the percentages by creating a new column called `Percentage`. The calculation is easy:
+    we want to divide the values in `n` by the sum of `n` and multiply it by 100. That is, we want to 
+    write `n/sum(n)*100`. Do it by adding `mutate()` to your pipe.
+  CorrectAnswer: mock_verbs %>% count(Verb, De_complement, Reflexive_pronoun) %>% mutate(Percentage = n/sum(n)*100)
+  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement, Reflexive_pronoun) %>% mutate(Percentage = n/sum(n)*100)')
+  Hint: Remember that the syntax of mutate requires an equal sign between the name of the new column and its value.
+
+- Class: cmd_question
+  Output: >
+    This is… almost what we wanted to do. We just calculated the global percentages, considering all values.
+    However, we want to have the percentages within smaller groups of variables! As you can see in your 
+    plot, we want to have them for each combination of verb and presence/absence of De_complement.
+    For this we need the function `group_by()`, which we have to add BEFORE our mutate. Group your data
+    by Verb and De_complement (in this order).
+  CorrectAnswer: mock_verbs %>% count(Verb, De_complement, Reflexive_pronoun) %>% group_by(Verb, De_complement) %>% mutate(Percentage = n/sum(n)*100)
+  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement, Reflexive_pronoun) %>% group_by(Verb, De_complement) %>% mutate(Percentage = n/sum(n)*100)')
+  Hint: Don't forget to add the pipes where they are needed!
+
+- Class: cmd_question
+  Output: >
+    This is the table that we want to have. Can you see that every two values in the `Percentage` column
+    add up to 100? That's what we needed. We can now create the plot with the same code as above, copying
+    and pasting it! We only need to adapt two things. In aes(), `y` should now take the values of 
+    `Percentage`, not of `n`. And we don't need the `scales` argument in `facet_wrap`, because we just
+    made the scales the same by using percentages. Do it now.
+  CorrectAnswer: mock_verbs %>% count(Verb, De_complement, Reflexive_pronoun) %>% group_by(Verb, De_complement) %>% mutate(Percentage = n/sum(n)*100) %>% ggplot(aes(x = De_complement, y = Percentage, fill = Reflexive_pronoun)) + geom_col() + facet_wrap(~Verb) + scale_fill_manual(values = wes_palette("Darjeeling1")[c(5, 2)])
+  AnswerTests: omnitest(correctExpr='mock_verbs %>% count(Verb, De_complement, Reflexive_pronoun) %>% group_by(Verb, De_complement) %>% mutate(Percentage = n/sum(n)*100) %>% ggplot(aes(x = De_complement, y = Percentage, fill = Reflexive_pronoun)) + geom_col() + facet_wrap(~Verb) + scale_fill_manual(values = wes_palette("Darjeeling1")[c(5, 2)])')
+  Hint: >
+    You need to copy your code from above, adding ggplot() after a pipe, until the end of your code (which 
+    ended with `scale_fill_manual`), and adapt it as indicated.
+
+- Class: text
+  Output: >
+    This was a lot of plotting, so I think you deserve a break. Remember that you can save any plot you
+    want with ggsave!

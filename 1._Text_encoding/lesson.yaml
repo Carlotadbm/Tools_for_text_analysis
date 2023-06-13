@@ -7,7 +7,9 @@
   Version: 2.4.5
 
 - Class: text
-  Output: Hi there! Welcome to this lesson on text encoding. Hopefully you have already watched the short video (available at the website) about text encoding and you know now what we're talking about.
+  Output: >
+    Hi there! Welcome to this lesson on text encoding. Hopefully you have already watched the short 
+    video (available at the website) about text encoding and you know now what we're talking about.
 
 - Class: text
   Output: In this lesson we'll learn how to set and change the encoding of a .txt file downloaded from the internet. 
