@@ -1,0 +1,269 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 29. Historical plot in ggplot2
+  Author: Carlota de Benito Moreno
+  Type: Standard
+  Organization: University of Zurich
+  Version: 2.4.5
+
+- Class: text
+  Output: >
+    Hi there! In this lesson we'll use the same historical data from Spanish that we used in the last
+    lesson, regarding verbs of mocking ('burlar' and 'mofar'). I have loaded the data for you (its called
+    `mock_verbs`). I have also loaded the library tidyverse for you.
+
+- Class: cmd_question
+  Output: Print `mock_verbs` to remember what it looks like.
+  CorrectAnswer: mock_verbs
+  AnswerTests: omnitest(correctExpr='mock_verbs')
+  Hint: Just run its name!
+
+- Class: figure
+  Output: >
+    We will plot what you should be seeing in your viewer now. It is a rather complex plot, with time in the 
+    x-axis (grouped in 22-year-periods), percentage of the presence of the reflexive marker in the y-axis, 
+    and the total number of occurrances over each dot. We have both dots and lines and we also have a blank
+    space in the period with no data. Let's learn how to do this!
+  Figure: Plot_1.R
+  FigureType: new
+  
+- Class: cmd_question
+  Output: >
+    As always, the first thing that we need to do is create the tibble with the information that we need
+    for our plot. In this case, we need to know the total number of occurrances per period and the 
+    percentage that show the reflexive marker. And, most importantly, we need to create our periods, because
+    they are not in `mock_verbs`! Let's find out first how many periods we need. For that, it is important 
+    to know the range of years in our data. With the function range() we can find out. We can't use the 
+    tidyverse, because its takes base R syntax. That is that its single argument should be 
+    mock_verbs$Year. Try it out.
+  CorrectAnswer: range(mock_verbs$Year) 
+  AnswerTests: omnitest(correctExpr='range(mock_verbs$Year)')
+  Hint: Insert mock_verbs$Year in range().
+
+- Class: cmd_question
+  Output: >
+    We'll have 22-year-periods. For finding out how many we need, we need to substract the earliest year
+    from the latest and divide the result by 22. Do it now.
+  CorrectAnswer: (1975-1386)/22
+  AnswerTests: omnitest(correctExpr='(1975-1386)/22')
+  Hint: Don't forget to use parentheses in your substraction!
+
+- Class: cmd_question
+  Output: >
+    Since the result is more than 26, that means that we'll nead 27 periods. We're now ready to create a new
+    column (`period`) with our 22-year-periods! The function cut_interval() will help us with it. As its 
+    first argument it needs the data we need to group into intervals (the column `Year` in this case). 
+    The second argument is the number of periods that we want to have, that is, 27). Create this new column 
+    using a pipe.
+  CorrectAnswer: mock_verbs %>% mutate(period = cut_interval(Year, 27))
+  AnswerTests: omnitest(correctExpr='mock_verbs %>% mutate(period = cut_interval(Year, 27))')
+  Hint: Remember you need to use mutate() to create a new column!
+
+- Class: cmd_question
+  Output: >
+    This is almost what we wanted. But the way the intervals are coded (E notation or base 10 notation) 
+    with this function is terrible for the normal human eye, don't you think? So we are going to change
+    the labels for the intervals by assigning them the first year of each interval (in regular 4 digit
+    numbers). You can add the argument `labels` to `cut_interval()`. Inside you should write the following:
+    `seq(from = 1386, to = 1975, by = 22)`. Function seq() creates a numerical vector that goes from the 
+    value in argument `from` to the value in argument `to` by the number in `by`. I hope this makes sense!
+    (P.S. If it doesn't, you can try it out outside of `cut_intervals()`, to see how it works.)
+  CorrectAnswer: mock_verbs %>% mutate(period = cut_interval(Year, 27))
+  AnswerTests: omnitest(correctExpr='mock_verbs %>% mutate(period = cut_interval(Year, 27))')
+  Hint: Remember that the name of an argument is followed by `=`.
+
+- Class: cmd_question
+  Output: >
+    Ok, this is looking better now. Let's save it as `mock_clean`.
+  CorrectAnswer: mock_clean <- mock_verbs %>% mock_verbs %>% mutate(period = cut_interval(Year, 27))
+  AnswerTests: omnitest(correctExpr='mock_clean <- mock_verbs %>% mutate(period = cut_interval(Year, 27))')
+  Hint: You'll need to use the arrow operator for this.
+
+- Class: cmd_question
+  Output: >
+    We have assigned our examples to the relevant periods now, but we still haven't calculated our data. 
+    So let's do that first. We need to know how many cases with and without the reflexive verb there are
+    in each period, so that we can calculate the percentage of presence of the reflexive pronoun. 
+    As always, we do that with count(), adding all columns with the relevant data as its
+    arguments, namely `period` and `Reflexive_pronoun`. Please, write them in this order.
+  CorrectAnswer: mock_clean %>% count(period, Reflexive_pronoun)
+  AnswerTests: omnitest(correctExpr='mock_clean %>% count(period, Reflexive_pronoun)')
+  Hint: Are you using a pipe?
+
+- Class: text
+  Output: >
+    Because in some periods there are no cases with the reflexive pronoun, we need to find a way of 
+    adding that information. For that, we're going to reorganise our tibble. It's harder to explain 
+    than to understand, but I'll try. If this is a bit confusing, don't worry, you'll get it when you 
+    see the result! We want to have two columns, called `yes` and `no` (that is, the values in column
+    Reflexive_pronoun), which should have the number of examples in each period with and without the 
+    reflexive pronoun respectively. And, when we don't have any data, we want it to show the value 0,
+    since that means that there were no examples.
+
+- Class: cmd_question
+  Output: > 
+    The function pivot_wider() does exactly that. We'll need three arguments (please, write them in this
+    order). First, `names_from`, whose value is the column with the values that we want to have as column 
+    names (Reflexive_pronoun). Second, `values_from`, whose value the column with the values with which we 
+    want to fill those columns (n). Last, `values_fill`, with the value with which we want to fills missing
+    data (that is, 0). Add it to your pipe.
+  CorrectAnswer: mock_clean %>% count(period, Reflexive_pronoun) %>% pivot_wider(names_from = Reflexive_pronoun, values_from = n, values_fill = 0)
+  AnswerTests: omnitest(correctExpr='mock_clean %>% count(period, Reflexive_pronoun) %>% pivot_wider(names_from = Reflexive_pronoun, values_from = n, values_fill = 0)')
+  Hint: Remember that you need to use `=` to assign values to arguments.
+
+- Class: cmd_question
+  Output: > 
+    Look at the console to understand what you did. Now we can calculate the information we want. Create
+    a new column called `total` where you add the values of columns `no` and `yes` (in this order, please).
+  CorrectAnswer: mock_clean %>% count(period, Reflexive_pronoun) %>% pivot_wider(names_from = Reflexive_pronoun, values_from = n, values_fill = 0) %>% mutate(total = no + yes)
+  AnswerTests: omnitest(correctExpr='mock_clean %>% count(period, Reflexive_pronoun) %>% pivot_wider(names_from = Reflexive_pronoun, values_from = n, values_fill = 0) %>% mutate(total = no + yes)')
+  Hint: Inside mutate() you should write `yes/total*100`.
+
+- Class: cmd_question
+  Output: > 
+    Now create a new column called `percentage` where calculate the percentage of `yes`from `total`.
+    You need to divide the values from `yes` by those from `total` and multiply it by 100.
+  CorrectAnswer: mock_clean %>% count(period, Reflexive_pronoun) %>% pivot_wider(names_from = Reflexive_pronoun, values_from = n, values_fill = 0) %>% mutate(total = no + yes) %>% mutate(percentage = yes/total*100)
+  AnswerTests: omnitest(correctExpr='mock_clean %>% count(period, Reflexive_pronoun) %>% pivot_wider(names_from = Reflexive_pronoun, values_from = n, values_fill = 0) %>% mutate(total = no + yes) %>% mutate(percentage = yes/total*100)')
+  Hint: Inside mutate() you should write `total = no + yes`. 
+
+- Class: cmd_question
+  Output: > 
+    Now we can create our plot! Add ggplot() to your pipe. Inside you need to have aes(), with arguments.
+    `x` and `y` you know already: they should have the names of the columns that we want to plot in the 
+    x and the y-axis respectively, which are `period` and `percentage`. You need to add a third argument,
+    called `group`, which should equal 1. This is necessary for the line to appear, it basically means
+    that you want all dots with values connected with the same single line. Go ahead!
+  CorrectAnswer: mock_clean %>% count(period, Reflexive_pronoun) %>% pivot_wider(names_from = Reflexive_pronoun, values_from = n, values_fill = 0) %>% mutate(total = no + yes) %>% mutate(percentage = yes/total*100) %>% ggplot(aes(x = period, y = percentage, group = 1))
+  AnswerTests: omnitest(correctExpr='mock_clean %>% count(period, Reflexive_pronoun) %>% pivot_wider(names_from = Reflexive_pronoun, values_from = n, values_fill = 0) %>% mutate(total = no + yes) %>% mutate(percentage = yes/total*100) %>% ggplot(aes(x = period, y = percentage, group = 1))')
+  Hint: Inside aes() you should have `x = period, y = percentage, group = 1`. 
+
+- Class: cmd_question
+  Output: > 
+    Of course, our plot is empty, because we didn't add any geometry to it. Use the plus sign to add
+    geom_line() to your code.
+  CorrectAnswer: mock_clean %>% count(period, Reflexive_pronoun) %>% pivot_wider(names_from = Reflexive_pronoun, values_from = n, values_fill = 0) %>% mutate(total = no + yes) %>% mutate(percentage = yes/total*100) %>% ggplot(aes(x = period, y = percentage, group = 1)) + geom_line()
+  AnswerTests: omnitest(correctExpr='mock_clean %>% count(period, Reflexive_pronoun) %>% pivot_wider(names_from = Reflexive_pronoun, values_from = n, values_fill = 0) %>% mutate(total = no + yes) %>% mutate(percentage = yes/total*100) %>% ggplot(aes(x = period, y = percentage, group = 1)) + geom_line()')
+  Hint: geom_line() must be empty. 
+
+- Class: cmd_question
+  Output: > 
+    This is starting to look good! Because we also want to have dots, add geom_point() to your code.
+  CorrectAnswer: mock_clean %>% count(period, Reflexive_pronoun) %>% pivot_wider(names_from = Reflexive_pronoun, values_from = n, values_fill = 0) %>% mutate(total = no + yes) %>% mutate(percentage = yes/total*100) %>% ggplot(aes(x = period, y = percentage, group = 1)) + geom_line() + geom_point()
+  AnswerTests: omnitest(correctExpr='mock_clean %>% count(period, Reflexive_pronoun) %>% pivot_wider(names_from = Reflexive_pronoun, values_from = n, values_fill = 0) %>% mutate(total = no + yes) %>% mutate(percentage = yes/total*100) %>% ggplot(aes(x = period, y = percentage, group = 1)) + geom_line() + geom_point()')
+  Hint: Remember that you need to add geom_point() after a plus sign. 
+
+- Class: cmd_question
+  Output: > 
+    We're missing the numbers with the total number of occurrances. Add geom_text() to your code after a 
+    plus sign. Inside we need to add a new aesthetic, so add aes() and, inside, write the argument `label`,
+    which should equal to the column `total`, which has the information that we want to add.
+  CorrectAnswer: mock_clean %>% count(period, Reflexive_pronoun) %>% pivot_wider(names_from = Reflexive_pronoun, values_from = n, values_fill = 0) %>% mutate(total = no + yes) %>% mutate(percentage = yes/total*100) %>% ggplot(aes(x = period, y = percentage, group = 1)) + geom_line() + geom_point() + geom_text(aes(label = total)) 
+  AnswerTests: omnitest(correctExpr='mock_clean %>% count(period, Reflexive_pronoun) %>% pivot_wider(names_from = Reflexive_pronoun, values_from = n, values_fill = 0) %>% mutate(total = no + yes) %>% mutate(percentage = yes/total*100) %>% ggplot(aes(x = period, y = percentage, group = 1)) + geom_line() + geom_point() + geom_text(aes(label = total))')
+  Hint: Remember that you need to add geom_point() after a plus sign. 
+
+- Class: cmd_question
+  Output: > 
+    As you can see, the numbers appear exactly where the dots are, so it's hard to read them. Within 
+    geom_text() but after aes(), write the argument `nudge_y` and make it equal to 10. This will 
+    raise the numbers a little bit.
+  CorrectAnswer: mock_clean %>% count(period, Reflexive_pronoun) %>% pivot_wider(names_from = Reflexive_pronoun, values_from = n, values_fill = 0) %>% mutate(total = no + yes) %>% mutate(percentage = yes/total*100) %>% ggplot(aes(x = period, y = percentage, group = 1)) + geom_line() + geom_point() + geom_text(aes(label = total), nudge_y = 10) 
+  AnswerTests: omnitest(correctExpr='mock_clean %>% count(period, Reflexive_pronoun) %>% pivot_wider(names_from = Reflexive_pronoun, values_from = n, values_fill = 0) %>% mutate(total = no + yes) %>% mutate(percentage = yes/total*100) %>% ggplot(aes(x = period, y = percentage, group = 1)) + geom_line() + geom_point() + geom_text(aes(label = total), nudge_y = 10)')
+  Hint: You need to write `nudge_y = 10` between the two closing parentheses you had in your code.
+
+- Class: text
+  Output: >
+    Looking good! Except for one little thing… Look between 1650 and 1694: one period is missing! There's 
+    where we had the blank space before. Since we don't have data for this period, it did not apper in our 
+    data and, thus, it is not in our plot. Let's fix that.
+
+- Class: text
+  Output: >
+    We want to create a vector with all missing periods and convert it into a tibble that looks like the 
+    one used to create our plot, so that we can put the together before we plot the data.
+
+- Class: cmd_question
+  Output: >
+    You actually know how to create the vector, because we did that already… Using seq(), remember?
+    Function seq() creates a numerical vector that goes from the value in argument `from` (here, year 1386) 
+    to the value in argument `to` (here, year 1975) by the number in `by` (here, 22 years). Look at you
+    code above if you need help.
+  CorrectAnswer: seq(from = 1386, to = 1975, by = 22)
+  AnswerTests: omnitest(correctExpr='seq(from = 1386, to = 1975, by = 22)')
+  Hint: You need to have seq(from = 1386, to = 1975, by = 22). 
+
+- Class: cmd_question
+  Output: >
+    Now save it as `all_periods`.
+  CorrectAnswer: all_periods <- seq(from = 1386, to = 1975, by = 22)
+  AnswerTests: omnitest(correctExpr='all_periods <- seq(from = 1386, to = 1975, by = 22)')
+  Hint: You need to use the arrow for that.
+
+- Class: cmd_question
+  Output: >
+    Now we'll create a column with the periods we actuall have. We can apply distinct() to our tibble
+    `mock_clean` for that. Its second argument should be `period`, of course. Use a pipe.
+  CorrectAnswer: mock_clean %>% distinct(period)
+  AnswerTests: omnitest(correctExpr='mock_clean %>% distinct(period)')
+  Hint: The second argument of a function is its single argument in a pipe.
+
+- Class: cmd_question
+  Output: >
+    Now save it as `actual_periods`.
+  CorrectAnswer: actual_periods <- mock_clean %>% distinct(period)
+  AnswerTests: omnitest(correctExpr='actual_periods <- mock_clean %>% distinct(period)')
+  Hint: You need to use the arrow for that.
+
+- Class: cmd_question
+  Output: >
+    Let's put them together. Using a pipe, convert `all_periods` in a tibble with the function as_tibble_col().
+    Inside, add the argument `column_name` and set it to "period" (with quotation marks).
+  CorrectAnswer: all_periods %>% as_tibble_col(column_name = "period")
+  AnswerTests: omnitest(correctExpr='all_periods %>% as_tibble_col(column_name = "period")')
+  Hint: You should have `column_name = "period"` inside as_tibble_col().
+
+- Class: cmd_question
+  Output: >
+    In `actual_periods`, our column `period` is a factor, so we want that our column `period` here is also 
+    a factor (so that we can join both tibbles). Modify you column `period` with the function `as.factor()`.
+  CorrectAnswer: all_periods %>% as_tibble_col(column_name = "period") %>% mutate(period = as.factor(period))
+  AnswerTests: omnitest(correctExpr='all_periods %>% as_tibble_col(column_name = "period") %>% mutate(period = as.factor(period))')
+  Hint: You need to use mutate() for modifying a column. Remember that you need to use the equal sign in mutate too.
+
+- Class: cmd_question
+  Output: >
+    Now we can join both tibbles. Because we want to only keep those rows that are not in `actual_periods`, 
+    we want to use anti_join(). Add it to your pipe.
+  CorrectAnswer: all_periods %>% as_tibble_col(column_name = "period") %>% mutate(period = as.factor(period)) %>% anti_join(actual_periods)
+  AnswerTests: omnitest(correctExpr='all_periods %>% as_tibble_col(column_name = "period") %>% mutate(period = as.factor(period)) %>% anti_join(actual_periods)')
+  Hint: The single argument of anti_join() should be the tibble `actual_periods`.
+
+- Class: cmd_question
+  Output: >
+    Only one period was missing. We want that this tibble can be integrated in our pipe from above, so
+    let's add two columns that are missing. Using add_column(), let's add to columns, one called `no` 
+    and another one called `yes`. Both of them should have the value 0. As always, when you create a column,
+    the necessary syntax is `column_name = column_value`.
+  CorrectAnswer: all_periods %>% as_tibble_col(column_name = "period") %>% mutate(period = as.factor(period)) %>% anti_join(actual_periods) %>% add_column(no = 0, yes = 0)
+  AnswerTests: omnitest(correctExpr='all_periods %>% as_tibble_col(column_name = "period") %>% mutate(period = as.factor(period)) %>% anti_join(actual_periods) %>% add_column(no = 0, yes = 0)') 
+  Hint: You want to `add_column(no = 0, yes = 0)` after a pipe.
+
+- Class: cmd_question
+  Output: >
+    This is a tibble we can add to our flow before, so let's save it as `missing_periods`.
+  CorrectAnswer: missing_periods <- all_periods %>% as_tibble_col(column_name = "period") %>% mutate(period = as.factor(period)) %>% anti_join(actual_periods) %>% add_column(no = 0, yes = 0)
+  AnswerTests: omnitest(correctExpr='missing_periods <- all_periods %>% as_tibble_col(column_name = "period") %>% mutate(period = as.factor(period)) %>% anti_join(actual_periods) %>% add_column(no = 0, yes = 0)')
+  Hint: You need to use the arrow for that.
+
+- Class: cmd_question
+  Output: >
+    So now we're almost done. Using add_row(), add `missing_periods` to the pipe you used above to create
+    the plot, right after the line where you had pivot_wider() and before you had `mutate`.
+  CorrectAnswer: mock_clean %>% count(period, Reflexive_pronoun) %>% pivot_wider(names_from = Reflexive_pronoun, values_from = n, values_fill = 0) %>% add_row(missing_periods) %>% mutate(total = no + yes) %>% mutate(percentage = yes/total*100) %>% ggplot(aes(x = period, y = percentage, group = 1)) + geom_line() + geom_point() + geom_text(aes(label = total), nudge_y = 10) 
+  AnswerTests: omnitest(correctExpr='mock_clean %>% count(period, Reflexive_pronoun) %>% pivot_wider(names_from = Reflexive_pronoun, values_from = n, values_fill = 0) %>% add_row(missing_periods) %>% mutate(total = no + yes) %>% mutate(percentage = yes/total*100) %>% ggplot(aes(x = period, y = percentage, group = 1)) + geom_line() + geom_point() + geom_text(aes(label = total), nudge_y = 10)')
+  Hint: The single argument of add_row() is `missing_periods`.
+
+- Class: text
+  Output: >
+    This was a lot, so I think you deserve a break. Remember that you can save any plot you
+    want with ggsave!
