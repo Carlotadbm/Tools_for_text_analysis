@@ -19,6 +19,6 @@ plot <- mock_clean %>%
   geom_line() +
   geom_point() +
   geom_text(aes(label = total), nudge_y = 10) +
-  geom_labs(y = "Presence of the reflexive marker (%)")
+  labs(y = "Presence of the reflexive marker (%)")
 
 plot(plot)
