@@ -21,4 +21,4 @@ plot <- mock_clean %>%
   geom_text(aes(label = total), nudge_y = 10) +
   labs(y = "Presence of the reflexive marker (%)")
 
-plot(plot)
+suppressWarnings(print(plot))
