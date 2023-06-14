@@ -68,15 +68,15 @@
     `seq(from = 1386, to = 1975, by = 22)`. Function seq() creates a numerical vector that goes from the 
     value in argument `from` to the value in argument `to` by the number in `by`. I hope this makes sense!
     (P.S. If it doesn't, you can try it out outside of `cut_intervals()`, to see how it works.)
-  CorrectAnswer: mock_verbs %>% mutate(period = cut_interval(Year, 27, seq(from = 1386, to = 1975, by = 22)))
-  AnswerTests: omnitest(correctExpr='mock_verbs %>% mutate(period = cut_interval(Year, 27, seq(from = 1386, to = 1975, by = 22)))')
+  CorrectAnswer: mock_verbs %>% mutate(period = cut_interval(Year, 27, labels = seq(from = 1386, to = 1975, by = 22)))
+  AnswerTests: omnitest(correctExpr='mock_verbs %>% mutate(period = cut_interval(Year, 27, labels = seq(from = 1386, to = 1975, by = 22)))')
   Hint: Remember that the name of an argument is followed by `=`.
 
 - Class: cmd_question
   Output: >
     Ok, this is looking better now. Let's save it as `mock_clean`.
-  CorrectAnswer: mock_clean <- mock_verbs %>% mutate(period = cut_interval(Year, 27, seq(from = 1386, to = 1975, by = 22)))
-  AnswerTests: omnitest(correctExpr='mock_clean <- mock_verbs %>% mutate(period = cut_interval(Year, 27, seq(from = 1386, to = 1975, by = 22)))')
+  CorrectAnswer: mock_clean <- mock_verbs %>% mutate(period = cut_interval(Year, 27, labels = seq(from = 1386, to = 1975, by = 22)))
+  AnswerTests: omnitest(correctExpr='mock_clean <- mock_verbs %>% mutate(period = cut_interval(Year, 27, labels = seq(from = 1386, to = 1975, by = 22)))')
   Hint: You'll need to use the arrow operator for this.
 
 - Class: cmd_question
