@@ -10,7 +10,9 @@
   Output: >
     Hi there! In this lesson we'll use some historical data from Spanish diminutive suffixes.
     I have loaded the data for you (its called `diminutives`). I have also loaded the libraries
-    tidyverse and sf for you. I've also loaded the shapefiles from Spain and Portugal for you.
+    tidyverse and sf for you. I've also loaded the shapefiles from Spain and Portugal for you. I have to
+    warn you: there's a lot of waiting time in this lesson, so I recommend that you have some other thing
+    to do at the same time… Sorry about that.
 
 - Class: cmd_question
   Output: Print `diminutives` to remember what it looks like.
