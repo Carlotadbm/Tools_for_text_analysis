@@ -12,8 +12,8 @@ swirl_options(swirl_logging = TRUE)
 }
 
 diminutives <- read_delim(file.path(.get_course_path(), "Tools_for_text_analysis", "30._Historical_maps", "diminutives.csv"), delim = "\t")
-spain <- st_read(file.path(.get_course_path(), "Tools_for_text_analysis", "30._Historical_maps", "ESP_adm2.shp"), delim = "\t")
-portugal <- st_read(file.path(.get_course_path(), "Tools_for_text_analysis", "30._Historical_maps", "PRT_adm1.shp"), delim = "\t")
+spain <- st_read(file.path(.get_course_path(), "Tools_for_text_analysis", "30._Historical_maps", "ESP_adm2.shp"))
+portugal <- st_read(file.path(.get_course_path(), "Tools_for_text_analysis", "30._Historical_maps", "PRT_adm1.shp"))
 
 
 
