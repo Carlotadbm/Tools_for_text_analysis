@@ -4,7 +4,7 @@ plot <- ggplot() +
   geom_point(data = diminutives,
              aes(x = Longitude,
                  y = Latitude,
-                 shape = Sufijo),
+                 shape = Suffix),
              position = position_jitter(h = 0.1, w = 0.1)) +
   scale_shape_manual(values = 1:8) +
   coord_sf(xlim = c(-10, 5), ylim = c(35, 44)) +
