@@ -1,0 +1,131 @@
+- Class: meta
+  Course: Tools for text analysis
+  Lesson: 30. Historical maps in ggplot2
+  Author: Carlota de Benito Moreno
+  Type: Standard
+  Organization: University of Zurich
+  Version: 2.4.5
+
+- Class: text
+  Output: >
+    Hi there! In this lesson we'll use some historical data from Spanish diminutive suffixes.
+    I have loaded the data for you (its called `diminutives`). I have also loaded the libraries
+    tidyverse and sf for you. I've also loaded the shapefiles from Spain and Portugal for you.
+
+- Class: cmd_question
+  Output: Print `diminutives` to remember what it looks like.
+  CorrectAnswer: diminutives
+  AnswerTests: omnitest(correctExpr='diminutives')
+  Hint: Just run its name!
+
+- Class: figure
+  Output: >
+    We have data from letters written in four different centuries, both in Spain and in Portugal (all of
+    them in Spanish, though). Our dataset has the suffixes used in all words with diminutives in these 
+    letters. We'll create a faceted map like the one you're seeing in your viewer, where each submap has
+    data from one century. Different suffixes are represented by different shapes of the points.
+    As you can see, this is not an optimal representation for these data, we'll just do it like that 
+    for the sake of learning to include shape as a variable, but you should be able to do this with colour
+    already :)
+  Figure: Plot_1.R
+  FigureType: new
+  
+- Class: text
+  Output: >
+    As you saw, our tibble is actually ready, since we already have all the data we need (including
+    the coordinates) in `diminutives`. Our shapefiles are loaded already (remember that we use `st_read`
+    for that).
+
+- Class: cmd_question
+  Output: > 
+    So we can start with our map right away! As always, we'll start with our ggplot() function. Simply run it.
+  CorrectAnswer: ggplot()
+  AnswerTests: omnitest(correctExpr='ggplot()')
+  Hint: It should have the parentheses (and be completely empty).
+
+- Class: cmd_question
+  Output: > 
+    In your viewer you can see an empty plot now. Let's add some information. Add the function geom_sf()
+    to load the map of Portugal. Its data argument should be `portugal`. Add a second argument `fill` so 
+    that its background is "white".
+  CorrectAnswer: ggplot() + geom_sf(data = portugal, fill = "white")
+  AnswerTests: omnitest(correctExpr='ggplot() + geom_sf(data = portugal, fill = "white")')
+  Hint: Remember that all functions after ggplot() are added after a plus sign (not a pipe).
+
+- Class: cmd_question
+  Output: > 
+    Let's add Spain (`spain`) now. 
+  CorrectAnswer: ggplot() + geom_sf(data = portugal, fill = "white") + geom_sf(data = spain, fill = "white")
+  AnswerTests: omnitest(correctExpr='ggplot() + geom_sf(data = portugal, fill = "white") + geom_sf(data = spain, fill = "white")')
+  Hint: Copy your last line and add it after a plus sign, simply changing the value of the `data` argument.
+
+- Class: cmd_question
+  Output: > 
+    Let's add the linguistic data now. When we use shapes we're actually using points, so let's add a 
+    `geom_point` layer. Its first argument is `data`, whose value is our linguistic dataset (`diminutives`).
+    Add a second argument with the function `aes()`, which inside should have three arguemnts: `x` (whose 
+    value is `Longitude`), `y` (whose value is `Latitude`) and `shape` (whose value is `Suffix`). Add a last
+    argument called `position` that equals `position_jitter(h = 0.1, w = 0.1))`, so that each point is 
+    jittered a little bit around in order to avoid overlappings. It takes a little while for the plot to, 
+    come up, don't worry.
+  CorrectAnswer: ggplot() + geom_sf(data = portugal, fill = "white") + geom_sf(data = spain, fill = "white") + geom_point(data = diminutives, aes(x = Longitude, y = Latitude, shape = Suffix), position = position_jitter(h = 0.1, w = 0.1))
+  AnswerTests: omnitest(correctExpr='ggplot() + geom_sf(data = portugal, fill = "white") + geom_sf(data = spain, fill = "white") + geom_point(data = diminutives, aes(x = Longitude, y = Latitude, shape = Suffix), position = position_jitter(h = 0.1, w = 0.1))')
+  Hint: Mind capital letters!
+
+- Class: cmd_question
+  Output: > 
+    You got a warning, because there are more suffixes (8) than default values of shape (6), which removed
+    two of your values. In prder to solve that, we'll use the function scale_shape_manual, whose single
+    argument should be `values = 1:8`. Add it as a new layer.
+  CorrectAnswer: ggplot() + geom_sf(data = portugal, fill = "white") + geom_sf(data = spain, fill = "white") + geom_point(data = diminutives, aes(x = Longitude, y = Latitude, shape = Suffix), position = position_jitter(h = 0.1, w = 0.1)) + scale_shape_manual(values = 1:8) 
+  AnswerTests: omnitest(correctExpr='ggplot() + geom_sf(data = portugal, fill = "white") + geom_sf(data = spain, fill = "white") + geom_point(data = diminutives, aes(x = Longitude, y = Latitude, shape = Suffix), position = position_jitter(h = 0.1, w = 0.1)) + scale_shape_manual(values = 1:8)')
+  Hint: Add it after a plus sign!
+
+- Class: text
+  Output: >
+    For future reference, this line of code selects the first 8 possible shapes that ggplot2 has by default.
+    You can customise that - google `shapes ggplot` and you'll see what are the possibilities.
+
+- Class: cmd_question
+  Output: > 
+    We don't have data from the Portuguese or the Canary Islands, but they are so far away that they use
+    a lot of space from our plot. We could remove them modifying the shapefile (you know already how), but
+    we can also focus on a given area of our plane, by delimiting it by coordinates. Add a new layer 
+    with `coord_sf`. As its first argument, write `xlim`, which should equal the value `c(-10, 5)`. This 
+    will be the limits in the longitude values to be displayed. Add a second argument `ylim` to limit the 
+    latitude values to the range betwewn 35 and 44.
+  CorrectAnswer: ggplot() + geom_sf(data = portugal, fill = "white") + geom_sf(data = spain, fill = "white") + geom_point(data = diminutives, aes(x = Longitude, y = Latitude, shape = Suffix), position = position_jitter(h = 0.1, w = 0.1)) + scale_shape_manual(values = 1:8) + coord_sf(xlim = c(-10, 5), ylim = c(35, 44))
+  AnswerTests: omnitest(correctExpr='ggplot() + geom_sf(data = portugal, fill = "white") + geom_sf(data = spain, fill = "white") + geom_point(data = diminutives, aes(x = Longitude, y = Latitude, shape = Suffix), position = position_jitter(h = 0.1, w = 0.1)) + scale_shape_manual(values = 1:8) + coord_sf(xlim = c(-10, 5), ylim = c(35, 44))')
+  Hint: The argument `ylim` should equal `c(35, 44)`.
+
+- Class: cmd_question
+  Output: > 
+    Now we just want to add a new layer with facet_wrap() to facet our map by `century`. Remember that you
+    need to add this value after the tilde `~`.
+  CorrectAnswer: ggplot() + geom_sf(data = portugal, fill = "white") + geom_sf(data = spain, fill = "white") + geom_point(data = diminutives, aes(x = Longitude, y = Latitude, shape = Suffix), position = position_jitter(h = 0.1, w = 0.1)) + scale_shape_manual(values = 1:8) + coord_sf(xlim = c(-10, 5), ylim = c(35, 44)) + facet_wrap(~century)
+  AnswerTests: omnitest(correctExpr='ggplot() + geom_sf(data = portugal, fill = "white") + geom_sf(data = spain, fill = "white") + geom_point(data = diminutives, aes(x = Longitude, y = Latitude, shape = Suffix), position = position_jitter(h = 0.1, w = 0.1)) + scale_shape_manual(values = 1:8) + coord_sf(xlim = c(-10, 5), ylim = c(35, 44)) + facet_wrap(~century)')
+  Hint: You should have `~century` inside facet_wrap().
+
+- Class: cmd_question
+  Output: > 
+    You know already how to make the background prettier. If you wanted to, you could also put the legend 
+    within the area of the map. Try it out adding `theme(legend.position = c(0.9, 0.1), legend.background = element_blank(), legend.title = element_blank())`.
+    I won't explain each argument, because I think they're easy to understand.
+  CorrectAnswer: ggplot() + geom_sf(data = portugal, fill = "white") + geom_sf(data = spain, fill = "white") + geom_point(data = diminutives, aes(x = Longitude, y = Latitude, shape = Suffix), position = position_jitter(h = 0.1, w = 0.1)) + scale_shape_manual(values = 1:8) + coord_sf(xlim = c(-10, 5), ylim = c(35, 44)) + facet_wrap(~century) + theme(legend.position = c(0.9, 0.1), legend.background = element_blank(), legend.title = element_blank())
+  AnswerTests: omnitest(correctExpr='ggplot() + geom_sf(data = portugal, fill = "white") + geom_sf(data = spain, fill = "white") + geom_point(data = diminutives, aes(x = Longitude, y = Latitude, shape = Suffix), position = position_jitter(h = 0.1, w = 0.1)) + scale_shape_manual(values = 1:8) + coord_sf(xlim = c(-10, 5), ylim = c(35, 44)) + facet_wrap(~century) + theme(legend.position = c(0.9, 0.1), legend.background = element_blank(), legend.title = element_blank())')
+  Hint: Simply add the line I gave you after a plus sign.
+
+- Class: cmd_question
+  Output: > 
+    It's also useful to know that you can modify the number of columns displayed by the legend. 
+    For that, you need to add a new layer with the function `guides()`, which in the case takes an
+    argument `shape`. To have two columns, sets its value to `guide_legend(ncol = 2)`.
+  CorrectAnswer: ggplot() + geom_sf(data = portugal, fill = "white") + geom_sf(data = spain, fill = "white") + geom_point(data = diminutives, aes(x = Longitude, y = Latitude, shape = Suffix), position = position_jitter(h = 0.1, w = 0.1)) + scale_shape_manual(values = 1:8) + coord_sf(xlim = c(-10, 5), ylim = c(35, 44)) + facet_wrap(~century) + theme(legend.position = c(0.9, 0.1), legend.background = element_blank(), legend.title = element_blank()) + guides(shape = guide_legend(ncol = 2))
+  AnswerTests: omnitest(correctExpr='ggplot() + geom_sf(data = portugal, fill = "white") + geom_sf(data = spain, fill = "white") + geom_point(data = diminutives, aes(x = Longitude, y = Latitude, shape = Suffix), position = position_jitter(h = 0.1, w = 0.1)) + scale_shape_manual(values = 1:8) + coord_sf(xlim = c(-10, 5), ylim = c(35, 44)) + facet_wrap(~century) + theme(legend.position = c(0.9, 0.1), legend.background = element_blank(), legend.title = element_blank()) + guides(shape = guide_legend(ncol = 2))')
+  Hint: You should have `shape = guide_legend(ncol = 2)` inside guides().
+
+- Class: text
+  Output: >
+    I'll leave you now to play around with the theme() possibilities that you already now of :) By the way,
+    you could also change the size and colour of you points, in case you want to keep on trying stuff.
+    Just a tip for the colour part: try the arguments `colour` and `fill` to see what happens.

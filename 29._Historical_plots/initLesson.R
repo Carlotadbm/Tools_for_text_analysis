@@ -11,5 +11,5 @@ swirl_options(swirl_logging = TRUE)
   )
 }
 
-mock_verbs <- read_delim(file.path(.get_course_path(), "Tools_for_text_analysis", "28._Statistical_barplots", "mock_sp.csv"), delim = "\t")
+mock_verbs <- read_delim(file.path(.get_course_path(), "Tools_for_text_analysis", "29._Historical_plots", "mock_sp.csv"), delim = "\t")
 
