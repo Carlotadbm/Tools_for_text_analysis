@@ -20,17 +20,15 @@
   AnswerTests: omnitest(correctExpr='diminutives')
   Hint: Just run its name!
 
-- Class: figure
+- Class: text
   Output: >
     We have data from letters written in four different centuries, both in Spain and in Portugal (all of
     them in Spanish, though). Our dataset has the suffixes used in all words with diminutives in these 
     letters. We'll create a faceted map like the one you're seeing in your viewer, where each submap has
     data from one century. Different suffixes are represented by different shapes of the points.
-    As you can see, this is not an optimal representation for these data, we'll just do it like that 
-    for the sake of learning to include shape as a variable, but you should be able to do this with colour
-    already :)
-  Figure: Plot_1.R
-  FigureType: new
+    This is not an optimal representation for these data, we'll just do it like that 
+    for the sake of learning to include shape as a variable, but you should be able to do this with 
+    different colours already :)
   
 - Class: text
   Output: >
